@@ -6,7 +6,7 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public class BlockSpawner : Transformable, Drawable
+	public class BlockSpawner : AEntity
 	{
 		public List<RectangleShape> Blocks { get; private set; }
 		public float BlockSpacing;
@@ -34,7 +34,7 @@ namespace SpaceTapper
 			random = new Random();
 		}
 
-		public BlockSpawner(int blocks, float spacing = 125)
+		public BlockSpawner(Game instance, int blocks, float spacing = 125) : base(instance)
 		{
 			Blocks = new List<RectangleShape>(blocks);
 			maxBlocks = blocks;
@@ -43,20 +43,22 @@ namespace SpaceTapper
 			RespawnBlocks();
 		}
 
-		public void Update(float dt)
+		public override void Update(TimeSpan delta)
 		{
+			var dt = (float)delta.TotalSeconds;
+
 			for(int i = 0; i < Blocks.Count; ++i)
 			{
 				var block = Blocks[i];
 
 				block.Position = new Vector2f(block.Position.X, block.Position.Y + 150 * dt);
 
-				if(block.Position.Y >= Game.Instance.Window.Size.Y)
+				if(block.Position.Y >= GInstance.Window.Size.Y)
 					PositionBlock(i);
 			}
 		}
 
-		public void Draw(RenderTarget target, RenderStates states)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
 			states.Transform *= Transform;
 
@@ -68,7 +70,7 @@ namespace SpaceTapper
 		{
 			Blocks.Clear();
 
-			var size = Game.Instance.Window.Size;
+			var size = GInstance.Window.Size;
 
 			for(int i = 0; i < MaxBlocks; ++i)
 			{
@@ -95,7 +97,7 @@ namespace SpaceTapper
 		private void PositionBlock(int index)
 		{
 			var b = Blocks[index];
-			var s = Game.Instance.Window.Size;
+			var s = GInstance.Window.Size;
 
 			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + random.Next(-15, 15));
 		}

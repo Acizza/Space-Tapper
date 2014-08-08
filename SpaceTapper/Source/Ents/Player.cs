@@ -5,7 +5,7 @@ using SFML.Window;
 namespace SpaceTapper
 {
 	// TODO: Refactor entire class
-	public class Player : Transformable, Drawable
+	public class Player : AEntity
 	{
 		public RectangleShape Shape { get; private set; }
 		public Vector2f Velocity;
@@ -15,7 +15,7 @@ namespace SpaceTapper
 		public readonly Vector2f MaxSpeed = new Vector2f(300, 400);
 		public readonly Vector2f Acceleration = new Vector2f(600, 250);
 
-		public Player(Vector2f pos)
+		public Player(Game instance, Vector2f pos) : base(instance)
 		{
 			Shape = new RectangleShape(Size);
 			Shape.FillColor = Color.Green;
@@ -26,20 +26,21 @@ namespace SpaceTapper
 			Origin = Size / 2;
 		}
 
-		public void Update(float dt)
+		public override void Update(TimeSpan delta)
 		{
-			UpdateVelocity(dt);
+			var dt = (float)delta.TotalSeconds;
 
+			UpdateVelocity(dt);
 			Position += Velocity * dt;
 
-			if(Position.Y - Origin.Y >= Game.Instance.Window.Size.Y)
+			if(Position.Y - Origin.Y >= GInstance.Window.Size.Y)
 			{
 				// TODO: Replace with Alive = false and adjust other code accordingly.
-				Game.Instance.EndGame();
+				GInstance.GameState.EndGame();
 			}
 		}
 
-		public void Draw(RenderTarget target, RenderStates states)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
 			states.Transform *= Transform;
 			target.Draw(Shape, states);

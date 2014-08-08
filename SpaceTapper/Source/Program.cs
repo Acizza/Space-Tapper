@@ -29,6 +29,7 @@ namespace SpaceTapper
 			parser.Add("vsync",      v => settings.Vsync = bool.Parse(v));
 			parser.Add("fullscreen", v => settings.Style = bool.Parse(v) == true ? Styles.Fullscreen : Styles.Close);
 			parser.Add("autosize",   v => settings.Mode = VideoMode.DesktopMode);
+			parser.Add("help",       v => PrintHelp(parser));
 
 			if(File.Exists(DefaultConfigFile))
 				parser.Parse(File.ReadAllLines(DefaultConfigFile));
@@ -37,6 +38,17 @@ namespace SpaceTapper
 
 			var game = new Game(settings);
 			game.Run();
+		}
+
+		static void PrintHelp(ArgParser parser)
+		{
+			Console.WriteLine("Options:\n");
+			uint index = 0;
+
+			foreach(var name in parser.Callbacks.Keys)
+				Console.WriteLine(++index + ". " + name);
+
+			Environment.Exit(0);
 		}
 	}
 }
