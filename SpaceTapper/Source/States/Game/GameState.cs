@@ -5,6 +5,7 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
+	// TODO: Add some events. Ex: EndGame()
 	public class GameState : AState
 	{
 		public DateTime StartTime { get; private set; }
@@ -22,6 +23,8 @@ namespace SpaceTapper
 
 		public void StartNewGame()
 		{
+			Active = true;
+
 			CreateText();
 			CreateEntities();
 
@@ -36,6 +39,10 @@ namespace SpaceTapper
 		{
 			Updating = false;
 			Player.Alive = false;
+
+			// TEMP
+			Active = false;
+			GInstance.MenuState.Active = true;
 
 			GameTimer.Stop();
 		}

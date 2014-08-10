@@ -32,12 +32,18 @@
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
     <Compile Include="Source\Game.cs" />
-    <Compile Include="Source\Ents\Player.cs" />
     <Compile Include="Source\Util\Extensions.cs" />
-    <Compile Include="Source\Ents\BlockSpawner.cs" />
     <Compile Include="Source\Util\LinuxUtil.cs" />
     <Compile Include="Source\GameTime.cs" />
     <Compile Include="Source\Util\ArgParser.cs" />
+    <Compile Include="Source\States\AState.cs" />
+    <Compile Include="Source\States\Game\GameState.cs" />
+    <Compile Include="Source\States\Game\Ents\BlockSpawner.cs" />
+    <Compile Include="Source\States\Game\Ents\Player.cs" />
+    <Compile Include="Source\AEntity.cs" />
+    <Compile Include="Source\States\Menu\MenuState.cs" />
+    <Compile Include="Source\UI\AUIElement.cs" />
+    <Compile Include="Source\UI\Button.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
@@ -76,7 +82,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Source\" />
-    <Folder Include="Source\Ents\" />
     <Folder Include="Source\Util\" />
+    <Folder Include="Source\States\" />
+    <Folder Include="Source\States\Game\" />
+    <Folder Include="Source\States\Game\Ents\" />
+    <Folder Include="Source\States\Menu\" />
+    <Folder Include="Source\UI\" />
   </ItemGroup>
 </Project>

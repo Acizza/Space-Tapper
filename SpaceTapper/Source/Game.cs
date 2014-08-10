@@ -14,6 +14,19 @@ namespace SpaceTapper
 		public MenuState MenuState { get; private set; }
 		public GameState GameState { get; private set; }
 
+		// Util function for floating point math.
+		public Vector2f Size
+		{
+			get
+			{
+				return new Vector2f(Window.Size.X, Window.Size.Y);
+			}
+			set
+			{
+				Window.Size = new Vector2u((uint)value.X, (uint)value.Y);
+			}
+		}
+
 		public Game(GameSettings settings)
 		{
 			Settings = settings;
@@ -23,8 +36,8 @@ namespace SpaceTapper
 
 			InitWindow(settings);
 
-			MenuState = new MenuState(this, false); // TODO: Set to the active state after implementing portions of the menu.
-			GameState = new GameState(this, true);
+			MenuState = new MenuState(this, true);
+			GameState = new GameState(this, false);
 		}
 
 		private void InitWindow(GameSettings settings)
@@ -46,8 +59,6 @@ namespace SpaceTapper
 		{
 			Time = new GameTime(0.5f);
 			Time.FpsUpdate += OnFpsUpdate;
-
-			GameState.StartNewGame();
 
 			while(Window.IsOpen())
 			{
