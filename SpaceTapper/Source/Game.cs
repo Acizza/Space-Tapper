@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Linq;
 using SFML.Graphics;
 using SFML.Window;
 using System.Timers;
+using System.Collections.Generic;
 
 namespace SpaceTapper
 {
 	public class Game
 	{
-		public RenderWindow Window { get; private set; }
+		public RenderWindow Window;
 		public GameSettings Settings { get; private set; }
 		public GameTime Time { get; private set; }
 
-		public MenuState MenuState { get; private set; }
-		public GameState GameState { get; private set; }
+		public Dictionary<State, AState> States;
 
 		// Util function for floating point math.
 		public Vector2f Size
@@ -36,30 +37,32 @@ namespace SpaceTapper
 
 			InitWindow(settings);
 
-			MenuState = new MenuState(this, true);
-			GameState = new GameState(this, false);
+			Time = new GameTime(0.5f);
+			Time.FpsUpdate += OnFpsUpdate;
+
+			States = new Dictionary<State, AState>();
+
+			States[State.Game] = new GameState(this, false);
+			States[State.EndGame] = new EndGameState(this, false);
+			States[State.Menu] = new MenuState(this, true);
 		}
 
-		private void InitWindow(GameSettings settings)
+		public void SetActiveState(State state)
 		{
-			Window = new RenderWindow(settings.Mode, settings.Title, settings.Style);
+			States[state].Active = true;
+			(from s in States where s.Key != state select s).ToList().ForEach(i => i.Value.Active = false);
+		}
 
-			Window.SetVerticalSyncEnabled(settings.Vsync);
-			Window.SetKeyRepeatEnabled(false);
+		public T GetState<T>(State state) where T : AState
+		{
+			if(!States.ContainsKey(state))
+				return null;
 
-			Window.Closed += (s, e) => Window.Close();
-			Window.KeyPressed += (s, e) =>
-			{
-				if(e.Code == Keyboard.Key.Escape)
-					Window.Close();
-			};
+			return (T)States[state];
 		}
 
 		public void Run()
 		{
-			Time = new GameTime(0.5f);
-			Time.FpsUpdate += OnFpsUpdate;
-
 			while(Window.IsOpen())
 			{
 				Window.DispatchEvents();
@@ -69,25 +72,45 @@ namespace SpaceTapper
 			}
 		}
 
-		private void Update()
+		void Update()
 		{
 			Time.Update();
 
-			MenuState.Update(Time.DeltaTime);
-			GameState.Update(Time.DeltaTime);
+			foreach(var i in States)
+			{
+				if(!i.Value.Updating)
+					continue;
+
+				i.Value.Update(Time.DeltaTime);
+			}
 		}
 
-		private void Render()
+		void Render()
 		{
 			Window.Clear();
 
-			MenuState.Render(Window);
-			GameState.Render(Window);
+			foreach(var i in States)
+			{
+				if(!i.Value.Drawing)
+					continue;
+
+				i.Value.Draw(Window);
+			}
 
 			Window.Display();
 		}
 
-		private void OnFpsUpdate(uint fps)
+		void InitWindow(GameSettings settings)
+		{
+			Window = new RenderWindow(settings.Mode, settings.Title, settings.Style);
+
+			Window.SetVerticalSyncEnabled(settings.Vsync);
+			Window.SetKeyRepeatEnabled(false);
+
+			Window.Closed += (s, e) => Window.Close();
+		}
+
+		void OnFpsUpdate(uint fps)
 		{
 			Window.SetTitle(Settings.Title + " | " + (fps / Time.FpsResetTime) + " fps");
 		}
@@ -99,5 +122,12 @@ namespace SpaceTapper
 		public Styles Style;
 		public string Title;
 		public bool Vsync;
+	}
+
+	public enum State
+	{
+		Menu,
+		Game,
+		EndGame
 	}
 }

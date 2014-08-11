@@ -7,9 +7,11 @@ namespace SpaceTapper
 	// TODO: Refactor entire class
 	public class Player : AEntity
 	{
-		public RectangleShape Shape { get; private set; }
+		public RectangleShape Shape;
 		public Vector2f Velocity;
 		public bool Alive;
+
+		public event Action OnCollision = delegate {};
 
 		public readonly Vector2f Size = new Vector2f(15, 15);
 		public readonly Vector2f MaxSpeed = new Vector2f(300, 400);
@@ -34,10 +36,7 @@ namespace SpaceTapper
 			Position += Velocity * dt;
 
 			if(Position.Y - Origin.Y >= GInstance.Window.Size.Y)
-			{
-				// TODO: Replace with Alive = false and adjust other code accordingly.
-				GInstance.GameState.EndGame();
-			}
+				OnCollision.Invoke();
 		}
 
 		public override void Draw(RenderTarget target, RenderStates states)
@@ -55,7 +54,7 @@ namespace SpaceTapper
 			return bounds;
 		}
 
-		private void UpdateVelocity(float dt)
+		void UpdateVelocity(float dt)
 		{
 			Velocity.X = MathUtil.Lerp(0, Velocity.X, 4 * dt);
 			Velocity.Y += Acceleration.Y / 2 * dt;
@@ -63,7 +62,7 @@ namespace SpaceTapper
 			CheckInput(dt);
 		}
 
-		private void CheckInput(float dt)
+		void CheckInput(float dt)
 		{
 			if(Keyboard.IsKeyPressed(Keyboard.Key.A))
 				Velocity.X = (Velocity.X - Acceleration.X * dt).Clamp(-MaxSpeed.X, MaxSpeed.X);

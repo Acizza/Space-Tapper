@@ -6,15 +6,14 @@ namespace SpaceTapper
 {
 	public class ArgParser
 	{
-		public Dictionary<string,CallbackFunc> Callbacks { get; private set; }
-		public delegate void CallbackFunc(string value);
+		public Dictionary<string, Action<string>> Callbacks { get; private set; }
 
 		public ArgParser()
 		{
-			Callbacks = new Dictionary<string,CallbackFunc>();
+			Callbacks = new Dictionary<string, Action<string>>();
 		}
 
-		public void Add(string name, CallbackFunc func)
+		public void Add(string name, Action<string> func)
 		{
 			Callbacks.Add(name, func);
 		}

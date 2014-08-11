@@ -14,12 +14,13 @@ namespace SpaceTapper
 			var center = instance.Size / 2;
 
 			StartButton = new Button(instance, center, "Start");
-			StartButton.Pressed += OnStartPressed;
+			QuitButton  = new Button(instance,
+							center + new Vector2f(0, StartButton.LocalBounds.Height + 15), "Quit");
 
-			QuitButton = new Button(instance,
-				center + new Vector2f(0, StartButton.LocalBounds.Height + 15), "Quit");
+			StartButton.OnPressed += () => GInstance.GetState<GameState>(State.Game).StartNewGame();
+			QuitButton.OnPressed += () => GInstance.Window.Close();
 
-			QuitButton.Pressed += () => GInstance.Window.Close();
+			GInstance.GetState<GameState>(State.Game).OnStartGame += () => Active = false;
 		}
 
 		public override void Update(TimeSpan dt)
@@ -31,7 +32,7 @@ namespace SpaceTapper
 			QuitButton.Update(dt);
 		}
 
-		public override void Render(RenderWindow window)
+		public override void Draw(RenderWindow window)
 		{
 			if(!Drawing)
 				return;
@@ -40,10 +41,10 @@ namespace SpaceTapper
 			window.Draw(QuitButton);
 		}
 
-		void OnStartPressed()
+		protected override void OnKeyPressed(KeyEventArgs e)
 		{
-			Active = false;
-			GInstance.GameState.StartNewGame();
+			if(e.Code == Keyboard.Key.Escape)
+				GInstance.Window.Close();
 		}
 	}
 }

@@ -8,8 +8,7 @@ namespace SpaceTapper
 	{
 		public static Font Font;
 		public Text Text;
-		public delegate void PressedDlg();
-		public event PressedDlg Pressed = delegate {};
+		public event Action OnPressed = delegate {};
 
 		public uint CharacterSize
 		{
@@ -31,7 +30,7 @@ namespace SpaceTapper
 			}
 		}
 
-		bool lastMouseState;
+		bool mLastMouseState;
 
 		static Button()
 		{
@@ -56,13 +55,13 @@ namespace SpaceTapper
 			{
 				Text.Color = Color.Red;
 
-				if(Mouse.IsButtonPressed(Mouse.Button.Left) && !lastMouseState)
-					Pressed.Invoke();
+				if(Mouse.IsButtonPressed(Mouse.Button.Left) && !mLastMouseState)
+					OnPressed.Invoke();
 			}
 			else
 				Text.Color = Color.White;
 
-			lastMouseState = Mouse.IsButtonPressed(Mouse.Button.Left);
+			mLastMouseState = Mouse.IsButtonPressed(Mouse.Button.Left);
 		}
 
 		public bool MouseInBounds()

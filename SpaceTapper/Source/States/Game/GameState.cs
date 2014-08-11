@@ -13,9 +13,13 @@ namespace SpaceTapper
 		public Font GameFont { get; private set; }
 		public Text TimeText { get; private set; }
 		public Text ScoreText { get; private set; }
+		public uint Score { get; private set; }
 
 		public Player Player { get; private set; }
 		public BlockSpawner BlockSpawner { get; private set; }
+
+		public event Action OnStartGame = delegate {};
+		public event Action OnEndGame = delegate {};
 
 		public GameState(Game instance, bool active = true) : base(instance, active)
 		{
@@ -33,18 +37,16 @@ namespace SpaceTapper
 			GameTimer.Start();
 
 			StartTime = DateTime.Now;
+			OnStartGame.Invoke();
 		}
 
 		public void EndGame()
 		{
-			Updating = false;
+			Active = false;
 			Player.Alive = false;
 
-			// TEMP
-			Active = false;
-			GInstance.MenuState.Active = true;
-
 			GameTimer.Stop();
+			OnEndGame.Invoke();
 		}
 
 		public override void Update(TimeSpan delta)
@@ -59,7 +61,7 @@ namespace SpaceTapper
 				EndGame();
 		}
 
-		public override void Render(RenderWindow window)
+		public override void Draw(RenderWindow window)
 		{
 			if(!Drawing)
 				return;
@@ -71,7 +73,7 @@ namespace SpaceTapper
 			window.Draw(ScoreText);
 		}
 
-		private void CreateText()
+		void CreateText()
 		{
 			GameFont  = new Font("data/fonts/DejaVuSans.ttf");
 			TimeText  = new Text("Time:\t00:00", GameFont, 20);
@@ -81,18 +83,31 @@ namespace SpaceTapper
 			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
 		}
 
-		private void CreateEntities()
+		void CreateEntities()
 		{
 			var size = GInstance.Window.Size;
 
 			Player = new Player(GInstance, new Vector2f(size.X / 2, size.Y / 2));
 			BlockSpawner = new BlockSpawner(GInstance, 100);
+
+			Player.OnCollision += () => OnPlayerCollision();
 		}
 
-		private void UpdateGameTime()
+		void UpdateGameTime()
 		{
 			var totalTime = DateTime.Now - StartTime;
 			TimeText.DisplayedString = string.Format("Time:\t{0:00}:{1:00}", totalTime.Minutes, totalTime.Seconds);
+		}
+
+		void OnPlayerCollision()
+		{
+			EndGame();
+		}
+
+		protected override void OnKeyPressed(KeyEventArgs e)
+		{
+			if(e.Code == Keyboard.Key.Escape)
+				GInstance.SetActiveState(State.Menu);
 		}
 	}
 }

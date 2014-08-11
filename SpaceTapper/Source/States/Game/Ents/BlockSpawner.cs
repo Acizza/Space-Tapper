@@ -8,36 +8,36 @@ namespace SpaceTapper
 {
 	public class BlockSpawner : AEntity
 	{
-		public List<RectangleShape> Blocks { get; private set; }
+		public List<RectangleShape> Blocks;
 		public float BlockSpacing;
 
 		public int MaxBlocks
 		{
 			get
 			{
-				return maxBlocks;
+				return mMaxBlocks;
 			}
 			set
 			{
-				if(value < maxBlocks)
-					Blocks.RemoveRange(Blocks.Count, Blocks.Count - maxBlocks - value); // TODO: Throws exception.
+				if(value < mMaxBlocks)
+					Blocks.RemoveRange(Blocks.Count, Blocks.Count - mMaxBlocks - value); // TODO: Throws exception.
 
-				maxBlocks = value;
+				mMaxBlocks = value;
 			}
 		}
 
-		private int maxBlocks;
-		private static Random random;
+		int mMaxBlocks;
+		static Random mRandom;
 
 		static BlockSpawner()
 		{
-			random = new Random();
+			mRandom = new Random();
 		}
 
 		public BlockSpawner(Game instance, int blocks, float spacing = 125) : base(instance)
 		{
 			Blocks = new List<RectangleShape>(blocks);
-			maxBlocks = blocks;
+			MaxBlocks = blocks;
 			BlockSpacing = spacing;
 
 			RespawnBlocks();
@@ -74,9 +74,9 @@ namespace SpaceTapper
 
 			for(int i = 0; i < MaxBlocks; ++i)
 			{
-				var shape = new RectangleShape(new Vector2f(random.Next(100, (int)(size.X * 0.25f)), 10));
+				var shape = new RectangleShape(new Vector2f(mRandom.Next(100, (int)(size.X * 0.25f)), 10));
 				shape.FillColor = Color.Red;
-				shape.Position = new Vector2f(random.Next(0, (int)size.X), 0);
+				shape.Position = new Vector2f(mRandom.Next(0, (int)size.X), 0);
 
 				Blocks.Add(shape);
 				PositionBlock(i);
@@ -94,12 +94,12 @@ namespace SpaceTapper
 			return false;
 		}
 
-		private void PositionBlock(int index)
+		void PositionBlock(int index)
 		{
 			var b = Blocks[index];
 			var s = GInstance.Window.Size;
 
-			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + random.Next(-15, 15));
+			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + mRandom.Next(-15, 15));
 		}
 	}
 }

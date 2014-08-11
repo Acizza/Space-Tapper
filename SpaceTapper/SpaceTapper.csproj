@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>-vsync=true -fullscreen=true -autosize</Commandlineparameters>
+    <Commandlineparameters>-vsync=true</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -27,6 +27,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <Commandlineparameters>-vsync=true</Commandlineparameters>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -44,6 +45,7 @@
     <Compile Include="Source\States\Menu\MenuState.cs" />
     <Compile Include="Source\UI\AUIElement.cs" />
     <Compile Include="Source\UI\Button.cs" />
+    <Compile Include="Source\States\EndGame\EndGameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
@@ -88,5 +90,6 @@
     <Folder Include="Source\States\Game\Ents\" />
     <Folder Include="Source\States\Menu\" />
     <Folder Include="Source\UI\" />
+    <Folder Include="Source\States\EndGame\" />
   </ItemGroup>
 </Project>

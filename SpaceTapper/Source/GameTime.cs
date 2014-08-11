@@ -8,36 +8,35 @@ namespace SpaceTapper
 		public uint  Fps { get; private set; }
 		public float FpsResetTime;
 
-		public delegate void OnFpsUpdate(uint fps);
-		public event OnFpsUpdate FpsUpdate = delegate {};
+		public event Action<uint> FpsUpdate = delegate {};
 
-		uint fps;
-		DateTime lastDeltaUpdate;
-		DateTime nextFpsReset;
+		uint mFps;
+		DateTime mLastDeltaUpdate;
+		DateTime mNextFpsReset;
 
 		public GameTime(float fpsResetTime = 0.5f)
 		{
 			FpsResetTime = fpsResetTime;
 
-			lastDeltaUpdate = DateTime.Now;
-			nextFpsReset    = DateTime.Now.AddSeconds(FpsResetTime);
+			mLastDeltaUpdate = DateTime.Now;
+			mNextFpsReset    = DateTime.Now.AddSeconds(FpsResetTime);
 		}
 
 		public void Update()
 		{
-			DeltaTime = DateTime.Now - lastDeltaUpdate;
-			lastDeltaUpdate = DateTime.Now;
+			DeltaTime = DateTime.Now - mLastDeltaUpdate;
+			mLastDeltaUpdate = DateTime.Now;
 
-			++fps;
+			++mFps;
 
-			if(DateTime.Now >= nextFpsReset)
+			if(DateTime.Now >= mNextFpsReset)
 			{
-				FpsUpdate.Invoke(fps);
+				FpsUpdate.Invoke(mFps);
 
-				Fps = fps;
-				fps = 0;
+				Fps = mFps;
+				mFps = 0;
 
-				nextFpsReset = DateTime.Now.AddSeconds(FpsResetTime);
+				mNextFpsReset = DateTime.Now.AddSeconds(FpsResetTime);
 			}
 		}
 	}
