@@ -31,6 +31,8 @@ namespace SpaceTapper
 			CreateText();
 			CreateEntities();
 
+			Score = 0;
+
 			GameTimer = new Timer(1000);
 			GameTimer.Elapsed += (s, e) => UpdateGameTime();
 			GameTimer.Start();
@@ -42,7 +44,6 @@ namespace SpaceTapper
 		public void EndGame()
 		{
 			Active = false;
-			Player.Alive = false;
 
 			GameTimer.Stop();
 			OnEndGame.Invoke();
@@ -50,21 +51,30 @@ namespace SpaceTapper
 
 		public override void Update(TimeSpan delta)
 		{
-			if(!Updating)
-				return;
-
 			Player.Update(delta);
 			BlockSpawner.Update(delta);
 
-			if(BlockSpawner.CheckCollision(Player.GetGlobalBounds()))
-				EndGame();
+			foreach(var block in BlockSpawner.Blocks)
+			{
+				if(block.GetGlobalBounds().Intersects(Player.GlobalBounds))
+				{
+					EndGame();
+					return;
+				}
+
+				if(block.Position.Y >= Player.Shape.Position.Y && !block.Scored)
+				{
+					ScoreText.DisplayedString = "Score:\t" + ++Score;
+					block.Scored = true;
+				}
+			}
+
+			//if(BlockSpawner.CheckCollision(Player.GlobalBounds))
+			//	EndGame();
 		}
 
 		public override void Draw(RenderWindow window)
 		{
-			if(!Drawing)
-				return;
-
 			window.Draw(Player);
 			window.Draw(BlockSpawner);
 

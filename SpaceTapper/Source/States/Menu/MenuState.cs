@@ -25,18 +25,12 @@ namespace SpaceTapper
 
 		public override void Update(TimeSpan dt)
 		{
-			if(!Updating)
-				return;
-
 			StartButton.Update(dt);
 			QuitButton.Update(dt);
 		}
 
 		public override void Draw(RenderWindow window)
 		{
-			if(!Drawing)
-				return;
-
 			window.Draw(StartButton);
 			window.Draw(QuitButton);
 		}

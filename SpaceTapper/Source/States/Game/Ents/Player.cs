@@ -4,12 +4,10 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	// TODO: Refactor entire class
 	public class Player : AEntity
 	{
 		public RectangleShape Shape;
 		public Vector2f Velocity;
-		public bool Alive;
 
 		public event Action OnCollision = delegate {};
 
@@ -17,15 +15,25 @@ namespace SpaceTapper
 		public readonly Vector2f MaxSpeed = new Vector2f(300, 400);
 		public readonly Vector2f Acceleration = new Vector2f(600, 250);
 
+		/// <summary>
+		/// Shortcut for Shape.GetGlobalBounds()
+		/// </summary>
+		/// <value>The global bounds.</value>
+		public FloatRect GlobalBounds
+		{
+			get
+			{
+				return Shape.GetGlobalBounds();
+			}
+		}
+
 		public Player(Game instance, Vector2f pos) : base(instance)
 		{
 			Shape = new RectangleShape(Size);
 			Shape.FillColor = Color.Green;
 
-			Alive = true;
-
-			Position = pos;
-			Origin = Size / 2;
+			Shape.Position = pos;
+			Shape.Origin = Size / 2;
 		}
 
 		public override void Update(TimeSpan delta)
@@ -33,9 +41,9 @@ namespace SpaceTapper
 			var dt = (float)delta.TotalSeconds;
 
 			UpdateVelocity(dt);
-			Position += Velocity * dt;
+			Shape.Position += Velocity * dt;
 
-			if(Position.Y - Origin.Y >= GInstance.Size.Y)
+			if(Shape.Position.Y - Shape.Origin.Y >= GInstance.Size.Y)
 				OnCollision.Invoke();
 		}
 
@@ -43,15 +51,6 @@ namespace SpaceTapper
 		{
 			states.Transform *= Transform;
 			target.Draw(Shape, states);
-		}
-
-		public FloatRect GetGlobalBounds()
-		{
-			var bounds  = Shape.GetGlobalBounds();
-			bounds.Left = Position.X - Origin.X;
-			bounds.Top  = Position.Y - Origin.Y;
-
-			return bounds;
 		}
 
 		void UpdateVelocity(float dt)

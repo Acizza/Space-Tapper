@@ -6,9 +6,10 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
+	// TODO: Refactor.
 	public class BlockSpawner : AEntity
 	{
-		public List<RectangleShape> Blocks;
+		public List<Block> Blocks;
 		public float BlockSpacing;
 
 		public int MaxBlocks
@@ -36,7 +37,7 @@ namespace SpaceTapper
 
 		public BlockSpawner(Game instance, int blocks, float spacing = 125) : base(instance)
 		{
-			Blocks = new List<RectangleShape>(blocks);
+			Blocks = new List<Block>(blocks);
 			MaxBlocks = blocks;
 			BlockSpacing = spacing;
 
@@ -74,7 +75,7 @@ namespace SpaceTapper
 
 			for(int i = 0; i < MaxBlocks; ++i)
 			{
-				var shape = new RectangleShape(new Vector2f(mRandom.Next(100, (int)(size.X * 0.25f)), 10));
+				var shape = new Block(new Vector2f(mRandom.Next(100, (int)(size.X * 0.25f)), 10));
 				shape.FillColor = Color.Red;
 				shape.Position = new Vector2f(mRandom.Next(0, (int)size.X), 0);
 
@@ -100,6 +101,7 @@ namespace SpaceTapper
 			var s = GInstance.Window.Size;
 
 			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + mRandom.Next(-15, 15));
+			b.Scored = false;
 		}
 	}
 }

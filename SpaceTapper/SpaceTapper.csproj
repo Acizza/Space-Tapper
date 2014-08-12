@@ -46,6 +46,7 @@
     <Compile Include="Source\UI\AUIElement.cs" />
     <Compile Include="Source\UI\Button.cs" />
     <Compile Include="Source\States\EndGame\EndGameState.cs" />
+    <Compile Include="Source\States\Game\Ents\Block.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">

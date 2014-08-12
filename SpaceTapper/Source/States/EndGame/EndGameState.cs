@@ -32,9 +32,6 @@ namespace SpaceTapper
 
 		public override void Draw(RenderWindow window)
 		{
-			if(!Drawing)
-				return;
-				
 			window.Draw(ScoreText);
 			window.Draw(TimeText);
 		}
@@ -44,7 +41,7 @@ namespace SpaceTapper
 			var gState = GInstance.GetState<GameState>(State.Game);
 
 			TimeText.DisplayedString = gState.TimeText.DisplayedString;
-			ScoreText.DisplayedString = "Score: " + gState.Score;
+			ScoreText.DisplayedString = gState.ScoreText.DisplayedString;
 
 			Active = true;
 		}
