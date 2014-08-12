@@ -51,9 +51,17 @@ namespace SpaceTapper
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
-			// BUG: Will end up exiting the game since the menu key press is ran right after this.
+			// If we don't set the state at the end of the frame,
+			// the menu handler will pick the key press up too and exit the game.
+
 			if(e.Code == Keyboard.Key.Escape)
-				GInstance.SetActiveState(State.Menu);
+				GInstance.OnEndFrame += EndFrameHandler;
+		}
+
+		void EndFrameHandler()
+		{
+			GInstance.SetActiveState(State.Menu);
+			GInstance.OnEndFrame -= EndFrameHandler;
 		}
 	}
 }

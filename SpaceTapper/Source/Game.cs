@@ -12,8 +12,8 @@ namespace SpaceTapper
 		public RenderWindow Window;
 		public GameSettings Settings { get; private set; }
 		public GameTime Time { get; private set; }
-
 		public Dictionary<State, AState> States;
+		public event Action OnEndFrame = delegate {};
 
 		// Util function for floating point math.
 		public Vector2f Size
@@ -55,9 +55,6 @@ namespace SpaceTapper
 
 		public T GetState<T>(State state) where T : AState
 		{
-			if(!States.ContainsKey(state))
-				return null;
-
 			return (T)States[state];
 		}
 
@@ -69,6 +66,8 @@ namespace SpaceTapper
 
 				Update();
 				Render();
+
+				OnEndFrame.Invoke();
 			}
 		}
 

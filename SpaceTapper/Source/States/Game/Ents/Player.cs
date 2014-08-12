@@ -35,7 +35,7 @@ namespace SpaceTapper
 			UpdateVelocity(dt);
 			Position += Velocity * dt;
 
-			if(Position.Y - Origin.Y >= GInstance.Window.Size.Y)
+			if(Position.Y - Origin.Y >= GInstance.Size.Y)
 				OnCollision.Invoke();
 		}
 

@@ -43,8 +43,16 @@ namespace SpaceTapper
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
-			if(e.Code == Keyboard.Key.Escape)
-				GInstance.Window.Close();
+			switch(e.Code)
+			{
+				case Keyboard.Key.Escape:
+					GInstance.Window.Close();
+					break;
+
+				case Keyboard.Key.Return:
+					GInstance.GetState<GameState>(State.Game).StartNewGame();
+					break;
+			}
 		}
 	}
 }

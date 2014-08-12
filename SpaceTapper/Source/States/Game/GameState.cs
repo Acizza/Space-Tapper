@@ -5,7 +5,6 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	// TODO: Add some events. Ex: EndGame()
 	public class GameState : AState
 	{
 		public DateTime StartTime { get; private set; }
@@ -27,7 +26,7 @@ namespace SpaceTapper
 
 		public void StartNewGame()
 		{
-			Active = true;
+			GInstance.SetActiveState(State.Game);
 
 			CreateText();
 			CreateEntities();
@@ -106,8 +105,17 @@ namespace SpaceTapper
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
+			// If we don't set the state at the end of the frame,
+			// the menu handler will pick the key press up too and exit the game.
+
 			if(e.Code == Keyboard.Key.Escape)
-				GInstance.SetActiveState(State.Menu);
+				GInstance.OnEndFrame += EndFrameHandler;
+		}
+
+		void EndFrameHandler()
+		{
+			GInstance.SetActiveState(State.Menu);
+			GInstance.OnEndFrame -= EndFrameHandler;
 		}
 	}
 }
