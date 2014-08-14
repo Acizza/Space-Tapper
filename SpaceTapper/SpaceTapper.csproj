@@ -26,8 +26,8 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
     <Commandlineparameters>-vsync=true</Commandlineparameters>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -47,6 +47,7 @@
     <Compile Include="Source\UI\Button.cs" />
     <Compile Include="Source\States\EndGame\EndGameState.cs" />
     <Compile Include="Source\States\Game\Ents\Block.cs" />
+    <Compile Include="Resource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">

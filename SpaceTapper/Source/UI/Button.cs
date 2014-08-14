@@ -6,7 +6,6 @@ namespace SpaceTapper
 {
 	public class Button : AUIElement
 	{
-		public static Font Font;
 		public Text Text;
 		public event Action OnPressed = delegate {};
 
@@ -32,14 +31,9 @@ namespace SpaceTapper
 
 		bool mLastMouseState;
 
-		static Button()
-		{
-			Font = new Font("data/fonts/DejaVuSans.ttf");
-		}
-
 		public Button(Game instance, Vector2f pos, string text, uint charSize = 20, bool center = true) : base(instance)
 		{
-			Text = new Text(text, Font, charSize);
+			Text = new Text(text, GInstance.Fonts["default"], charSize);
 			Text.Position = pos;
 
 			if(center)

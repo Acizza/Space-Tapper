@@ -13,6 +13,8 @@ namespace SpaceTapper
 		public GameSettings Settings { get; private set; }
 		public GameTime Time { get; private set; }
 		public Dictionary<State, AState> States;
+		public Resource<Font> Fonts;
+
 		public event Action OnEndFrame = delegate {};
 
 		// Util function for floating point math.
@@ -36,6 +38,7 @@ namespace SpaceTapper
 				LinuxUtil.XInitThreads();
 
 			InitWindow(settings);
+			InitResources();
 
 			Time = new GameTime(0.5f);
 			Time.FpsUpdate += OnFpsUpdate;
@@ -97,6 +100,12 @@ namespace SpaceTapper
 			}
 
 			Window.Display();
+		}
+
+		void InitResources()
+		{
+			Fonts = new Resource<Font>();
+			Fonts["default"] = new Font("data/fonts/DejaVuSans.ttf");
 		}
 
 		void InitWindow(GameSettings settings)

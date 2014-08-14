@@ -71,7 +71,7 @@ namespace SpaceTapper
 		{
 			Blocks.Clear();
 
-			var size = GInstance.Window.Size;
+			var size = GInstance.Size;
 
 			for(int i = 0; i < MaxBlocks; ++i)
 			{
@@ -98,7 +98,7 @@ namespace SpaceTapper
 		void PositionBlock(int index)
 		{
 			var b = Blocks[index];
-			var s = GInstance.Window.Size;
+			var s = GInstance.Size;
 
 			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + mRandom.Next(-15, 15));
 			b.Scored = false;

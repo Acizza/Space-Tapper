@@ -6,19 +6,15 @@ namespace SpaceTapper
 {
 	public class EndGameState : AState
 	{
-		public static Font Font;
 		public Text ScoreText { get; private set; }
 		public Text TimeText { get; private set; }
 
-		static EndGameState()
-		{
-			Font = new Font("data/fonts/DejaVuSans.ttf");
-		}
-
 		public EndGameState(Game instance, bool active = false) : base(instance, active)
 		{
-			TimeText  = new Text("Time: 00:00", Font, 30);
-			ScoreText = new Text("Score: 0", Font, 30);
+			var font = GInstance.Fonts["default"];
+
+			TimeText  = new Text("Time: 00:00", font, 30);
+			ScoreText = new Text("Score: 0", font, 30);
 
 			TimeText.Position = GInstance.Size / 2 - new Vector2f(100, 150);
 			ScoreText.Position = GInstance.Size / 2 + new Vector2f(-100, -100);
@@ -48,9 +44,6 @@ namespace SpaceTapper
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
-			// If we don't set the state at the end of the frame,
-			// the menu handler will pick the key press up too and exit the game.
-
 			if(e.Code == Keyboard.Key.Escape)
 				GInstance.OnEndFrame += EndFrameHandler;
 		}

@@ -9,7 +9,6 @@ namespace SpaceTapper
 	{
 		public DateTime StartTime { get; private set; }
 		public Timer GameTimer { get; private set; }
-		public Font GameFont { get; private set; }
 		public Text TimeText { get; private set; }
 		public Text ScoreText { get; private set; }
 		public uint Score { get; private set; }
@@ -62,15 +61,12 @@ namespace SpaceTapper
 					return;
 				}
 
-				if(block.Position.Y >= Player.Shape.Position.Y && !block.Scored)
+				if(!block.Scored && block.Position.Y >= Player.Shape.Position.Y)
 				{
 					ScoreText.DisplayedString = "Score:\t" + ++Score;
 					block.Scored = true;
 				}
 			}
-
-			//if(BlockSpawner.CheckCollision(Player.GlobalBounds))
-			//	EndGame();
 		}
 
 		public override void Draw(RenderWindow window)
@@ -84,9 +80,10 @@ namespace SpaceTapper
 
 		void CreateText()
 		{
-			GameFont  = new Font("data/fonts/DejaVuSans.ttf");
-			TimeText  = new Text("Time:\t00:00", GameFont, 20);
-			ScoreText = new Text("Score:\t0", GameFont, 20);
+			var font = GInstance.Fonts["default"];
+
+			TimeText  = new Text("Time:\t00:00", font, 20);
+			ScoreText = new Text("Score:\t0", font, 20);
 
 			TimeText.Position  = new Vector2f(5, 5);
 			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
