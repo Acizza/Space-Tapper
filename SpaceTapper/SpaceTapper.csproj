@@ -47,7 +47,8 @@
     <Compile Include="Source\UI\Button.cs" />
     <Compile Include="Source\States\EndGame\EndGameState.cs" />
     <Compile Include="Source\States\Game\Ents\Block.cs" />
-    <Compile Include="Resource.cs" />
+    <Compile Include="Source\Resource.cs" />
+    <Compile Include="Source\States\Difficulty\DifficultyState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
@@ -93,5 +94,6 @@
     <Folder Include="Source\States\Menu\" />
     <Folder Include="Source\UI\" />
     <Folder Include="Source\States\EndGame\" />
+    <Folder Include="Source\States\Difficulty\" />
   </ItemGroup>
 </Project>

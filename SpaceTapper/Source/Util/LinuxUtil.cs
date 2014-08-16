@@ -7,7 +7,7 @@ namespace SpaceTapper
 	// Therefore, we have to wrap and call it manually.
 	public static class LinuxUtil
 	{
-		[DllImportAttribute("X11")]
+		[DllImport("X11")]
 		public static extern int XInitThreads();
 	}
 }

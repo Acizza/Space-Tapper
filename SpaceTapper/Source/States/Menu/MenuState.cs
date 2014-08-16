@@ -17,7 +17,7 @@ namespace SpaceTapper
 			QuitButton  = new Button(instance,
 							center + new Vector2f(0, StartButton.LocalBounds.Height + 15), "Quit");
 
-			StartButton.OnPressed += () => GInstance.GetState<GameState>(State.Game).StartNewGame();
+			StartButton.OnPressed += () => GInstance.OnEndFrame += EndFrameHandler;
 			QuitButton.OnPressed += () => GInstance.Window.Close();
 
 			GInstance.GetState<GameState>(State.Game).OnStartGame += () => Active = false;
@@ -44,9 +44,15 @@ namespace SpaceTapper
 					break;
 
 				case Keyboard.Key.Return:
-					GInstance.GetState<GameState>(State.Game).StartNewGame();
+					GInstance.SetActiveState(State.DifficultySelect);
 					break;
 			}
+		}
+
+		void EndFrameHandler()
+		{
+			GInstance.SetActiveState(State.DifficultySelect);
+			GInstance.OnEndFrame -= EndFrameHandler;
 		}
 	}
 }

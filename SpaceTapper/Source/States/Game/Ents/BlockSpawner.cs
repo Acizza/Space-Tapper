@@ -10,7 +10,7 @@ namespace SpaceTapper
 	public class BlockSpawner : AEntity
 	{
 		public List<Block> Blocks;
-		public float BlockSpacing;
+		public DifficultySettings CurDifficulty;
 
 		public int MaxBlocks
 		{
@@ -35,11 +35,11 @@ namespace SpaceTapper
 			mRandom = new Random();
 		}
 
-		public BlockSpawner(Game instance, int blocks, float spacing = 125) : base(instance)
+		public BlockSpawner(Game instance, DifficultySettings settings) : base(instance)
 		{
-			Blocks = new List<Block>(blocks);
-			MaxBlocks = blocks;
-			BlockSpacing = spacing;
+			Blocks = new List<Block>(settings.BlockCount);
+			MaxBlocks = settings.BlockCount;
+			CurDifficulty = settings;
 
 			RespawnBlocks();
 		}
@@ -52,7 +52,7 @@ namespace SpaceTapper
 			{
 				var block = Blocks[i];
 
-				block.Position = new Vector2f(block.Position.X, block.Position.Y + 150 * dt);
+				block.Position = new Vector2f(block.Position.X, block.Position.Y + CurDifficulty.BlockSpeed * dt);
 
 				if(block.Position.Y >= GInstance.Window.Size.Y)
 					PositionBlock(i);
@@ -100,7 +100,7 @@ namespace SpaceTapper
 			var b = Blocks[index];
 			var s = GInstance.Size;
 
-			b.Position = new Vector2f(b.Position.X, -BlockSpacing * index + mRandom.Next(-15, 15));
+			b.Position = new Vector2f(b.Position.X, -CurDifficulty.BlockSpacing * index + mRandom.Next(-15, 15));
 			b.Scored = false;
 		}
 	}

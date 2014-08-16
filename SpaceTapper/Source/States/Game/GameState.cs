@@ -12,6 +12,7 @@ namespace SpaceTapper
 		public Text TimeText { get; private set; }
 		public Text ScoreText { get; private set; }
 		public uint Score { get; private set; }
+		public DifficultySettings CurDifficulty;
 
 		public Player Player { get; private set; }
 		public BlockSpawner BlockSpawner { get; private set; }
@@ -23,14 +24,15 @@ namespace SpaceTapper
 		{
 		}
 
-		public void StartNewGame()
+		public void StartNewGame(DifficultyLevel level)
 		{
 			GInstance.SetActiveState(State.Game);
 
+			Score = 0;
+			CurDifficulty = Difficulty.Levels[level];
+
 			CreateText();
 			CreateEntities();
-
-			Score = 0;
 
 			GameTimer = new Timer(1000);
 			GameTimer.Elapsed += (s, e) => UpdateGameTime();
@@ -94,7 +96,7 @@ namespace SpaceTapper
 			var size = GInstance.Window.Size;
 
 			Player = new Player(GInstance, new Vector2f(size.X / 2, size.Y / 2));
-			BlockSpawner = new BlockSpawner(GInstance, 100);
+			BlockSpawner = new BlockSpawner(GInstance, CurDifficulty);
 
 			Player.OnCollision += () => OnPlayerCollision();
 		}
