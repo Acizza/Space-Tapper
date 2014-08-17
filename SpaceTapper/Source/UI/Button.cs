@@ -29,7 +29,7 @@ namespace SpaceTapper
 			}
 		}
 
-		bool mLastMouseState;
+		bool mLastMouseState = true;
 
 		public Button(Game instance, Vector2f pos, string text, uint charSize = 20, bool center = true) : base(instance)
 		{
