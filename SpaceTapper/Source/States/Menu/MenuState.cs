@@ -4,33 +4,53 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public class MenuState : AState
+	public class MenuState : AIdleState
 	{
 		public Button StartButton { get; private set; }
 		public Button QuitButton { get; private set; }
+		public Button ResumeButton { get; private set; }
+
+		bool mInGame;
 
 		public MenuState(Game instance, bool active = true) : base(instance, active)
 		{
-			var center = instance.Size / 2;
+			StartButton = new Button(instance, GInstance.Size / 2, "Start");
 
-			StartButton = new Button(instance, center, "Start");
+			var lBounds = StartButton.LocalBounds;
+			var center = StartButton.Text.Position;
+
+			ResumeButton = new Button(instance,
+				center - new Vector2f(0, lBounds.Height + 15), "Resume");
+
 			QuitButton  = new Button(instance,
-							center + new Vector2f(0, StartButton.LocalBounds.Height + 15), "Quit");
+				center + new Vector2f(0, lBounds.Height + 15), "Quit");
 
-			StartButton.OnPressed += () => GInstance.OnEndFrame += EndFrameHandler;
+			StartButton.OnPressed += () => GInstance.OnEndFrame += OnStartPressed;
+			ResumeButton.OnPressed += () => OnResumePressed();
 			QuitButton.OnPressed += () => GInstance.Window.Close();
 
-			GInstance.GetState<GameState>(State.Game).OnStartGame += () => Active = false;
+			var gState = GInstance.GetState<GameState>(State.Game);
+
+			gState.OnStartGame += () => mInGame = true;
+			gState.OnEndGame += () => mInGame = false;
 		}
 
 		public override void Update(TimeSpan dt)
 		{
+			if(mInGame)
+				ResumeButton.Update(dt);
+
 			StartButton.Update(dt);
 			QuitButton.Update(dt);
 		}
 
 		public override void Draw(RenderWindow window)
 		{
+			base.Draw(window);
+
+			if(mInGame)
+				window.Draw(ResumeButton);
+
 			window.Draw(StartButton);
 			window.Draw(QuitButton);
 		}
@@ -44,15 +64,24 @@ namespace SpaceTapper
 					break;
 
 				case Keyboard.Key.Return:
-					GInstance.SetActiveState(State.DifficultySelect);
+					OnStartPressed();
 					break;
 			}
 		}
 
-		void EndFrameHandler()
+		void OnStartPressed()
 		{
 			GInstance.SetActiveState(State.DifficultySelect);
-			GInstance.OnEndFrame -= EndFrameHandler;
+			GInstance.SetStateStatus(State.Game, false, true);
+
+			GInstance.OnEndFrame -= OnStartPressed;
+			Active = false;
+		}
+
+		void OnResumePressed()
+		{
+			GInstance.SetActiveState(State.Game);
+			GInstance.GetState<GameState>(State.Game).Resume();
 		}
 	}
 }

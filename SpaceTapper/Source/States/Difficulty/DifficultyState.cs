@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SpaceTapper
 {
-	public class DifficultyState : AState
+	public class DifficultyState : AIdleState
 	{
 		List<Button> mButtons;
 
@@ -24,6 +24,8 @@ namespace SpaceTapper
 
 		public override void Draw(RenderWindow window)
 		{
+			base.Draw(window);
+
 			foreach(var button in mButtons)
 				window.Draw(button);
 		}
@@ -52,6 +54,7 @@ namespace SpaceTapper
 
 				button.OnPressed += () =>
 				{
+					Active = false;
 					GInstance.GetState<GameState>(State.Game).StartNewGame((DifficultyLevel)(copy - 1));
 				};
 
@@ -62,6 +65,8 @@ namespace SpaceTapper
 		void EndFrameHandler()
 		{
 			GInstance.SetActiveState(State.Menu);
+			GInstance.SetStateStatus(State.Game, false, true);
+
 			GInstance.OnEndFrame -= EndFrameHandler;
 		}
 	}

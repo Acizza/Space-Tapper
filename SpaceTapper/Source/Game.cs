@@ -57,6 +57,12 @@ namespace SpaceTapper
 			(from s in States where s.Key != state select s).ToList().ForEach(i => i.Value.Active = false);
 		}
 
+		public void SetStateStatus(State state, bool updating, bool drawing)
+		{
+			States[state].Updating = updating;
+			States[state].Drawing = drawing;
+		}
+
 		public T GetState<T>(State state) where T : AState
 		{
 			return (T)States[state];

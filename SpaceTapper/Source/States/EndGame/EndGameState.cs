@@ -4,7 +4,7 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public class EndGameState : AState
+	public class EndGameState : AIdleState
 	{
 		public Text ScoreText { get; private set; }
 		public Text TimeText { get; private set; }
@@ -28,6 +28,8 @@ namespace SpaceTapper
 
 		public override void Draw(RenderWindow window)
 		{
+			base.Draw(window);
+
 			window.Draw(ScoreText);
 			window.Draw(TimeText);
 		}
@@ -39,7 +41,8 @@ namespace SpaceTapper
 			TimeText.DisplayedString = gState.TimeText.DisplayedString;
 			ScoreText.DisplayedString = gState.ScoreText.DisplayedString;
 
-			Active = true;
+			GInstance.SetActiveState(State.EndGame);
+			GInstance.SetStateStatus(State.Game, false, true);
 		}
 
 		protected override void OnKeyPressed(KeyEventArgs e)
@@ -51,6 +54,8 @@ namespace SpaceTapper
 		void EndFrameHandler()
 		{
 			GInstance.SetActiveState(State.Menu);
+			GInstance.SetStateStatus(State.Game, false, true);
+
 			GInstance.OnEndFrame -= EndFrameHandler;
 		}
 	}

@@ -10,7 +10,21 @@ namespace SpaceTapper
 	public class BlockSpawner : AEntity
 	{
 		public List<Block> Blocks;
-		public DifficultySettings CurDifficulty;
+
+		public DifficultySettings CurDifficulty
+		{
+			get
+			{
+				return mDifficulty;
+			}
+			set
+			{
+				mDifficulty = value;
+				MaxBlocks = value.BlockCount;
+
+				RespawnBlocks();
+			}
+		}
 
 		public int MaxBlocks
 		{
@@ -21,13 +35,15 @@ namespace SpaceTapper
 			set
 			{
 				if(value < mMaxBlocks)
-					Blocks.RemoveRange(Blocks.Count, Blocks.Count - mMaxBlocks - value); // TODO: Throws exception.
+					Blocks.RemoveRange(Blocks.Count - value, value);
 
 				mMaxBlocks = value;
 			}
 		}
 
 		int mMaxBlocks;
+		DifficultySettings mDifficulty;
+
 		static Random mRandom;
 
 		static BlockSpawner()
@@ -35,13 +51,9 @@ namespace SpaceTapper
 			mRandom = new Random();
 		}
 
-		public BlockSpawner(Game instance, DifficultySettings settings) : base(instance)
+		public BlockSpawner(Game instance) : base(instance)
 		{
-			Blocks = new List<Block>(settings.BlockCount);
-			MaxBlocks = settings.BlockCount;
-			CurDifficulty = settings;
-
-			RespawnBlocks();
+			Blocks = new List<Block>();
 		}
 
 		public override void Update(TimeSpan delta)

@@ -26,7 +26,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Commandlineparameters>-vsync=false</Commandlineparameters>
+    <Commandlineparameters>-vsync=true</Commandlineparameters>
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -50,6 +50,7 @@
     <Compile Include="Source\Resource.cs" />
     <Compile Include="Source\States\Difficulty\DifficultyState.cs" />
     <Compile Include="Source\States\Difficulty\DifficultySettings.cs" />
+    <Compile Include="Source\States\AIdleState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">

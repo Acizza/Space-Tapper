@@ -11,28 +11,64 @@ namespace SpaceTapper
 		public Timer GameTimer { get; private set; }
 		public Text TimeText { get; private set; }
 		public Text ScoreText { get; private set; }
-		public uint Score { get; private set; }
-		public DifficultySettings CurDifficulty;
-
 		public Player Player { get; private set; }
 		public BlockSpawner BlockSpawner { get; private set; }
 
 		public event Action OnStartGame = delegate {};
 		public event Action OnEndGame = delegate {};
 
+		public string Time
+		{
+			get
+			{
+				return mTimeStr;
+			}
+			set
+			{
+				mTimeStr = value;
+				TimeText.DisplayedString = "Time:\t" + mTimeStr;
+			}
+		}
+
+		public uint Score
+		{
+			get
+			{
+				return mScore;
+			}
+			set
+			{
+				mScore = value;
+				ScoreText.DisplayedString = "Score:\t" + mScore;
+			}
+		}
+
+		string mTimeStr;
+		uint mScore;
+
 		public GameState(Game instance, bool active = true) : base(instance, active)
 		{
+			var size = GInstance.Size;
+			var font = GInstance.Fonts["default"];
+
+			TimeText  = new Text("Time:\t00:00", font, 20);
+			ScoreText = new Text("Score:\t0", font, 20);
+
+			TimeText.Position  = new Vector2f(5, 5);
+			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
+
+			Player = new Player(GInstance, new Vector2f(size.X / 2, size.Y / 2));
+			BlockSpawner = new BlockSpawner(GInstance);
+
+			Player.OnCollision += () => OnPlayerCollision();
 		}
 
 		public void StartNewGame(DifficultyLevel level)
 		{
-			GInstance.SetActiveState(State.Game);
+			BlockSpawner.CurDifficulty = Difficulty.Levels[level];
+			Reset();
 
-			Score = 0;
-			CurDifficulty = Difficulty.Levels[level];
-
-			CreateText();
-			CreateEntities();
+			Active = true;
 
 			GameTimer = new Timer(1000);
 			GameTimer.Elapsed += (s, e) => UpdateGameTime();
@@ -65,7 +101,7 @@ namespace SpaceTapper
 
 				if(!block.Scored && block.Position.Y >= Player.Shape.Position.Y)
 				{
-					ScoreText.DisplayedString = "Score:\t" + ++Score;
+					++Score;
 					block.Scored = true;
 				}
 			}
@@ -80,31 +116,18 @@ namespace SpaceTapper
 			window.Draw(ScoreText);
 		}
 
-		void CreateText()
+		void Reset()
 		{
-			var font = GInstance.Fonts["default"];
+			Time = "00:00";
+			Score = 0;
 
-			TimeText  = new Text("Time:\t00:00", font, 20);
-			ScoreText = new Text("Score:\t0", font, 20);
-
-			TimeText.Position  = new Vector2f(5, 5);
-			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
-		}
-
-		void CreateEntities()
-		{
-			var size = GInstance.Window.Size;
-
-			Player = new Player(GInstance, new Vector2f(size.X / 2, size.Y / 2));
-			BlockSpawner = new BlockSpawner(GInstance, CurDifficulty);
-
-			Player.OnCollision += () => OnPlayerCollision();
+			Player.Reset();
 		}
 
 		void UpdateGameTime()
 		{
 			var totalTime = DateTime.Now - StartTime;
-			TimeText.DisplayedString = string.Format("Time:\t{0:00}:{1:00}", totalTime.Minutes, totalTime.Seconds);
+			Time = string.Format("{0:00}:{1:00}", totalTime.Minutes, totalTime.Seconds);
 		}
 
 		void OnPlayerCollision()
@@ -114,17 +137,30 @@ namespace SpaceTapper
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
-			// If we don't set the state at the end of the frame,
-			// the menu handler will pick the key press up too and exit the game.
-
 			if(e.Code == Keyboard.Key.Escape)
-				GInstance.OnEndFrame += EndFrameHandler;
+				GInstance.OnEndFrame += ReturnToMenu;
 		}
 
-		void EndFrameHandler()
+		public void Resume()
 		{
+			Updating = true;
+			GameTimer.Start();
+		}
+
+		public void Pause()
+		{
+			GameTimer.Stop();
+			Updating = false;
+		}
+
+		void ReturnToMenu()
+		{
+			Pause();
+
 			GInstance.SetActiveState(State.Menu);
-			GInstance.OnEndFrame -= EndFrameHandler;
+			Drawing = true;
+
+			GInstance.OnEndFrame -= ReturnToMenu;
 		}
 	}
 }

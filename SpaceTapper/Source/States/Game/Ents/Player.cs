@@ -32,8 +32,8 @@ namespace SpaceTapper
 			Shape = new RectangleShape(Size);
 			Shape.FillColor = Color.Green;
 
-			Shape.Position = pos;
 			Shape.Origin = Size / 2;
+			Reset();
 		}
 
 		public override void Update(TimeSpan delta)
@@ -51,6 +51,12 @@ namespace SpaceTapper
 		{
 			states.Transform *= Transform;
 			target.Draw(Shape, states);
+		}
+
+		public void Reset()
+		{
+			Velocity = new Vector2f();
+			Shape.Position = GInstance.Size / 2;
 		}
 
 		void UpdateVelocity(float dt)
