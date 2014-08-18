@@ -19,7 +19,7 @@ namespace SpaceTapper
 			TimeText.Position = GInstance.Size / 2 - new Vector2f(100, 150);
 			ScoreText.Position = GInstance.Size / 2 + new Vector2f(-100, -100);
 
-			GInstance.GetState<GameState>(State.Game).OnEndGame += OnEndGame;
+			GInstance.GetState<GameState>().OnEndGame += OnEndGame;
 		}
 
 		public override void Update(TimeSpan dt)
@@ -41,22 +41,22 @@ namespace SpaceTapper
 			TimeText.DisplayedString = gState.TimeText.DisplayedString;
 			ScoreText.DisplayedString = gState.ScoreText.DisplayedString;
 
-			GInstance.SetActiveState(State.EndGame);
+			GInstance.SetActiveState(this);
 			GInstance.SetStateStatus(State.Game, false, true);
 		}
 
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
 			if(e.Code == Keyboard.Key.Escape)
-				GInstance.OnEndFrame += EndFrameHandler;
+				GInstance.OnEndFrame += OnEscapePressed;
 		}
 
-		void EndFrameHandler()
+		void OnEscapePressed()
 		{
 			GInstance.SetActiveState(State.Menu);
 			GInstance.SetStateStatus(State.Game, false, true);
 
-			GInstance.OnEndFrame -= EndFrameHandler;
+			GInstance.OnEndFrame -= OnEscapePressed;
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace SpaceTapper
 		protected override void OnKeyPressed(KeyEventArgs e)
 		{
 			if(e.Code == Keyboard.Key.Escape)
-				GInstance.OnEndFrame += EndFrameHandler;
+				GInstance.OnEndFrame += OnEscapePressed;
 		}
 
 		void InitButtons()
@@ -62,12 +62,12 @@ namespace SpaceTapper
 			}
 		}
 
-		void EndFrameHandler()
+		void OnEscapePressed()
 		{
 			GInstance.SetActiveState(State.Menu);
 			GInstance.SetStateStatus(State.Game, false, true);
 
-			GInstance.OnEndFrame -= EndFrameHandler;
+			GInstance.OnEndFrame -= OnEscapePressed;
 		}
 	}
 }

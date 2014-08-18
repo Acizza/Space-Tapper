@@ -14,25 +14,12 @@ namespace SpaceTapper
 
 		public MenuState(Game instance, bool active = true) : base(instance, active)
 		{
-			StartButton = new Button(instance, GInstance.Size / 2, "Start");
+			CreateButtons();
 
-			var lBounds = StartButton.LocalBounds;
-			var center = StartButton.Text.Position;
-
-			ResumeButton = new Button(instance,
-				center - new Vector2f(0, lBounds.Height + 15), "Resume");
-
-			QuitButton  = new Button(instance,
-				center + new Vector2f(0, lBounds.Height + 15), "Quit");
-
-			StartButton.OnPressed += () => GInstance.OnEndFrame += OnStartPressed;
-			ResumeButton.OnPressed += () => OnResumePressed();
-			QuitButton.OnPressed += () => GInstance.Window.Close();
-
-			var gState = GInstance.GetState<GameState>(State.Game);
+			var gState = GInstance.GetState<GameState>();
 
 			gState.OnStartGame += () => mInGame = true;
-			gState.OnEndGame += () => mInGame = false;
+			gState.OnEndGame   += () => mInGame = false;
 		}
 
 		public override void Update(TimeSpan dt)
@@ -69,19 +56,33 @@ namespace SpaceTapper
 			}
 		}
 
+		void CreateButtons()
+		{
+			StartButton = new Button(GInstance, GInstance.Size / 2, "Start");
+
+			var center = StartButton.Text.Position;
+			var offset = new Vector2f(0, StartButton.LocalBounds.Height + 15);
+
+			ResumeButton = new Button(GInstance, center - offset, "Resume");
+			QuitButton   = new Button(GInstance, center + offset, "Quit");
+
+			StartButton.OnPressed  += () => GInstance.OnEndFrame += OnStartPressed;
+			ResumeButton.OnPressed += () => OnResumePressed();
+			QuitButton.OnPressed   += () => GInstance.Window.Close();
+		}
+
 		void OnStartPressed()
 		{
 			GInstance.SetActiveState(State.DifficultySelect);
-			GInstance.SetStateStatus(State.Game, false, true);
+			Active = false;
 
 			GInstance.OnEndFrame -= OnStartPressed;
-			Active = false;
 		}
 
 		void OnResumePressed()
 		{
 			GInstance.SetActiveState(State.Game);
-			GInstance.GetState<GameState>(State.Game).Resume();
+			GInstance.GetState<GameState>().Resume();
 		}
 	}
 }

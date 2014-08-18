@@ -6,25 +6,14 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	// TODO: Refactor.
 	public class BlockSpawner : AEntity
 	{
-		public List<Block> Blocks;
+		public List<Block> Blocks { get; private set; }
 
-		public DifficultySettings CurDifficulty
-		{
-			get
-			{
-				return mDifficulty;
-			}
-			set
-			{
-				mDifficulty = value;
-				MaxBlocks = value.BlockCount;
+		DifficultySettings mDifficulty;
+		int mMaxBlocks;
 
-				RespawnBlocks();
-			}
-		}
+		static Random mRand;
 
 		public int MaxBlocks
 		{
@@ -36,19 +25,29 @@ namespace SpaceTapper
 			{
 				if(value < mMaxBlocks)
 					Blocks.RemoveRange(Blocks.Count - value, value);
+				else if(value > mMaxBlocks)
+					CreateBlocks(value - mMaxBlocks);
 
 				mMaxBlocks = value;
 			}
 		}
 
-		int mMaxBlocks;
-		DifficultySettings mDifficulty;
-
-		static Random mRandom;
+		public DifficultySettings Difficulty
+		{
+			get
+			{
+				return mDifficulty;
+			}
+			set
+			{
+				mDifficulty = value;
+				MaxBlocks = value.BlockCount;
+			}
+		}
 
 		static BlockSpawner()
 		{
-			mRandom = new Random();
+			mRand = new Random();
 		}
 
 		public BlockSpawner(Game instance) : base(instance)
@@ -59,15 +58,15 @@ namespace SpaceTapper
 		public override void Update(TimeSpan delta)
 		{
 			var dt = (float)delta.TotalSeconds;
+			int index = 0;
 
-			for(int i = 0; i < Blocks.Count; ++i)
+			foreach(var block in Blocks)
 			{
-				var block = Blocks[i];
+				++index;
+				block.Position += new Vector2f(0, Difficulty.BlockSpeed * dt);
 
-				block.Position = new Vector2f(block.Position.X, block.Position.Y + CurDifficulty.BlockSpeed * dt);
-
-				if(block.Position.Y >= GInstance.Window.Size.Y)
-					PositionBlock(i);
+				if(block.Position.Y >= GInstance.Size.Y)
+					ResetBlock(block, index);
 			}
 		}
 
@@ -79,41 +78,41 @@ namespace SpaceTapper
 				target.Draw(block, states);
 		}
 
-		public void RespawnBlocks()
+		public void CreateBlocks(int count)
 		{
-			Blocks.Clear();
-
 			var size = GInstance.Size;
 
-			for(int i = 0; i < MaxBlocks; ++i)
+			for(int i = 0; i < count; ++i)
 			{
-				var shape = new Block(new Vector2f(mRandom.Next(100, (int)(size.X * 0.25f)), 10));
-				shape.FillColor = Color.Red;
-				shape.Position = new Vector2f(mRandom.Next(0, (int)size.X), 0);
+				var block = new Block(new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
+				block.FillColor = Color.Red;
 
-				Blocks.Add(shape);
-				PositionBlock(i);
+				// Prevent intersections.
+				FloatRect lastPos;
+
+				do
+				{
+					lastPos = block.GetGlobalBounds();
+					ResetBlock(block, i);
+				}
+				while(block.GetGlobalBounds().Intersects(lastPos));
+
+				Blocks.Add(block);
 			}
 		}
 
-		public bool CheckCollision(FloatRect rect)
+		public void ResetBlock(Block block, int heightMult)
 		{
-			foreach(var block in Blocks)
-			{
-				if(block.GetGlobalBounds().Intersects(rect))
-					return true;
-			}
+			block.Position = new Vector2f(mRand.Next(0, (int)GInstance.Size.X),
+				-Difficulty.BlockSpacing * heightMult + mRand.Next(-15, 15));
 
-			return false;
+			block.Scored = false;
 		}
 
-		void PositionBlock(int index)
+		public void Reset()
 		{
-			var b = Blocks[index];
-			var s = GInstance.Size;
-
-			b.Position = new Vector2f(b.Position.X, -CurDifficulty.BlockSpacing * index + mRandom.Next(-15, 15));
-			b.Scored = false;
+			Blocks.Clear();
+			mMaxBlocks = 0;
 		}
 	}
 }

@@ -57,6 +57,18 @@ namespace SpaceTapper
 			(from s in States where s.Key != state select s).ToList().ForEach(i => i.Value.Active = false);
 		}
 
+		public void SetActiveState(AState state)
+		{
+			var result = (from s in States
+						  where s.Value == state
+			              select s).FirstOrDefault();
+
+			if(result.Value == null)
+				throw new ArgumentException("Unknown / null state: " + state.ToString());
+
+			SetActiveState(result.Key);
+		}
+
 		public void SetStateStatus(State state, bool updating, bool drawing)
 		{
 			States[state].Updating = updating;
@@ -66,6 +78,15 @@ namespace SpaceTapper
 		public T GetState<T>(State state) where T : AState
 		{
 			return (T)States[state];
+		}
+
+		public T GetState<T>() where T : AState
+		{
+			var result = (from s in States
+						  where s.Value.GetType() == typeof(T)
+			              select s).FirstOrDefault();
+
+			return (T)result.Value;
 		}
 
 		public void Run()
