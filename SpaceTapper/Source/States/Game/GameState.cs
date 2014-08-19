@@ -66,8 +66,6 @@ namespace SpaceTapper
 		public void StartNewGame(DifficultyLevel level)
 		{
 			Reset();
-
-			BlockSpawner.Reset();
 			BlockSpawner.Difficulty = Difficulty.Levels[level];
 
 			Active = true;
@@ -124,6 +122,7 @@ namespace SpaceTapper
 			Score = 0;
 
 			Player.Reset();
+			BlockSpawner.Reset();
 		}
 
 		void UpdateGameTime()

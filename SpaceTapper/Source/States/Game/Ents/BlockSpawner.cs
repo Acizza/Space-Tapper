@@ -87,16 +87,7 @@ namespace SpaceTapper
 				var block = new Block(new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
 				block.FillColor = Color.Red;
 
-				// Prevent intersections.
-				FloatRect lastPos;
-
-				do
-				{
-					lastPos = block.GetGlobalBounds();
-					ResetBlock(block, i);
-				}
-				while(block.GetGlobalBounds().Intersects(lastPos));
-
+				ResetBlock(block, i);
 				Blocks.Add(block);
 			}
 		}
