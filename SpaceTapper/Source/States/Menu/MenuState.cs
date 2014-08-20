@@ -46,8 +46,12 @@ namespace SpaceTapper
 		{
 			switch(e.Code)
 			{
-				case Keyboard.Key.Escape:
-					GInstance.Window.Close();
+			case Keyboard.Key.Escape:
+					if(mInGame)
+						GInstance.SetActiveState(State.Game);
+					else
+						GInstance.Window.Close();
+
 					break;
 
 				case Keyboard.Key.Return:

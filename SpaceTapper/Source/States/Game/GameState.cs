@@ -57,7 +57,7 @@ namespace SpaceTapper
 			TimeText.Position  = new Vector2f(5, 5);
 			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
 
-			Player = new Player(GInstance, new Vector2f(size.X / 2, size.Y / 2));
+			Player = new Player(GInstance);
 			BlockSpawner = new BlockSpawner(GInstance);
 
 			Player.OnCollision += () => OnPlayerCollision();
@@ -93,16 +93,30 @@ namespace SpaceTapper
 
 			foreach(var block in BlockSpawner.Blocks)
 			{
-				if(block.GetGlobalBounds().Intersects(Player.GlobalBounds))
+				if(block.GlobalBounds.Intersects(Player.GlobalBounds))
 				{
 					EndGame();
 					return;
 				}
 
-				if(!block.Scored && block.Position.Y >= Player.Shape.Position.Y)
+				if(!block.Scored && block.Position.Y >= Player.Position.Y)
 				{
 					++Score;
 					block.Scored = true;
+				}
+					
+				foreach(Pickup pickup in block.Children)
+				{
+					if(pickup.GlobalBounds.Intersects(Player.GlobalBounds))
+					{
+						// TODO: Refactor.
+						// This will prevent multiple upgrades from being active at the same time, but it's somewhat hacky.
+						if(!Pickup.ActivateTextShowing)
+							pickup.Invoke();
+
+						block.Children.Remove(pickup);
+						break;
+					}
 				}
 			}
 		}

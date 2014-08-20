@@ -4,15 +4,15 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public class Block : RectangleShape
+	public class Block : ARectEntity
 	{
 		public bool Scored;
 
-		public Block() : base()
+		public Block(Game instance) : base(instance)
 		{
 		}
 
-		public Block(Vector2f pos) : base(pos)
+		public Block(Game instance, Vector2f size) : base(instance, size)
 		{
 		}
 	}

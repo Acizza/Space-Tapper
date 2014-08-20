@@ -51,6 +51,13 @@
     <Compile Include="Source\States\Difficulty\DifficultyState.cs" />
     <Compile Include="Source\States\Difficulty\DifficultySettings.cs" />
     <Compile Include="Source\States\AIdleState.cs" />
+    <Compile Include="Source\SceneNode.cs" />
+    <Compile Include="Source\States\Game\Ents\ARectEntity.cs" />
+    <Compile Include="Source\States\Game\Ents\Pickups\Pickup.cs" />
+    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\AUpgrade.cs" />
+    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowDownUpgrade.cs" />
+    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowBlocksUpgrade.cs" />
+    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\VelocityBoostUpgrade.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
@@ -97,5 +104,7 @@
     <Folder Include="Source\UI\" />
     <Folder Include="Source\States\EndGame\" />
     <Folder Include="Source\States\Difficulty\" />
+    <Folder Include="Source\States\Game\Ents\Pickups\" />
+    <Folder Include="Source\States\Game\Ents\Pickups\Upgrades\" />
   </ItemGroup>
 </Project>

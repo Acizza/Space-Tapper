@@ -14,10 +14,8 @@ namespace SpaceTapper
 			Drawables = new List<Drawable>();
 		}
 
-		public override void Draw(RenderTarget target, RenderStates states)
+		public override void DrawSelf(RenderTarget target, RenderStates states)
 		{
-			states.Transform *= this.Transform;
-
 			foreach(var drawable in Drawables)
 				target.Draw(drawable, states);
 		}

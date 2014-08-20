@@ -4,59 +4,45 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public class Player : AEntity
+	public class Player : ARectEntity
 	{
-		public RectangleShape Shape;
 		public Vector2f Velocity;
+		public bool AllowSlowing;
 
 		public event Action OnCollision = delegate {};
 
-		public readonly Vector2f Size = new Vector2f(15, 15);
-		public readonly Vector2f MaxSpeed = new Vector2f(300, 400);
-		public readonly Vector2f Acceleration = new Vector2f(600, 250);
+		public static readonly Vector2f Size = new Vector2f(15, 15);
+		public static readonly Vector2f MaxSpeed = new Vector2f(300, 400);
+		public static Vector2f Acceleration = new Vector2f(600, 250);
 
-		/// <summary>
-		/// Shortcut for Shape.GetGlobalBounds()
-		/// </summary>
-		/// <value>The global bounds.</value>
-		public FloatRect GlobalBounds
-		{
-			get
-			{
-				return Shape.GetGlobalBounds();
-			}
-		}
-
-		public Player(Game instance, Vector2f pos) : base(instance)
+		public Player(Game instance) : base(instance)
 		{
 			Shape = new RectangleShape(Size);
 			Shape.FillColor = Color.Green;
 
-			Shape.Origin = Size / 2;
 			Reset();
 		}
 
-		public override void Update(TimeSpan delta)
+		public override void UpdateSelf(TimeSpan delta)
 		{
 			var dt = (float)delta.TotalSeconds;
 
 			UpdateVelocity(dt);
-			Shape.Position += Velocity * dt;
+			Position += Velocity * dt;
 
-			if(Shape.Position.Y - Shape.Origin.Y >= GInstance.Size.Y)
+			if(Position.Y - Origin.Y >= GInstance.Size.Y)
 				OnCollision.Invoke();
 		}
 
-		public override void Draw(RenderTarget target, RenderStates states)
+		public override void DrawSelf(RenderTarget target, RenderStates states)
 		{
-			states.Transform *= Transform;
 			target.Draw(Shape, states);
 		}
 
 		public void Reset()
 		{
 			Velocity = new Vector2f();
-			Shape.Position = GInstance.Size / 2;
+			Position = GInstance.Size / 2;
 		}
 
 		void UpdateVelocity(float dt)
@@ -77,6 +63,12 @@ namespace SpaceTapper
 
 			if(Keyboard.IsKeyPressed(Keyboard.Key.Space))
 				Velocity.Y -= Acceleration.Y * dt;
+
+			if(AllowSlowing)
+			{
+				if(Keyboard.IsKeyPressed(Keyboard.Key.S))
+					Velocity.Y += Acceleration.Y * dt;
+			}
 		}
 	}
 }

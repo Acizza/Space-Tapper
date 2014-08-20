@@ -9,6 +9,7 @@ namespace SpaceTapper
 	public class BlockSpawner : AEntity
 	{
 		public List<Block> Blocks { get; private set; }
+		public int UpgradeChance = 15;
 
 		DifficultySettings mDifficulty;
 		int mMaxBlocks;
@@ -55,27 +56,19 @@ namespace SpaceTapper
 			Blocks = new List<Block>();
 		}
 
-		public override void Update(TimeSpan delta)
+		public override void UpdateSelf(TimeSpan delta)
 		{
 			var dt = (float)delta.TotalSeconds;
-			int index = 0;
 
-			foreach(var block in Blocks)
+			for(int i = 0; i < Blocks.Count; ++i)
 			{
-				++index;
+				var block = Blocks[i];
+
 				block.Position += new Vector2f(0, Difficulty.BlockSpeed * dt);
 
 				if(block.Position.Y >= GInstance.Size.Y)
-					ResetBlock(block, index);
+					ResetBlock(block, i);
 			}
-		}
-
-		public override void Draw(RenderTarget target, RenderStates states)
-		{
-			states.Transform *= Transform;
-
-			foreach(var block in Blocks)
-				target.Draw(block, states);
 		}
 
 		public void CreateBlocks(int count)
@@ -84,10 +77,12 @@ namespace SpaceTapper
 
 			for(int i = 0; i < count; ++i)
 			{
-				var block = new Block(new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
+				var block = new Block(GInstance, new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
 				block.FillColor = Color.Red;
 
 				ResetBlock(block, i);
+
+				AddChild(block);
 				Blocks.Add(block);
 			}
 		}
@@ -97,12 +92,33 @@ namespace SpaceTapper
 			block.Position = new Vector2f(mRand.Next(0, (int)GInstance.Size.X),
 				-Difficulty.BlockSpacing * heightMult + mRand.Next(-15, 15));
 
+			CreateBlockUpgrades(block);
+
 			block.Scored = false;
+		}
+
+		public void CreateBlockUpgrades(Block block)
+		{
+			block.Children.Clear();
+
+			if(mRand.Next(UpgradeChance) == 1)
+			{
+				var upgrade = new Pickup(GInstance);
+
+				upgrade.Position = new Vector2f(
+					mRand.Next(-25, (int)block.Shape.Size.X + 25),
+					mRand.Next(2) == 1 ?
+					upgrade.Shape.Size.Y + mRand.Next(5, 30) : -mRand.Next(5, 30));
+
+				block.AddChild(upgrade);
+			}
 		}
 
 		public void Reset()
 		{
 			Blocks.Clear();
+			Children.Clear();
+
 			mMaxBlocks = 0;
 		}
 	}

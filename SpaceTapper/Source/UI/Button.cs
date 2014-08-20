@@ -43,7 +43,7 @@ namespace SpaceTapper
 			Drawables.Add(Text);
 		}
 
-		public override void Update(TimeSpan dt)
+		public override void UpdateSelf(TimeSpan dt)
 		{
 			if(MouseInBounds())
 			{
