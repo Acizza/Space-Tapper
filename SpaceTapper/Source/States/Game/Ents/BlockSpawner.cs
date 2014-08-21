@@ -108,7 +108,7 @@ namespace SpaceTapper
 				upgrade.Position = new Vector2f(
 					mRand.Next(-25, (int)block.Shape.Size.X + 25),
 					mRand.Next(2) == 1 ?
-					upgrade.Shape.Size.Y + mRand.Next(5, 30) : -mRand.Next(5, 30));
+					Pickup.Size.Y + mRand.Next(5, 30) : -mRand.Next(5, 30));
 
 				block.AddChild(upgrade);
 			}

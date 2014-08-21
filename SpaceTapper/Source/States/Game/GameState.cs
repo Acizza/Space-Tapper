@@ -9,6 +9,7 @@ namespace SpaceTapper
 	{
 		public DateTime StartTime { get; private set; }
 		public Timer GameTimer { get; private set; }
+		public RectangleShape BackgroundRect { get; private set; }
 		public Text TimeText { get; private set; }
 		public Text ScoreText { get; private set; }
 		public Player Player { get; private set; }
@@ -48,14 +49,10 @@ namespace SpaceTapper
 
 		public GameState(Game instance, bool active = true) : base(instance, active)
 		{
-			var size = GInstance.Size;
-			var font = GInstance.Fonts["default"];
+			BackgroundRect = new RectangleShape(GInstance.Size);
+			BackgroundRect.FillColor = new Color(10, 10, 10);
 
-			TimeText  = new Text("Time:\t00:00", font, 20);
-			ScoreText = new Text("Score:\t0", font, 20);
-
-			TimeText.Position  = new Vector2f(5, 5);
-			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
+			InitText();
 
 			Player = new Player(GInstance);
 			BlockSpawner = new BlockSpawner(GInstance);
@@ -123,6 +120,8 @@ namespace SpaceTapper
 
 		public override void Draw(RenderWindow window)
 		{
+			window.Draw(BackgroundRect);
+
 			window.Draw(Player);
 			window.Draw(BlockSpawner);
 
@@ -137,6 +136,18 @@ namespace SpaceTapper
 
 			Player.Reset();
 			BlockSpawner.Reset();
+		}
+
+		void InitText()
+		{
+			var size = GInstance.Size;
+			var font = GInstance.Fonts["default"];
+
+			TimeText  = new Text("Time:\t00:00", font, 20);
+			ScoreText = new Text("Score:\t0", font, 20);
+
+			TimeText.Position  = new Vector2f(5, 5);
+			ScoreText.Position = new Vector2f(5, TimeText.GetGlobalBounds().Height + 10);
 		}
 
 		void UpdateGameTime()
