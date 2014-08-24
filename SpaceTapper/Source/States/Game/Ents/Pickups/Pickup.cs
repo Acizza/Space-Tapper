@@ -21,22 +21,22 @@ namespace SpaceTapper
 			mRand = new Random();
 		}
 
-		public Pickup(Game instance) : base(instance)
+		public Pickup(AState state) : base(state)
 		{
 			if(Upgrades == null)
 			{
 				Upgrades = new List<AUpgrade>()
 				{
-					new SlowDownUpgrade(GInstance),
-					new SlowBlocksUpgrade(GInstance),
-					new VelocityBoostUpgrade(GInstance)
+					new SlowDownUpgrade(State),
+					new SlowBlocksUpgrade(State),
+					new VelocityBoostUpgrade(State)
 				};
 			}
 
 			if(ActivateText == null)
 			{
-				ActivateText = new Text("", GInstance.Fonts["default"], 16);
-				ActivateText.Position = new Vector2f(10, GInstance.Size.Y - ActivateText.GetLocalBounds().Height - 30);
+				ActivateText = new Text("", State.GInstance.Fonts["default"], 16);
+				ActivateText.Position = new Vector2f(10, State.GInstance.Size.Y - ActivateText.GetLocalBounds().Height - 30);
 				ActivateText.Color = Color.White;
 			}
 
@@ -44,7 +44,7 @@ namespace SpaceTapper
 			Shape.FillColor = Color.Yellow;
 		}
 
-		public Pickup(Game instance, Vector2f pos) : this(instance)
+		public Pickup(AState state, Vector2f pos) : this(state)
 		{
 			Shape.Position = pos;
 		}

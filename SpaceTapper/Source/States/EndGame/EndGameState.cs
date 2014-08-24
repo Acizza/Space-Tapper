@@ -20,6 +20,7 @@ namespace SpaceTapper
 			ScoreText.Position = GInstance.Size / 2 + new Vector2f(-100, -100);
 
 			GInstance.GetState<GameState>().OnEndGame += OnEndGame;
+			OnKeyPressed += KeyPressedHandler;
 		}
 
 		public override void Update(TimeSpan dt)
@@ -45,7 +46,7 @@ namespace SpaceTapper
 			GInstance.SetStateStatus(State.Game, false, true);
 		}
 
-		protected override void OnKeyPressed(KeyEventArgs e)
+		void KeyPressedHandler(KeyEventArgs e)
 		{
 			if(e.Code == Keyboard.Key.Escape)
 				GInstance.OnEndFrame += OnEscapePressed;

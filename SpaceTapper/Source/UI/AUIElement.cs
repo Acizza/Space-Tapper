@@ -5,19 +5,13 @@ using System.Collections.Generic;
 
 namespace SpaceTapper
 {
+	/// <summary>
+	/// Adds no extra functionality. Only for separation purposes.
+	/// </summary>
 	public abstract class AUIElement : AEntity
 	{
-		public List<Drawable> Drawables { get; protected set; }
-
-		public AUIElement(Game instance) : base(instance)
+		public AUIElement(AState state) : base(state)
 		{
-			Drawables = new List<Drawable>();
-		}
-
-		public override void DrawSelf(RenderTarget target, RenderStates states)
-		{
-			foreach(var drawable in Drawables)
-				target.Draw(drawable, states);
 		}
 	}
 }

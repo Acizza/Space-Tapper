@@ -1,15 +1,14 @@
 ﻿using System;
-using SFML.Graphics;
 
 namespace SpaceTapper
 {
 	public abstract class AEntity : SceneNode
 	{
-		public Game GInstance;
+		public AState State;
 
-		public AEntity(Game instance)
+		public AEntity(AState state)
 		{
-			GInstance = instance;
+			State = state;
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace SpaceTapper
 		public static readonly Vector2f MaxSpeed = new Vector2f(300, 400);
 		public static Vector2f Acceleration = new Vector2f(600, 250);
 
-		public Player(Game instance) : base(instance)
+		public Player(AState state) : base(state)
 		{
 			Shape = new RectangleShape(Size);
 			Shape.FillColor = Color.Green;
@@ -30,7 +30,7 @@ namespace SpaceTapper
 			UpdateVelocity(dt);
 			Position += Velocity * dt;
 
-			if(Position.Y - Origin.Y >= GInstance.Size.Y)
+			if(Position.Y - Origin.Y >= State.GInstance.Size.Y)
 				OnCollision.Invoke();
 		}
 
@@ -42,7 +42,7 @@ namespace SpaceTapper
 		public void Reset()
 		{
 			Velocity = new Vector2f();
-			Position = GInstance.Size / 2;
+			Position = State.GInstance.Size / 2;
 		}
 
 		void UpdateVelocity(float dt)

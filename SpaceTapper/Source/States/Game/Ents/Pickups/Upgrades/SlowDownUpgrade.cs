@@ -5,7 +5,7 @@ namespace SpaceTapper
 {
 	public class SlowDownUpgrade : AUpgrade
 	{
-		public SlowDownUpgrade(Game instance) : base(instance)
+		public SlowDownUpgrade(AState state) : base(state)
 		{
 			Name = "Slow Down";
 			ActiveTime = TimeSpan.FromSeconds(15);
@@ -13,12 +13,12 @@ namespace SpaceTapper
 
 		public override void Invoke()
 		{
-			GInstance.GetState<GameState>().Player.AllowSlowing = true;
+			State.GInstance.GetState<GameState>().Player.AllowSlowing = true;
 		}
 
 		public override void Disable()
 		{
-			GInstance.GetState<GameState>().Player.AllowSlowing = false;
+			State.GInstance.GetState<GameState>().Player.AllowSlowing = false;
 		}
 	}
 }

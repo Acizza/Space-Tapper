@@ -8,8 +8,31 @@ namespace SpaceTapper
 	{
 		public Game GInstance;
 
-		public bool Updating;
-		public bool Drawing;
+		public bool Updating
+		{
+			get
+			{
+				return mUpdating;
+			}
+			set
+			{
+				mUpdating = value;
+				OnStatusChanged.Invoke(value, Drawing);
+			}
+		}
+
+		public bool Drawing
+		{
+			get
+			{
+				return mDrawing;
+			}
+			set
+			{
+				mDrawing = value;
+				OnStatusChanged.Invoke(Updating, value);
+			}
+		}
 
 		public bool Active
 		{
@@ -22,8 +45,13 @@ namespace SpaceTapper
 			{
 				Updating = value;
 				Drawing  = value;
+
+				OnStatusChanged.Invoke(value, value);
 			}
 		}
+
+		bool mUpdating;
+		bool mDrawing;
 
 		public AState(Game instance, bool active = true)
 		{
@@ -33,19 +61,21 @@ namespace SpaceTapper
 			GInstance.Window.KeyPressed += _OnKeyPressed;
 		}
 
+		public delegate void OnKeyPressedDlg(KeyEventArgs e);
+		public delegate void OnStatusChangeDlg(bool updating, bool drawing);
+
+		public event OnKeyPressedDlg OnKeyPressed = delegate {};
+		public event OnStatusChangeDlg OnStatusChanged = delegate {};
+
 		public abstract void Update(TimeSpan dt);
 		public abstract void Draw(RenderWindow window);
-
-		protected virtual void OnKeyPressed(KeyEventArgs e)
-		{
-		}
 
 		void _OnKeyPressed(object sender, KeyEventArgs e)
 		{
 			if(!Updating)
 				return;
 
-			OnKeyPressed(e);
+			OnKeyPressed.Invoke(e);
 		}
 	}
 }

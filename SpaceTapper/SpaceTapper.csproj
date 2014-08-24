@@ -58,6 +58,7 @@
     <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowDownUpgrade.cs" />
     <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowBlocksUpgrade.cs" />
     <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\VelocityBoostUpgrade.cs" />
+    <Compile Include="Source\UI\ButtonList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">

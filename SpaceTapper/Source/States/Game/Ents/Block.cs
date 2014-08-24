@@ -8,11 +8,11 @@ namespace SpaceTapper
 	{
 		public bool Scored;
 
-		public Block(Game instance) : base(instance)
+		public Block(AState state) : base(state)
 		{
 		}
 
-		public Block(Game instance, Vector2f size) : base(instance, size)
+		public Block(AState state, Vector2f size) : base(state, size)
 		{
 		}
 	}

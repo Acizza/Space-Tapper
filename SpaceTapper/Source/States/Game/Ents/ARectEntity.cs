@@ -40,12 +40,13 @@ namespace SpaceTapper
 			}
 		}
 
-		public ARectEntity(Game instance) : base(instance)
+		public ARectEntity(AState state) : base(state)
 		{
 			Shape = new RectangleShape();
 		}
 
-		public ARectEntity(Game instance, Vector2f size) : this(instance)
+		public ARectEntity(AState state, Vector2f size)
+			: this(state)
 		{
 			Shape.Size = size;
 		}

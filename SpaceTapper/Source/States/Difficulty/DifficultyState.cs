@@ -7,18 +7,20 @@ namespace SpaceTapper
 {
 	public class DifficultyState : AIdleState
 	{
-		List<Button> mButtons;
+		ButtonList mButtons;
 
 		public DifficultyState(Game instance, bool active = false) : base(instance, active)
 		{
-			mButtons = new List<Button>();
+			mButtons = new ButtonList(this);
 
 			InitButtons();
+
+			OnKeyPressed += KeyPressedHandler;
 		}
 
 		public override void Update(TimeSpan dt)
 		{
-			foreach(var button in mButtons)
+			foreach(var button in mButtons.Buttons)
 				button.Update(dt);
 		}
 
@@ -26,11 +28,11 @@ namespace SpaceTapper
 		{
 			base.Draw(window);
 
-			foreach(var button in mButtons)
+			foreach(var button in mButtons.Buttons)
 				window.Draw(button);
 		}
 
-		protected override void OnKeyPressed(KeyEventArgs e)
+		void KeyPressedHandler(KeyEventArgs e)
 		{
 			if(e.Code == Keyboard.Key.Escape)
 				GInstance.OnEndFrame += OnEscapePressed;
@@ -50,12 +52,12 @@ namespace SpaceTapper
 				++i;
 				int copy = i; // http://stackoverflow.com/questions/271440/captured-variable-in-a-loop-in-c-sharp
 
-				var button = new Button(GInstance, new Vector2f(pos.X, pos.Y + spacing * i), difficulty);
+				var button = new Button(this, new Vector2f(pos.X, pos.Y + spacing * i), difficulty);
 
 				button.OnPressed += () =>
 				{
 					Active = false;
-					GInstance.GetState<GameState>(State.Game).StartNewGame((DifficultyLevel)(copy - 1));
+					GInstance.GetState<GameState>().StartNewGame((DifficultyLevel)(copy - 1));
 				};
 
 				mButtons.Add(button);

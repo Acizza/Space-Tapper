@@ -51,7 +51,7 @@ namespace SpaceTapper
 			mRand = new Random();
 		}
 
-		public BlockSpawner(Game instance) : base(instance)
+		public BlockSpawner(AState state, bool active = true) : base(state)
 		{
 			Blocks = new List<Block>();
 		}
@@ -66,18 +66,18 @@ namespace SpaceTapper
 
 				block.Position += new Vector2f(0, Difficulty.BlockSpeed * dt);
 
-				if(block.Position.Y >= GInstance.Size.Y)
+				if(block.Position.Y >= State.GInstance.Size.Y)
 					ResetBlock(block, i);
 			}
 		}
 
 		public void CreateBlocks(int count)
 		{
-			var size = GInstance.Size;
+			var size = State.GInstance.Size;
 
 			for(int i = 0; i < count; ++i)
 			{
-				var block = new Block(GInstance, new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
+				var block = new Block(State, new Vector2f(mRand.Next(100, (int)(size.X * 0.25f)), 10));
 				block.FillColor = Color.Red;
 
 				ResetBlock(block, i);
@@ -89,7 +89,7 @@ namespace SpaceTapper
 
 		public void ResetBlock(Block block, int heightMult)
 		{
-			block.Position = new Vector2f(mRand.Next(0, (int)GInstance.Size.X),
+			block.Position = new Vector2f(mRand.Next(0, (int)State.GInstance.Size.X),
 				-Difficulty.BlockSpacing * heightMult + mRand.Next(-15, 15));
 
 			CreateBlockUpgrades(block);
@@ -103,7 +103,7 @@ namespace SpaceTapper
 
 			if(mRand.Next(UpgradeChance) == 1)
 			{
-				var upgrade = new Pickup(GInstance);
+				var upgrade = new Pickup(State);
 
 				upgrade.Position = new Vector2f(
 					mRand.Next(-25, (int)block.Shape.Size.X + 25),

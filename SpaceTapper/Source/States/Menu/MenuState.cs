@@ -6,25 +6,27 @@ namespace SpaceTapper
 {
 	public class MenuState : AIdleState
 	{
+		public ButtonList Buttons { get; private set; }
 		public Button StartButton { get; private set; }
 		public Button QuitButton { get; private set; }
 		public Button ResumeButton { get; private set; }
 
-		bool mInGame;
+		GameState mGState;
 
 		public MenuState(Game instance, bool active = true) : base(instance, active)
 		{
 			CreateButtons();
 
-			var gState = GInstance.GetState<GameState>();
+			mGState = GInstance.GetState<GameState>();
 
-			gState.OnStartGame += () => mInGame = true;
-			gState.OnEndGame   += () => mInGame = false;
+			OnKeyPressed += KeyPressedHandler;
 		}
 
 		public override void Update(TimeSpan dt)
 		{
-			if(mInGame)
+			Buttons.MinIndex = mGState.InGame ? 0 : 1;
+
+			if(mGState.InGame)
 				ResumeButton.Update(dt);
 
 			StartButton.Update(dt);
@@ -35,58 +37,54 @@ namespace SpaceTapper
 		{
 			base.Draw(window);
 
-			if(mInGame)
+			if(mGState.InGame)
 				window.Draw(ResumeButton);
 
 			window.Draw(StartButton);
 			window.Draw(QuitButton);
 		}
 
-		protected override void OnKeyPressed(KeyEventArgs e)
+		void KeyPressedHandler(KeyEventArgs e)
 		{
 			switch(e.Code)
 			{
-			case Keyboard.Key.Escape:
-					if(mInGame)
+				case Keyboard.Key.Escape:
+					if(mGState.InGame)
 						GInstance.SetActiveState(State.Game);
 					else
 						GInstance.Window.Close();
 
-					break;
-
-				case Keyboard.Key.Return:
-					OnStartPressed();
 					break;
 			}
 		}
 
 		void CreateButtons()
 		{
-			StartButton = new Button(GInstance, GInstance.Size / 2, "Start");
+			StartButton = new Button(this, GInstance.Size / 2, "Start");
 
 			var center = StartButton.Text.Position;
 			var offset = new Vector2f(0, StartButton.LocalBounds.Height + 15);
 
-			ResumeButton = new Button(GInstance, center - offset, "Resume");
-			QuitButton   = new Button(GInstance, center + offset, "Quit");
+			ResumeButton = new Button(this, center - offset, "Resume");
+			QuitButton   = new Button(this, center + offset, "Quit");
 
 			StartButton.OnPressed  += () => GInstance.OnEndFrame += OnStartPressed;
 			ResumeButton.OnPressed += () => OnResumePressed();
 			QuitButton.OnPressed   += () => GInstance.Window.Close();
+
+			Buttons = new ButtonList(this, ResumeButton, StartButton, QuitButton);
+			Buttons.MinIndex = 1;
 		}
 
 		void OnStartPressed()
 		{
 			GInstance.SetActiveState(State.DifficultySelect);
-			Active = false;
-
 			GInstance.OnEndFrame -= OnStartPressed;
 		}
 
 		void OnResumePressed()
 		{
 			GInstance.SetActiveState(State.Game);
-			GInstance.GetState<GameState>().Resume();
 		}
 	}
 }

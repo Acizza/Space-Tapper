@@ -6,7 +6,7 @@ namespace SpaceTapper
 	{
 		float mPrevAccel;
 
-		public VelocityBoostUpgrade(Game instance) : base(instance)
+		public VelocityBoostUpgrade(AState state) : base(state)
 		{
 			Name = "Velocity Boost";
 			ActiveTime = TimeSpan.FromSeconds(20);

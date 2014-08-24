@@ -14,9 +14,12 @@ namespace SpaceTapper
 		public Text ScoreText { get; private set; }
 		public Player Player { get; private set; }
 		public BlockSpawner BlockSpawner { get; private set; }
+		public bool InGame { get; private set; }
 
 		public event Action OnStartGame = delegate {};
 		public event Action OnEndGame = delegate {};
+		public event Action OnResumeGame = delegate {};
+		public event Action OnPauseGame = delegate {};
 
 		public string Time
 		{
@@ -52,34 +55,44 @@ namespace SpaceTapper
 			BackgroundRect = new RectangleShape(GInstance.Size);
 			BackgroundRect.FillColor = new Color(10, 10, 10);
 
-			InitText();
-
-			Player = new Player(GInstance);
-			BlockSpawner = new BlockSpawner(GInstance);
-
-			Player.OnCollision += () => OnPlayerCollision();
-		}
-
-		public void StartNewGame(DifficultyLevel level)
-		{
-			Reset();
-			BlockSpawner.Difficulty = Difficulty.Levels[level];
-
-			Active = true;
-
 			GameTimer = new Timer(1000);
 			GameTimer.Elapsed += (s, e) => UpdateGameTime();
+
+			InitText();
+
+			Player = new Player(this);
+			BlockSpawner = new BlockSpawner(this);
+
+			Player.OnCollision += OnPlayerCollision;
+
+			base.OnKeyPressed += KeyPressedHandler;
+			base.OnStatusChanged += HandleOnStatusChanged;
+		}
+
+		public void StartNewGame(DifficultySettings settings)
+		{
+			Reset();
+			BlockSpawner.Difficulty = settings;
+
+			Active = true;
+			InGame = true;
+
 			GameTimer.Start();
 
 			StartTime = DateTime.Now;
 			OnStartGame.Invoke();
 		}
 
+		public void StartNewGame(DifficultyLevel level)
+		{
+			StartNewGame(Difficulty.Levels[level]);
+		}
+
 		public void EndGame()
 		{
 			Active = false;
+			InGame = false;
 
-			GameTimer.Stop();
 			OnEndGame.Invoke();
 		}
 
@@ -161,7 +174,7 @@ namespace SpaceTapper
 			EndGame();
 		}
 
-		protected override void OnKeyPressed(KeyEventArgs e)
+		void KeyPressedHandler(KeyEventArgs e)
 		{
 			if(e.Code == Keyboard.Key.Escape)
 				GInstance.OnEndFrame += ReturnToMenu;
@@ -169,14 +182,22 @@ namespace SpaceTapper
 
 		public void Resume()
 		{
-			Updating = true;
+			OnResumeGame.Invoke();
 			GameTimer.Start();
 		}
 
 		public void Pause()
 		{
+			OnPauseGame.Invoke();
 			GameTimer.Stop();
-			Updating = false;
+		}
+
+		void HandleOnStatusChanged(bool updating, bool drawing)
+		{
+			if(updating && InGame)
+				Resume();
+			else if(!updating && InGame)
+				Pause();
 		}
 
 		void ReturnToMenu()

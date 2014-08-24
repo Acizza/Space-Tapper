@@ -43,7 +43,7 @@ namespace SpaceTapper
 			Children.Add(child);
 		}
 
-		public void Update(TimeSpan dt)
+		public virtual void Update(TimeSpan dt)
 		{
 			UpdateSelf(dt);
 
@@ -59,7 +59,7 @@ namespace SpaceTapper
 		{
 		}
 
-		public void Draw(RenderTarget target, RenderStates states)
+		public virtual void Draw(RenderTarget target, RenderStates states)
 		{
 			states.Transform *= Transform;
 

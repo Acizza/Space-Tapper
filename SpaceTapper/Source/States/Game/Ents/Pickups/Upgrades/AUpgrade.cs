@@ -7,11 +7,12 @@ namespace SpaceTapper
 		public string Name { get; protected set; }
 		public TimeSpan ActiveTime { get; protected set; }
 
-		public AUpgrade(Game instance) : base(instance)
+		public AUpgrade(AState state) : base(state)
 		{
 		}
 
-		public AUpgrade(Game instance, string name) : this(instance)
+		public AUpgrade(AState state, string name, bool active = true)
+			: this(state)
 		{
 			Name = name;
 		}
