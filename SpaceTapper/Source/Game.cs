@@ -49,6 +49,7 @@ namespace SpaceTapper
 			States[State.EndGame] = new EndGameState(this, false);
 			States[State.Menu] = new MenuState(this, true);
 			States[State.DifficultySelect] = new DifficultyState(this, false);
+			States[State.Scoreboard] = new ScoreboardState(this, false);
 		}
 
 		public void SetActiveState(State state)
@@ -165,6 +166,7 @@ namespace SpaceTapper
 		Menu,
 		DifficultySelect,
 		Game,
-		EndGame
+		EndGame,
+		Scoreboard
 	}
 }

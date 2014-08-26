@@ -79,6 +79,8 @@ namespace SpaceTapper
 		void OnStartPressed()
 		{
 			GInstance.SetActiveState(State.DifficultySelect);
+			GInstance.SetStateStatus(State.Game, false, true);
+
 			GInstance.OnEndFrame -= OnStartPressed;
 		}
 

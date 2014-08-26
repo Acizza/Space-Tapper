@@ -62,6 +62,9 @@ namespace SpaceTapper
 
 				mButtons.Add(button);
 			}
+
+			// Set the default difficulty to normal.
+			mButtons.Index = 1;
 		}
 
 		void OnEscapePressed()

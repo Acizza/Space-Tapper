@@ -34,7 +34,7 @@ namespace SpaceTapper
 			}
 		}
 
-		public uint Score
+		public int Score
 		{
 			get
 			{
@@ -48,7 +48,7 @@ namespace SpaceTapper
 		}
 
 		string mTimeStr;
-		uint mScore;
+		int mScore;
 
 		public GameState(Game instance, bool active = true) : base(instance, active)
 		{
