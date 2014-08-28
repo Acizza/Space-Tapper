@@ -2,12 +2,13 @@
 using System.Timers;
 using SFML.Graphics;
 using SFML.Window;
+using System.Diagnostics;
 
 namespace SpaceTapper
 {
 	public class GameState : AState
 	{
-		public DateTime StartTime { get; private set; }
+		public Stopwatch GameTime { get; private set; }
 		public Timer GameTimer { get; private set; }
 		public RectangleShape BackgroundRect { get; private set; }
 		public Text TimeText { get; private set; }
@@ -58,6 +59,8 @@ namespace SpaceTapper
 			GameTimer = new Timer(1000);
 			GameTimer.Elapsed += (s, e) => UpdateGameTime();
 
+			GameTime = new Stopwatch();
+
 			InitText();
 
 			Player = new Player(this);
@@ -78,8 +81,8 @@ namespace SpaceTapper
 			InGame = true;
 
 			GameTimer.Start();
+			GameTime.Restart();
 
-			StartTime = DateTime.Now;
 			OnStartGame.Invoke();
 		}
 
@@ -92,6 +95,8 @@ namespace SpaceTapper
 		{
 			Active = false;
 			InGame = false;
+
+			GameTime.Stop();
 
 			OnEndGame.Invoke();
 		}
@@ -165,8 +170,8 @@ namespace SpaceTapper
 
 		void UpdateGameTime()
 		{
-			var totalTime = DateTime.Now - StartTime;
-			Time = string.Format("{0:00}:{1:00}", totalTime.Minutes, totalTime.Seconds);
+			var e = GameTime.Elapsed;
+			Time = string.Format("{0:00}:{1:00}", e.Minutes, e.Seconds);
 		}
 
 		void OnPlayerCollision()
@@ -182,14 +187,18 @@ namespace SpaceTapper
 
 		public void Resume()
 		{
-			OnResumeGame.Invoke();
 			GameTimer.Start();
+			GameTime.Start();
+
+			OnResumeGame.Invoke();
 		}
 
 		public void Pause()
 		{
-			OnPauseGame.Invoke();
 			GameTimer.Stop();
+			GameTime.Stop();
+
+			OnPauseGame.Invoke();
 		}
 
 		void HandleOnStatusChanged(bool updating, bool drawing)

@@ -23,6 +23,7 @@ namespace SpaceTapper
 		Text mLastScore;
 		List<ScoreIter> mScores;
 
+		// Using class instead of struct so we can set the score later.
 		public class ScoreIter
 		{
 			public int Score;

@@ -26,7 +26,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Commandlineparameters>-vsync=true</Commandlineparameters>
+    <Commandlineparameters>-vsync=false</Commandlineparameters>
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

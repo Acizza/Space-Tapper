@@ -44,11 +44,9 @@ namespace SpaceTapper
 			}
 		}
 
-		bool mLastMouseState = true;
 		bool mLastMouseStatus;
 
-		public Button(AState state, string text, uint charSize = 20, bool center = true)
-			: base(state)
+		public Button(AState state, string text, uint charSize = 20, bool center = true) : base(state)
 		{
 			Text = new Text(text, State.GInstance.Fonts["default"], charSize);
 
@@ -57,6 +55,8 @@ namespace SpaceTapper
 				Text.Origin = new Vector2f((float)Math.Round(Text.GetLocalBounds().Width / 2),
 					(float)Math.Round(Text.GetLocalBounds().Height / 2));
 			}
+
+			State.OnMousePressed += HandleOnMousePressed;
 		}
 
 		public Button(AState state, Vector2f pos, string text, uint charSize = 20, bool center = true)
@@ -75,16 +75,10 @@ namespace SpaceTapper
 			var inBounds = MouseInBounds();
 
 			if(inBounds)
-			{
 				Text.Color = SelectColor;
-
-				if(Mouse.IsButtonPressed(Mouse.Button.Left) && !mLastMouseState)
-					OnPressed.Invoke();
-			}
-			else if(!inBounds && mLastMouseStatus)
+			else if(!inBounds && mLastMouseStatus) // Only set to the clear color if the mouse just left the button.
 				Text.Color = ClearColor;
 
-			mLastMouseState = Mouse.IsButtonPressed(Mouse.Button.Left);
 			mLastMouseStatus = MouseInBounds();
 		}
 
@@ -97,6 +91,14 @@ namespace SpaceTapper
 		{
 			var m = Mouse.GetPosition(State.GInstance.Window);
 			return Text.GetGlobalBounds().Intersects(new FloatRect(m.X, m.Y, 1, 1));
+		}
+
+		void HandleOnMousePressed(MouseButtonEventArgs e)
+		{
+			if(!MouseInBounds())
+				return;
+
+			OnPressed.Invoke();
 		}
 	}
 }

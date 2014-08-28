@@ -59,12 +59,21 @@ namespace SpaceTapper
 			Active = active;
 
 			GInstance.Window.KeyPressed += _OnKeyPressed;
+			GInstance.Window.MouseButtonPressed += _OnMousePressed;
+		}
+
+		~AState()
+		{
+			GInstance.Window.KeyPressed -= _OnKeyPressed;
+			GInstance.Window.MouseButtonPressed -= _OnMousePressed;
 		}
 
 		public delegate void OnKeyPressedDlg(KeyEventArgs e);
+		public delegate void OnMousePressedDlg(MouseButtonEventArgs e);
 		public delegate void OnStatusChangeDlg(bool updating, bool drawing);
 
 		public event OnKeyPressedDlg OnKeyPressed = delegate {};
+		public event OnMousePressedDlg OnMousePressed = delegate {};
 		public event OnStatusChangeDlg OnStatusChanged = delegate {};
 
 		public abstract void Update(TimeSpan dt);
@@ -76,6 +85,14 @@ namespace SpaceTapper
 				return;
 
 			OnKeyPressed.Invoke(e);
+		}
+
+		void _OnMousePressed(object sender, MouseButtonEventArgs e)
+		{
+			if(!Updating)
+				return;
+
+			OnMousePressed.Invoke(e);
 		}
 	}
 }
