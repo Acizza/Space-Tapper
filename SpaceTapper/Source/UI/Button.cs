@@ -51,10 +51,7 @@ namespace SpaceTapper
 			Text = new Text(text, State.GInstance.Fonts["default"], charSize);
 
 			if(center)
-			{
-				Text.Origin = new Vector2f((float)Math.Round(Text.GetLocalBounds().Width / 2),
-					(float)Math.Round(Text.GetLocalBounds().Height / 2));
-			}
+				Text.Origin = new Vector2f((int)LocalBounds.Width / 2, (int)LocalBounds.Height / 2);
 
 			State.OnMousePressed += HandleOnMousePressed;
 		}

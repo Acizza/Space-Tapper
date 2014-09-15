@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SpaceTapper
 {
@@ -18,25 +19,25 @@ namespace SpaceTapper
 		{
 			FpsResetTime = fpsResetTime;
 
-			mLastDeltaUpdate = DateTime.Now;
-			mNextFpsReset    = DateTime.Now.AddSeconds(FpsResetTime);
+			mLastDeltaUpdate = DateTime.UtcNow;
+			mNextFpsReset    = DateTime.UtcNow.AddSeconds(FpsResetTime);
 		}
 
 		public void Update()
 		{
-			DeltaTime = DateTime.Now - mLastDeltaUpdate;
-			mLastDeltaUpdate = DateTime.Now;
+			DeltaTime = DateTime.UtcNow - mLastDeltaUpdate;
+			mLastDeltaUpdate = DateTime.UtcNow;
 
 			++mFps;
 
-			if(DateTime.Now >= mNextFpsReset)
+			if(DateTime.UtcNow >= mNextFpsReset)
 			{
 				FpsUpdate.Invoke(mFps);
 
 				Fps = mFps;
 				mFps = 0;
 
-				mNextFpsReset = DateTime.Now.AddSeconds(FpsResetTime);
+				mNextFpsReset = DateTime.UtcNow.AddSeconds(FpsResetTime);
 			}
 		}
 	}

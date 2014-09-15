@@ -18,8 +18,8 @@ namespace SpaceTapper
 
 			settings.Mode.Width  = DefaultWidth;
 			settings.Mode.Height = DefaultHeight;
-			settings.Style       = Styles.Close;
 			settings.Title       = DefaultTitle;
+			settings.Style       = Styles.Close;
 
 			var parser = new ArgParser();
 

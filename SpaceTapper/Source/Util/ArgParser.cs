@@ -6,7 +6,7 @@ namespace SpaceTapper
 {
 	public class ArgParser
 	{
-		public Dictionary<string, Action<string>> Callbacks { get; private set; }
+		public Dictionary<string, Action<string>> Callbacks;
 
 		public ArgParser()
 		{
@@ -38,21 +38,7 @@ namespace SpaceTapper
 					continue;
 				}
 
-				// TODO: Refactor single argument matching (?)
-				int gIndex = 2;
-
-				if(match.Groups.Count > 3)
-					gIndex = 3;
-
-				var mGroup = match.Groups[gIndex];
-
-				if(mGroup.Captures.Count <= 0)
-				{
-					Callbacks[name].Invoke("");
-					continue;
-				}
-
-				Callbacks[name].Invoke(mGroup.Captures[0].Value);
+				Callbacks[name].Invoke(match.Groups[match.Groups.Count - 1].Value);
 			}
 		}
 	}
