@@ -44,7 +44,7 @@ namespace SpaceTapper
 		/// <param name="del">Delegate.</param>
 		public void Add(string name, bool single, CallbackDel del)
 		{
-			var names = name.Split('|');
+			var names = name.Split(NameSeparator);
 
 			foreach(var n in names)
 			{
@@ -59,7 +59,7 @@ namespace SpaceTapper
 			{
 				var arg = args[i];
 
-				if(arg[0] != NameSeparator)
+				if(arg[0] != '-')
 				{
 					Log.Warning("Skipping argument: ", arg);
 					continue;
@@ -76,27 +76,27 @@ namespace SpaceTapper
 				var callback = Callbacks[name];
 
 				// If the command indicates it requires a value, increase i to skip the next argument for name parsing.
-				if(!callback.Single)
+				if(!callback.Single && i + 1 < args.Length)
 					++i;
 
 				Callbacks[name].Callback.Invoke(args[i]);
 			}
 		}
+	}
 
-		public struct CommandInfo
+	public struct CommandInfo
+	{
+		public CommandParser.CallbackDel Callback;
+
+		/// <summary>
+		/// If true, the parser will not look for a value ahead.
+		/// </summary>
+		public bool Single;
+
+		public CommandInfo(CommandParser.CallbackDel callback, bool single = false)
 		{
-			public CallbackDel Callback;
-
-			/// <summary>
-			/// If true, the parser will not look for a value ahead.
-			/// </summary>
-			public bool Single;
-
-			public CommandInfo(CallbackDel callback, bool single = false)
-			{
-				Callback = callback;
-				Single = single;
-			}
+			Callback = callback;
+			Single = single;
 		}
 	}
 }

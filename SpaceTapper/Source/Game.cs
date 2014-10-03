@@ -15,8 +15,8 @@ namespace SpaceTapper
 		public static State DefaultState;
 
 		public static List<State> States { get; private set; }
-		public static double DeltaTime { get; private set; }
-		public static bool Initialized { get; private set; }
+		public static double DeltaTime   { get; private set; }
+		public static bool Initialized   { get; private set; }
 
 		static DateTime mLastFrameTime;
 
@@ -202,11 +202,10 @@ namespace SpaceTapper
 
 		static void InitWindow(GameSettings settings)
 		{
-			var mode  = new VideoMode(settings.Width, settings.Height);
 			var title = String.IsNullOrEmpty(settings.Title) ? "Window" : settings.Title;
 			var style = settings.Fullscreen ? Styles.Fullscreen : Styles.Close;
 
-			Window = new RenderWindow(mode, title, style);
+			Window = new RenderWindow(settings.Mode, title, style);
 			Window.Closed += OnWindowClosed;
 			Window.KeyPressed += OnKeyPressed;
 			Window.KeyReleased += OnKeyReleased;
