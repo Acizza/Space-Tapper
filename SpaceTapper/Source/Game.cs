@@ -1,172 +1,247 @@
 ﻿using System;
-using System.Linq;
 using SFML.Graphics;
 using SFML.Window;
-using System.Timers;
+using SpaceTapper.Util;
+using SpaceTapper.States;
+using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceTapper
 {
-	public class Game
+	public static class Game
 	{
-		public RenderWindow Window;
-		public GameSettings Settings { get; private set; }
-		public GameTime Time { get; private set; }
-		public Dictionary<State, AState> States;
-		public Resource<Font> Fonts;
+		public static RenderWindow Window;
+		public static State DefaultState;
 
-		public event Action OnEndFrame = delegate {};
+		public static List<State> States { get; private set; }
+		public static double DeltaTime { get; private set; }
+		public static bool Initialized { get; private set; }
 
-		// Util function for floating point math.
-		public Vector2f Size
+		static DateTime mLastFrameTime;
+
+		static Game()
 		{
-			get
-			{
-				return new Vector2f(Window.Size.X, Window.Size.Y);
-			}
-			set
-			{
-				Window.Size = new Vector2u((uint)value.X, (uint)value.Y);
-			}
+			States = new List<State>();
 		}
 
-		public Game(GameSettings settings)
+		/// <summary>
+		/// Initializes the window and states.
+		/// </summary>
+		/// <param name="settings">Game settings.</param>
+		public static void Init(GameSettings settings)
 		{
-			Settings = settings;
+			if(Initialized)
+			{
+				Log.Warning("Tried to call Game.Init() after already being initialized");
+				return;
+			}
 
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
-				LinuxUtil.XInitThreads();
+			Log.Info("Initializing");
 
+			InitPlatform();
 			InitWindow(settings);
-			InitResources();
 
-			Time = new GameTime(0.5f);
-			Time.FpsUpdate += OnFpsUpdate;
+			States = State.FindAll();
 
-			States = new Dictionary<State, AState>();
-
-			States[State.Game] = new GameState(this, false);
-			States[State.EndGame] = new EndGameState(this, false);
-			States[State.Menu] = new MenuState(this, true);
-			States[State.DifficultySelect] = new DifficultyState(this, false);
-			States[State.Scoreboard] = new ScoreboardState(this, false);
+			Initialized = true;
+			Log.Info("Initialization complete");
 		}
 
-		public void SetActiveState(State state)
+		/// <summary>
+		/// Starts updating and drawing the window. Runs in the current thread.
+		/// </summary>
+		public static void Run()
 		{
-			States[state].Active = true;
-			(from s in States where s.Key != state select s).ToList().ForEach(i => i.Value.Active = false);
-		}
+			if(!Initialized)
+			{
+				Log.Warning("Tried to call Game.Run() without calling Game.Init() first");
+				return;
+			}
 
-		public void SetActiveState(AState state)
-		{
-			var result = (from s in States
-						  where s.Value == state
-			              select s).FirstOrDefault();
+			// No need to check if the state is valid, as the function will do it for us.
+			if(DefaultState != null)
+				SetActiveState(DefaultState.Name);
 
-			if(result.Value == null)
-				throw new ArgumentException("Unknown / null state: " + state.ToString());
-
-			SetActiveState(result.Key);
-		}
-
-		public void SetStateStatus(State state, bool updating, bool drawing)
-		{
-			States[state].Updating = updating;
-			States[state].Drawing = drawing;
-		}
-
-		public T GetState<T>(State state) where T : AState
-		{
-			return (T)States[state];
-		}
-
-		public T GetState<T>() where T : AState
-		{
-			var result = (from s in States
-						  where s.Value.GetType() == typeof(T)
-			              select s).FirstOrDefault();
-
-			return (T)result.Value;
-		}
-
-		public void Run()
-		{
 			while(Window.IsOpen())
 			{
 				Window.DispatchEvents();
 
 				Update();
-				Render();
-
-				OnEndFrame.Invoke();
+				Draw();
 			}
 		}
 
-		void Update()
+		/// <summary>
+		/// Calculates the next delta time and does other frame update operations.
+		/// </summary>
+		static void Update()
 		{
-			Time.Update();
+			DeltaTime = (DateTime.UtcNow - mLastFrameTime).TotalSeconds;
+			mLastFrameTime = DateTime.UtcNow;
 
-			foreach(var i in States)
+			foreach(var state in States)
 			{
-				if(!i.Value.Updating)
+				if(!state.Updating)
 					continue;
 
-				i.Value.Update(Time.DeltaTime);
+				state.Update(DeltaTime);
 			}
 		}
 
-		void Render()
+		/// <summary>
+		/// Clears the screen and draws the next frame.
+		/// </summary>
+		static void Draw()
 		{
 			Window.Clear();
 
-			foreach(var i in States)
+			foreach(var state in States)
 			{
-				if(!i.Value.Drawing)
+				if(!state.Drawing)
 					continue;
 
-				i.Value.Draw(Window);
+				state.Draw(Window);
 			}
 
 			Window.Display();
 		}
 
-		void InitResources()
+		/// <summary>
+		/// Makes the state found by name active. Disables all others.
+		/// </summary>
+		/// <param name="name">Name.</param>
+		public static void SetActiveState(string name)
 		{
-			Fonts = new Resource<Font>();
-			Fonts["default"] = new Font("data/fonts/DejaVuSans.ttf");
+			int index = FetchStateIndex(name, x => x.Name == name);
+
+			if(index == -1)
+				return;
+
+			States[index].Active = true;
+			States.Where(x => x.Name != name).ToList().ForEach(x => x.Active = false);
 		}
 
-		void InitWindow(GameSettings settings)
+		/// <summary>
+		/// Makes the state found by reference active. Disables all others.
+		/// </summary>
+		/// <param name="state">State.</param>
+		public static void SetActiveState(State state)
 		{
-			Window = new RenderWindow(settings.Mode, settings.Title, settings.Style);
+			int index = FetchStateIndex(state.Name, x => x == state);
 
+			if(index == -1)
+				return;
+
+			States[index].Active = true;
+			States.Where(x => x != state).ToList().ForEach(x => x.Active = false);
+		}
+
+		/// <summary>
+		/// Sets the status of the state found by name.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
+		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
+		public static void SetStateStatus(string name, bool updating, bool drawing)
+		{
+			int index = FetchStateIndex(name, x => x.Name == name);
+
+			if(index == -1)
+				return;
+
+			States[index].Updating = updating;
+			States[index].Drawing  = drawing;
+		}
+
+		/// <summary>
+		/// Sets the status of the state found by reference.
+		/// </summary>
+		/// <param name="state">State.</param>
+		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
+		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
+		public static void SetStateStatus(State state, bool updating, bool drawing)
+		{
+			int index = FetchStateIndex(state.Name, x => x == state);
+
+			if(index == -1)
+				return;
+
+			States[index].Updating = updating;
+			States[index].Drawing  = drawing;
+		}
+
+		/// <summary>
+		/// Finds state by name in States. Returns null if not found.
+		/// </summary>
+		/// <returns>The state found.</returns>
+		/// <param name="name">State name.</param>
+		public static State GetState(string name)
+		{
+			return States.Find(x => x.Name == name);
+		}
+
+		/// <summary>
+		/// Util function to automatically log an invalid index.
+		/// </summary>
+		/// <returns>The state index.</returns>
+		/// <param name="name">Name.</param>
+		/// <param name="pred">Delegate.</param>
+		static int FetchStateIndex(string name, Predicate<State> pred)
+		{
+			int index = States.FindIndex(pred);
+
+			if(index == -1)
+			{
+				Log.Error("State not found: ", name);
+				return -1;
+			}
+
+			return index;
+		}
+
+		static void InitWindow(GameSettings settings)
+		{
+			var mode  = new VideoMode(settings.Width, settings.Height);
+			var title = String.IsNullOrEmpty(settings.Title) ? "Window" : settings.Title;
+			var style = settings.Fullscreen ? Styles.Fullscreen : Styles.Close;
+
+			Window = new RenderWindow(mode, title, style);
+			Window.Closed += OnWindowClosed;
+			Window.KeyPressed += OnKeyPressed;
+			Window.KeyReleased += OnKeyReleased;
+
+			Window.SetKeyRepeatEnabled(settings.KeyRepeat);
 			Window.SetVerticalSyncEnabled(settings.Vsync);
-			Window.SetKeyRepeatEnabled(false);
-
-			Window.Closed += (s, e) => Window.Close();
 		}
 
-		void OnFpsUpdate(uint fps)
+		static void OnWindowClosed(object sender, EventArgs e)
 		{
-			Window.SetTitle(Settings.Title + " | " + (fps / Time.FpsResetTime) + " fps");
+			Log.Info("Exiting");
+			Window.Close();
 		}
-	}
 
-	public struct GameSettings
-	{
-		public VideoMode Mode;
-		public Styles Style;
-		public string Title;
-		public bool Vsync;
-	}
+		static void OnKeyPressed(object sender, KeyEventArgs e)
+		{
+			Input.ProcessKey(e, true);
+		}
 
-	public enum State
-	{
-		Menu,
-		DifficultySelect,
-		Game,
-		EndGame,
-		Scoreboard
+		static void OnKeyReleased(object sender, KeyEventArgs e)
+		{
+			Input.ProcessKey(e, false);
+		}
+
+		/// <summary>
+		/// Calls any required platform-specific functions.
+		/// </summary>
+		static void InitPlatform()
+		{
+			switch(Environment.OSVersion.Platform)
+			{
+				case PlatformID.Unix:
+					LinuxInit.XInitThreads();
+					break;
+			}
+		}
 	}
 }

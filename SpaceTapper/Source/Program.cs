@@ -1,54 +1,22 @@
 ﻿using System;
-using SFML.Window;
-using System.IO;
-using SpaceTapper;
+using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
 	public class Program
 	{
-		public static readonly uint DefaultWidth = 1024;
-		public static readonly uint DefaultHeight = 768;
-		public static readonly string DefaultTitle = "Space Tapper";
-		public static readonly string DefaultConfigFile = "settings.cfg";
-
 		static void Main(string[] args)
 		{
 			var settings = new GameSettings();
+			settings.Width = 1024;
+			settings.Height = 768;
+			settings.Title = "SpaceTapper";
+			settings.Vsync = true;
 
-			settings.Mode.Width  = DefaultWidth;
-			settings.Mode.Height = DefaultHeight;
-			settings.Title       = DefaultTitle;
-			settings.Style       = Styles.Close;
+			Log.File = "./log.txt";
 
-			var parser = new ArgParser();
-
-			parser.Add("file",       v => parser.Parse(File.ReadAllLines(v)));
-			parser.Add("width",      v => settings.Mode.Width = uint.Parse(v));
-			parser.Add("height",     v => settings.Mode.Height = uint.Parse(v));
-			parser.Add("vsync",      v => settings.Vsync = bool.Parse(v));
-			parser.Add("fullscreen", v => settings.Style = bool.Parse(v) == true ? Styles.Fullscreen : Styles.Close);
-			parser.Add("autosize",   v => settings.Mode = VideoMode.DesktopMode);
-			parser.Add("help",       v => PrintHelp(parser));
-
-			if(File.Exists(DefaultConfigFile))
-				parser.Parse(File.ReadAllLines(DefaultConfigFile));
-
-			parser.Parse(args);
-
-			var game = new Game(settings);
-			game.Run();
-		}
-
-		static void PrintHelp(ArgParser parser)
-		{
-			Console.WriteLine("Options:\n");
-			uint index = 0;
-
-			foreach(var name in parser.Callbacks.Keys)
-				Console.WriteLine(++index + ". " + name);
-
-			Environment.Exit(0);
+			Game.Init(settings);
+			Game.Run();
 		}
 	}
 }

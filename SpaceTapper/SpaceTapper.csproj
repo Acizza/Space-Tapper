@@ -31,37 +31,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Source\Program.cs" />
-    <Compile Include="Source\Game.cs" />
-    <Compile Include="Source\Util\Extensions.cs" />
-    <Compile Include="Source\Util\LinuxUtil.cs" />
-    <Compile Include="Source\GameTime.cs" />
-    <Compile Include="Source\Util\ArgParser.cs" />
-    <Compile Include="Source\States\AState.cs" />
-    <Compile Include="Source\States\Game\GameState.cs" />
-    <Compile Include="Source\States\Game\Ents\BlockSpawner.cs" />
-    <Compile Include="Source\States\Game\Ents\Player.cs" />
-    <Compile Include="Source\AEntity.cs" />
-    <Compile Include="Source\States\Menu\MenuState.cs" />
-    <Compile Include="Source\UI\AUIElement.cs" />
-    <Compile Include="Source\UI\Button.cs" />
-    <Compile Include="Source\States\EndGame\EndGameState.cs" />
-    <Compile Include="Source\States\Game\Ents\Block.cs" />
-    <Compile Include="Source\Resource.cs" />
-    <Compile Include="Source\States\Difficulty\DifficultyState.cs" />
-    <Compile Include="Source\States\Difficulty\DifficultySettings.cs" />
-    <Compile Include="Source\States\AIdleState.cs" />
-    <Compile Include="Source\SceneNode.cs" />
-    <Compile Include="Source\States\Game\Ents\ARectEntity.cs" />
-    <Compile Include="Source\States\Game\Ents\Pickups\Pickup.cs" />
-    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\AUpgrade.cs" />
-    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowDownUpgrade.cs" />
-    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\SlowBlocksUpgrade.cs" />
-    <Compile Include="Source\States\Game\Ents\Pickups\Upgrades\VelocityBoostUpgrade.cs" />
-    <Compile Include="Source\UI\ButtonList.cs" />
-    <Compile Include="Source\States\Scoreboard\ScoreboardState.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
       <HintPath>..\..\..\..\Desktop\SFML.Net-2.1\lib\sfmlnet-audio-2.dll</HintPath>
     </Reference>
@@ -100,14 +69,16 @@
     <Folder Include="Source\" />
     <Folder Include="Source\Util\" />
     <Folder Include="Source\States\" />
-    <Folder Include="Source\States\Game\" />
-    <Folder Include="Source\States\Game\Ents\" />
-    <Folder Include="Source\States\Menu\" />
-    <Folder Include="Source\UI\" />
-    <Folder Include="Source\States\EndGame\" />
-    <Folder Include="Source\States\Difficulty\" />
-    <Folder Include="Source\States\Game\Ents\Pickups\" />
-    <Folder Include="Source\States\Game\Ents\Pickups\Upgrades\" />
-    <Folder Include="Source\States\Scoreboard\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\Program.cs" />
+    <Compile Include="Source\Game.cs" />
+    <Compile Include="Source\GameSettings.cs" />
+    <Compile Include="Source\Util\Log.cs" />
+    <Compile Include="Source\Util\Input.cs" />
+    <Compile Include="Source\Util\CommandParser.cs" />
+    <Compile Include="Source\States\State.cs" />
+    <Compile Include="Source\States\StateAttr.cs" />
+    <Compile Include="Source\Util\LinuxInit.cs" />
   </ItemGroup>
 </Project>
