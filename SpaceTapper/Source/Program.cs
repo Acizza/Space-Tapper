@@ -7,8 +7,9 @@ namespace SpaceTapper
 {
 	public class Program
 	{
-		public const uint DefaultWidth  = 1024;
-		public const uint DefaultHeight = 768;
+		public const uint DefaultWidth   = 1024;
+		public const uint DefaultHeight  = 768;
+		public const string DefaultState = "Menu";
 
 		static void Main(string[] args)
 		{
@@ -31,6 +32,7 @@ namespace SpaceTapper
 			parser.Parse(args);
 
 			Game.Init(settings);
+			Game.DefaultState = Game.GetState(DefaultState);
 			Game.Run();
 		}
 	}

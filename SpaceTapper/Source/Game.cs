@@ -1,11 +1,10 @@
 ﻿using System;
-using SFML.Graphics;
-using SFML.Window;
-using SpaceTapper.Util;
-using SpaceTapper.States;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using SFML.Graphics;
+using SFML.Window;
+using SpaceTapper.States;
+using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
@@ -13,6 +12,7 @@ namespace SpaceTapper
 	{
 		public static RenderWindow Window;
 		public static State DefaultState;
+		public static Resource<Font> Fonts;
 
 		public static List<State> States { get; private set; }
 		public static double DeltaTime   { get; private set; }
@@ -41,11 +41,46 @@ namespace SpaceTapper
 
 			InitPlatform();
 			InitWindow(settings);
+			InitResources();
 
 			States = State.FindAll();
 
 			Initialized = true;
 			Log.Info("Initialization complete");
+		}
+
+		static void InitWindow(GameSettings settings)
+		{
+			var title = String.IsNullOrEmpty(settings.Title) ? "Window" : settings.Title;
+			var style = settings.Fullscreen ? Styles.Fullscreen : Styles.Close;
+
+			Window = new RenderWindow(settings.Mode, title, style);
+			Window.Closed += (s, e) => Exit();
+
+			Window.SetKeyRepeatEnabled(settings.KeyRepeat);
+			Window.SetVerticalSyncEnabled(settings.Vsync);
+		}
+
+		/// <summary>
+		/// Calls any required platform-specific functions.
+		/// </summary>
+		static void InitPlatform()
+		{
+			switch(Environment.OSVersion.Platform)
+			{
+				case PlatformID.Unix:
+					LinuxInit.XInitThreads();
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Creates resource groups.
+		/// </summary>
+		static void InitResources()
+		{
+			Fonts = new Resource<Font>();
+			Fonts["default"] = new Font("Resources/Fonts/DejaVuSans.ttf");
 		}
 
 		/// <summary>
@@ -59,7 +94,6 @@ namespace SpaceTapper
 				return;
 			}
 
-			// No need to check if the state is valid, as the function will do it for us.
 			if(DefaultState != null)
 				SetActiveState(DefaultState.Name);
 
@@ -105,6 +139,18 @@ namespace SpaceTapper
 			}
 
 			Window.Display();
+		}
+
+		/// <summary>
+		/// Exits the game by closing the window.
+		/// </summary>
+		public static void Exit()
+		{
+			if(!Initialized)
+				return;
+
+			Log.Info("Exiting");
+			Window.Close();
 		}
 
 		/// <summary>
@@ -198,49 +244,6 @@ namespace SpaceTapper
 			}
 
 			return index;
-		}
-
-		static void InitWindow(GameSettings settings)
-		{
-			var title = String.IsNullOrEmpty(settings.Title) ? "Window" : settings.Title;
-			var style = settings.Fullscreen ? Styles.Fullscreen : Styles.Close;
-
-			Window = new RenderWindow(settings.Mode, title, style);
-			Window.Closed += OnWindowClosed;
-			Window.KeyPressed += OnKeyPressed;
-			Window.KeyReleased += OnKeyReleased;
-
-			Window.SetKeyRepeatEnabled(settings.KeyRepeat);
-			Window.SetVerticalSyncEnabled(settings.Vsync);
-		}
-
-		static void OnWindowClosed(object sender, EventArgs e)
-		{
-			Log.Info("Exiting");
-			Window.Close();
-		}
-
-		static void OnKeyPressed(object sender, KeyEventArgs e)
-		{
-			Input.ProcessKey(e, true);
-		}
-
-		static void OnKeyReleased(object sender, KeyEventArgs e)
-		{
-			Input.ProcessKey(e, false);
-		}
-
-		/// <summary>
-		/// Calls any required platform-specific functions.
-		/// </summary>
-		static void InitPlatform()
-		{
-			switch(Environment.OSVersion.Platform)
-			{
-				case PlatformID.Unix:
-					LinuxInit.XInitThreads();
-					break;
-			}
 		}
 	}
 }

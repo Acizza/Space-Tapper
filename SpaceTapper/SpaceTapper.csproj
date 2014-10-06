@@ -26,9 +26,9 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <Commandlineparameters>-vsync true -w 1024 -h 768</Commandlineparameters>
-    <Externalconsole>true</Externalconsole>
+    <Commandlineparameters>-vsync false -w 1024 -h 768</Commandlineparameters>
     <DocumentationFile>bin\Release\SpaceTapper.xml</DocumentationFile>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -78,16 +78,23 @@
     <Folder Include="Source\States\" />
     <Folder Include="Resources\" />
     <Folder Include="Resources\Fonts\" />
+    <Folder Include="Source\UI\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
     <Compile Include="Source\Game.cs" />
     <Compile Include="Source\GameSettings.cs" />
     <Compile Include="Source\Util\Log.cs" />
-    <Compile Include="Source\Util\Input.cs" />
     <Compile Include="Source\Util\CommandParser.cs" />
     <Compile Include="Source\States\State.cs" />
     <Compile Include="Source\States\StateAttr.cs" />
     <Compile Include="Source\Util\LinuxInit.cs" />
+    <Compile Include="Source\States\MenuState.cs" />
+    <Compile Include="Source\UI\Button.cs" />
+    <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\Resource.cs" />
+    <Compile Include="Source\Util\Extensions.cs" />
+    <Compile Include="Source\Input.cs" />
+    <Compile Include="Source\UI\ButtonList.cs" />
   </ItemGroup>
 </Project>

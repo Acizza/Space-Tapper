@@ -1,14 +1,15 @@
 ﻿using System;
-using SFML.Graphics;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
+using SFML.Graphics;
 
 namespace SpaceTapper.States
 {
 	public abstract class State
 	{
 		public string Name;
+		public Input  Input { get; private set; }
 
 		public bool Updating
 		{
@@ -56,11 +57,16 @@ namespace SpaceTapper.States
 
 		public State()
 		{
+			Input = new Input();
+
+			// Only process input if the state is updating.
+			Input.OnKeyProcess = k => Updating;
+			Input.OnMouseProcess = m => Updating;
 		}
 
-		public State(string name, bool active = false)
+		public State(string name, bool active = false) : this()
 		{
-			Name = name;
+			Name   = name;
 			Active = active;
 		}
 
