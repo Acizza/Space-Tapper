@@ -27,5 +27,24 @@ namespace SpaceTapper.Util
 		{
 			return new FloatRect(pos.X + rect.Left, pos.Y + rect.Top, rect.Width, rect.Height);
 		}
+
+		/// <summary>
+		/// Returns a Vector2f with rounded components.
+		/// </summary>
+		/// <param name="vec">Vector to take data from.</param>
+		public static Vector2f Round(this Vector2f vec)
+		{
+			return new Vector2f((int)vec.X, (int)vec.Y);
+		}
+
+		/// <summary>
+		/// Returns a new Vector2f with vec's values.
+		/// </summary>
+		/// <returns>The Vector2f.</returns>
+		/// <param name="vec">Vector2i.</param>
+		public static Vector2f ToFloat(this Vector2i vec)
+		{
+			return new Vector2f(vec.X, vec.Y);
+		}
 	}
 }

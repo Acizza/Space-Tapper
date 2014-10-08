@@ -26,7 +26,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <Commandlineparameters>-vsync false -w 1024 -h 768</Commandlineparameters>
+    <Commandlineparameters>-v true -w 1024 -h 768</Commandlineparameters>
     <DocumentationFile>bin\Release\SpaceTapper.xml</DocumentationFile>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
@@ -79,6 +79,7 @@
     <Folder Include="Resources\" />
     <Folder Include="Resources\Fonts\" />
     <Folder Include="Source\UI\" />
+    <Folder Include="Source\Game\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
@@ -87,7 +88,6 @@
     <Compile Include="Source\Util\Log.cs" />
     <Compile Include="Source\Util\CommandParser.cs" />
     <Compile Include="Source\States\State.cs" />
-    <Compile Include="Source\States\StateAttr.cs" />
     <Compile Include="Source\Util\LinuxInit.cs" />
     <Compile Include="Source\States\MenuState.cs" />
     <Compile Include="Source\UI\Button.cs" />
@@ -96,5 +96,11 @@
     <Compile Include="Source\Util\Extensions.cs" />
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\UI\ButtonList.cs" />
+    <Compile Include="Source\Game\GameDifficulty.cs" />
+    <Compile Include="Source\Game\Difficulty.cs" />
+    <Compile Include="Source\Game\DifficultySettings.cs" />
+    <Compile Include="Source\States\DifficultyState.cs" />
+    <Compile Include="Source\States\GameState.cs" />
+    <Compile Include="Source\States\StateAttr.cs" />
   </ItemGroup>
 </Project>

@@ -20,9 +20,20 @@ namespace SpaceTapper
 
 		static DateTime mLastFrameTime;
 
-		static Game()
+		/// <summary>
+		/// Util function for the window size.
+		/// </summary>
+		/// <value>The window size, in int form.</value>
+		public static Vector2i Size
 		{
-			States = new List<State>();
+			get
+			{
+				return new Vector2i((int)Window.Size.X, (int)Window.Size.Y);
+			}
+			set
+			{
+				Window.Size = new Vector2u((uint)value.X, (uint)value.Y);
+			}
 		}
 
 		/// <summary>
@@ -68,6 +79,7 @@ namespace SpaceTapper
 		{
 			switch(Environment.OSVersion.Platform)
 			{
+				// Threads + SFML calls will likely cause a crash, and SFML doesn't call this for us.
 				case PlatformID.Unix:
 					LinuxInit.XInitThreads();
 					break;
@@ -96,6 +108,16 @@ namespace SpaceTapper
 
 			if(DefaultState != null)
 				SetActiveState(DefaultState.Name);
+			else if(States != null && States.Count > 0)
+			{
+				Log.Info("No default state found. Using: " + States[0].Name);
+				SetActiveState(States[0]);
+			}
+			else
+			{
+				Log.Error("Unable to find a valid game state in Game.Run()");
+				return;
+			}
 
 			while(Window.IsOpen())
 			{
@@ -224,7 +246,12 @@ namespace SpaceTapper
 		/// <param name="name">State name.</param>
 		public static State GetState(string name)
 		{
-			return States.Find(x => x.Name == name);
+			var found = States.Find(x => x.Name == name);
+
+			if(found == null)
+				Log.Error("Game.GetState(): State not found: ", name);
+
+			return found;
 		}
 
 		/// <summary>

@@ -21,8 +21,10 @@ namespace SpaceTapper.UI
 		/// </summary>
 		public Color SelectColor = Color.Red;
 
-		public Text Text { get; private set; }
-		public Font Font { get; private set; }
+		/// <summary>
+		/// The text object.
+		/// </summary>
+		public Text Text;
 
 		/// <summary>
 		/// Gets a value indicating whether the mouse is in bounds.
@@ -55,6 +57,26 @@ namespace SpaceTapper.UI
 
 			Text = new Text(str, font, charSize);
 			Text.Color = ClearColor;
+
+			if(center)
+				Center();
+		}
+
+		/// <summary>
+		/// Invokes the Pressed event.
+		/// </summary>
+		public void Press()
+		{
+			Pressed.Invoke();
+		}
+
+		/// <summary>
+		/// Centers the text origin.
+		/// </summary>
+		public void Center()
+		{
+			var b = Text.GetLocalBounds();
+			Text.Origin = new Vector2f(b.Width / 2, b.Height / 2);
 		}
 
 		protected override void UpdateSelf(double dt)
@@ -64,14 +86,6 @@ namespace SpaceTapper.UI
 		protected override void DrawSelf(RenderTarget target, RenderStates states)
 		{
 			target.Draw(Text, states);
-		}
-
-		/// <summary>
-		/// Invokes the Pressed event.
-		/// </summary>
-		public void Press()
-		{
-			Pressed.Invoke();
 		}
 
 		void OnMousePressed(bool pressed)

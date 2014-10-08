@@ -1,15 +1,16 @@
 ﻿using System;
-using SpaceTapper.Util;
-using SFML.Window;
 using System.IO;
+using SFML.Window;
+using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
 	public class Program
 	{
+		public const string Name = "Space Tapper";
 		public const uint DefaultWidth   = 1024;
 		public const uint DefaultHeight  = 768;
-		public const string DefaultState = "Menu";
+		public const string DefaultState = "menu";
 
 		static void Main(string[] args)
 		{
@@ -17,7 +18,7 @@ namespace SpaceTapper
 
 			settings.Mode   = new VideoMode(DefaultWidth, DefaultHeight);
 			settings.Vsync  = true;
-			settings.Title  = "SpaceTapper";
+			settings.Title  = Name;
 
 			var parser = new CommandParser();
 
