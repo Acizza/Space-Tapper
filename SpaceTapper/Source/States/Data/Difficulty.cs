@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SpaceTapper
+namespace SpaceTapper.States.Data
 {
 	/// <summary>
 	/// Provides the default difficulty level values.

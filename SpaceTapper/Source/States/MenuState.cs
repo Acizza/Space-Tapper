@@ -1,29 +1,35 @@
 ﻿using System;
 using SFML.Graphics;
 using SFML.Window;
-using SpaceTapper.States;
 using SpaceTapper.UI;
 
-namespace SpaceTapper
+namespace SpaceTapper.States
 {
 	[StateAttr]
 	public class MenuState : State
 	{
-		Text mTitleText;
-		ButtonList mOptions;
+		Text 	   _titleText;
+		ButtonList _buttons;
 
 		public MenuState()
 		{
 			base.Name = "menu";
 
+			Input.Keys[Keyboard.Key.Escape] = OnEscapePressed;
+
+			PopulateDrawables();
+		}
+
+		void PopulateDrawables()
+		{
 			var font  = Game.Fonts["default"];
 			var hSize = Game.Size / 2;
 
-			mTitleText          = new Text(Program.Name, font, 40);
-			mTitleText.Origin   = new Vector2f(mTitleText.GetLocalBounds().Width / 2, 0);
-			mTitleText.Position = new Vector2f(hSize.X, (int)(Game.Window.Size.Y * 0.2f));
+			_titleText          = new Text(Program.Name, font, 40);
+			_titleText.Origin   = new Vector2f(_titleText.GetLocalBounds().Width / 2, 0);
+			_titleText.Position = new Vector2f(hSize.X, (int)(Game.Window.Size.Y * 0.2f));
 
-			mOptions = new ButtonList(this);
+			_buttons = new ButtonList(this);
 
 			var startBtn      = new Button(this);
 			startBtn.Text     = new Text("Start", font, 22);
@@ -31,7 +37,7 @@ namespace SpaceTapper
 			startBtn.Pressed  += OnStartPressed;
 
 			startBtn.Center();
-			mOptions.Add(startBtn);
+			_buttons.Add(startBtn);
 
 			var quitBtn      = new Button(this);
 			quitBtn.Text     = new Text("Quit", font, 22);
@@ -39,7 +45,15 @@ namespace SpaceTapper
 			quitBtn.Pressed  += OnQuitPressed;
 
 			quitBtn.Center();
-			mOptions.Add(quitBtn);
+			_buttons.Add(quitBtn);
+		}
+
+		static void OnEscapePressed(bool pressed)
+		{
+			if(pressed)
+				return;
+
+			Game.Exit();
 		}
 
 		public override void Update(double dt)
@@ -48,9 +62,9 @@ namespace SpaceTapper
 
 		public override void Draw(RenderTarget target)
 		{
-			target.Draw(mTitleText);
+			target.Draw(_titleText);
 
-			foreach(var button in mOptions)
+			foreach(var button in _buttons)
 				target.Draw(button);
 		}
 

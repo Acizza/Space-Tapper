@@ -1,12 +1,22 @@
 ﻿using System;
 using SFML.Graphics;
-using SpaceTapper.States;
+using SpaceTapper.States.Data;
+using SpaceTapper.Ents;
 
-namespace SpaceTapper
+namespace SpaceTapper.States
 {
 	[StateAttr]
 	public class GameState : State
 	{
+		/// <summary>
+		/// Gets a value indicating whether a game is in progress.
+		/// </summary>
+		/// <value><c>true</c> if in progress; otherwise, <c>false</c>.</value>
+		public bool InProgress { get; private set; }
+		public Player Player { get; private set; }
+
+		GameDifficulty _level;
+
 		/// <summary>
 		/// The difficulty level. Can be swapped mid-game.
 		/// </summary>
@@ -14,22 +24,14 @@ namespace SpaceTapper
 		{
 			get
 			{
-				return mLevel;
+				return _level;
 			}
 			set
 			{
 				// TODO: Update BlockSpawner values when implemented.
-				mLevel = value;
+				_level = value;
 			}
 		}
-
-		/// <summary>
-		/// Gets a value indicating whether a game is in progress.
-		/// </summary>
-		/// <value><c>true</c> if in progress; otherwise, <c>false</c>.</value>
-		public bool InProgress { get; private set; }
-
-		GameDifficulty mLevel;
 
 		public GameState()
 		{
@@ -45,7 +47,7 @@ namespace SpaceTapper
 			if(InProgress)
 				return;
 
-			// TODO
+			Player = new Player(this);
 		}
 
 		public override void UpdateChanged(bool flag)
@@ -58,12 +60,18 @@ namespace SpaceTapper
 
 		public override void Update(double dt)
 		{
+			if(!InProgress)
+				return;
 
+			Player.Update(dt);
 		}
 
 		public override void Draw(RenderTarget target)
 		{
+			if(!InProgress)
+				return;
 
+			target.Draw(Player);
 		}
 	}
 }

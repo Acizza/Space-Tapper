@@ -28,7 +28,7 @@ namespace SpaceTapper
 		{
 			get
 			{
-				return mSelected;
+				return _selected;
 			}
 			set
 			{
@@ -36,7 +36,7 @@ namespace SpaceTapper
 			}
 		}
 
-		int mSelected;
+		int _selected;
 
 		public ButtonList(State state)
 		{
@@ -81,8 +81,8 @@ namespace SpaceTapper
 			else if(index >= Count)
 				index = 0;
 
-			PrevSelected = mSelected;
-			mSelected    = index;
+			PrevSelected = _selected;
+			_selected    = index;
 
 			var prev     = base[PrevSelected];
 			var selected = base[index];
@@ -112,7 +112,7 @@ namespace SpaceTapper
 			if(pressed)
 				return;
 
-			base[mSelected].Press();
+			base[_selected].Press();
 		}
 	}
 }

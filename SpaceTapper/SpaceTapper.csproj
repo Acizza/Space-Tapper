@@ -79,7 +79,7 @@
     <Folder Include="Resources\" />
     <Folder Include="Resources\Fonts\" />
     <Folder Include="Source\UI\" />
-    <Folder Include="Source\Game\" />
+    <Folder Include="Source\States\Data\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
@@ -96,11 +96,12 @@
     <Compile Include="Source\Util\Extensions.cs" />
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\UI\ButtonList.cs" />
-    <Compile Include="Source\Game\GameDifficulty.cs" />
-    <Compile Include="Source\Game\Difficulty.cs" />
-    <Compile Include="Source\Game\DifficultySettings.cs" />
     <Compile Include="Source\States\DifficultyState.cs" />
-    <Compile Include="Source\States\GameState.cs" />
     <Compile Include="Source\States\StateAttr.cs" />
+    <Compile Include="Source\States\GameState.cs" />
+    <Compile Include="Source\States\Data\GameDifficulty.cs" />
+    <Compile Include="Source\States\Data\DifficultySettings.cs" />
+    <Compile Include="Source\States\Data\Difficulty.cs" />
+    <Compile Include="Source\Ents\Player.cs" />
   </ItemGroup>
 </Project>

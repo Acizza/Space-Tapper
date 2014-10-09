@@ -76,7 +76,7 @@ namespace SpaceTapper.UI
 		public void Center()
 		{
 			var b = Text.GetLocalBounds();
-			Text.Origin = new Vector2f(b.Width / 2, b.Height / 2);
+			Text.Origin = new Vector2f((int)b.Width / 2, (int)b.Height / 2);
 		}
 
 		protected override void UpdateSelf(double dt)

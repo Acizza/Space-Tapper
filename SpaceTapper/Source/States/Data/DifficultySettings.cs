@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpaceTapper
+namespace SpaceTapper.States.Data
 {
 	public struct DifficultySettings
 	{

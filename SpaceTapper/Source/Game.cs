@@ -18,7 +18,9 @@ namespace SpaceTapper
 		public static double DeltaTime   { get; private set; }
 		public static bool Initialized   { get; private set; }
 
-		static DateTime mLastFrameTime;
+		public static event Action EndFrame = delegate {};
+
+		static DateTime _lastFrameTime;
 
 		/// <summary>
 		/// Util function for the window size.
@@ -125,6 +127,8 @@ namespace SpaceTapper
 
 				Update();
 				Draw();
+
+				EndFrame.Invoke();
 			}
 		}
 
@@ -133,8 +137,8 @@ namespace SpaceTapper
 		/// </summary>
 		static void Update()
 		{
-			DeltaTime = (DateTime.UtcNow - mLastFrameTime).TotalSeconds;
-			mLastFrameTime = DateTime.UtcNow;
+			DeltaTime = (DateTime.UtcNow - _lastFrameTime).TotalSeconds;
+			_lastFrameTime = DateTime.UtcNow;
 
 			foreach(var state in States)
 			{

@@ -11,16 +11,19 @@ namespace SpaceTapper.States
 		public string Name;
 		public Input  Input { get; private set; }
 
+		bool _updating;
+		bool _drawing;
+
 		public bool Updating
 		{
 			get
 			{
-				return mUpdating;
+				return _updating;
 			}
 			set
 			{
 				UpdateChanged(value);
-				mUpdating = value;
+				_updating = value;
 			}
 		}
 
@@ -28,12 +31,12 @@ namespace SpaceTapper.States
 		{
 			get
 			{
-				return mDrawing;
+				return _drawing;
 			}
 			set
 			{
 				DrawChanged(value);
-				mDrawing = value;
+				_drawing = value;
 			}
 		}
 
@@ -51,9 +54,6 @@ namespace SpaceTapper.States
 				Drawing  = value;
 			}
 		}
-
-		bool mUpdating;
-		bool mDrawing;
 
 		public State()
 		{
