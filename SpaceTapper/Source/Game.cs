@@ -145,7 +145,7 @@ namespace SpaceTapper
 				if(!state.Updating)
 					continue;
 
-				state.Update(DeltaTime);
+				state.Update((float)DeltaTime);
 			}
 		}
 

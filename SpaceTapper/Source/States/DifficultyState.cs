@@ -52,9 +52,8 @@ namespace SpaceTapper.States
 			Game.SetActiveState("menu");
 		}
 
-		public override void Update(double dt)
+		public override void Update(float dt)
 		{
-
 		}
 
 		public override void Draw(RenderTarget target)

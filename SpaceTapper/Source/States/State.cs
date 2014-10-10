@@ -70,7 +70,7 @@ namespace SpaceTapper.States
 			Active = active;
 		}
 
-		public abstract void Update(double dt);
+		public abstract void Update(float dt);
 		public abstract void Draw(RenderTarget target);
 
 		/// <summary>

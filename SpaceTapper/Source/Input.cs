@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SFML.Window;
 
 namespace SpaceTapper
@@ -70,7 +69,7 @@ namespace SpaceTapper
 			Game.Window.MouseButtonPressed  += OnMousePressed;
 			Game.Window.MouseButtonReleased += OnMouseReleased;
 			Game.Window.MouseMoved          += OnMouseMoved;
-			Game.EndFrame 					+= OnEndFrame;
+			Game.EndFrame                   += OnEndFrame;
 		}
 
 		~Input()
@@ -80,7 +79,7 @@ namespace SpaceTapper
 			Game.Window.MouseButtonPressed  -= OnMousePressed;
 			Game.Window.MouseButtonReleased -= OnMouseReleased;
 			Game.Window.MouseMoved          -= OnMouseMoved;
-			Game.EndFrame 					-= OnEndFrame;
+			Game.EndFrame                   -= OnEndFrame;
 		}
 
 		/// <summary>

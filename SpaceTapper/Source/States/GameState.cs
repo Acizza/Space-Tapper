@@ -2,6 +2,7 @@
 using SFML.Graphics;
 using SpaceTapper.States.Data;
 using SpaceTapper.Ents;
+using SpaceTapper.Util;
 
 namespace SpaceTapper.States
 {
@@ -47,7 +48,27 @@ namespace SpaceTapper.States
 			if(InProgress)
 				return;
 
-			Player = new Player(this);
+			if(Player == null)
+			{
+				Player = new Player(this, Game.Size.ToFloat() / 2);
+				Player.HitWall += OnPlayerHitWall;
+			}
+			else
+				Player.Reset();
+
+			InProgress = true;
+		}
+
+		/// <summary>
+		/// Ends the game.
+		/// </summary>
+		/// <param name="transition">If set to <c>true</c>, the active state is set to end_game.</param>
+		public void EndGame(bool transition = true)
+		{
+			InProgress = false;
+
+			if(transition)
+				Game.SetActiveState("end_game");
 		}
 
 		public override void UpdateChanged(bool flag)
@@ -58,7 +79,7 @@ namespace SpaceTapper.States
 			StartGame(Level);
 		}
 
-		public override void Update(double dt)
+		public override void Update(float dt)
 		{
 			if(!InProgress)
 				return;
@@ -72,6 +93,12 @@ namespace SpaceTapper.States
 				return;
 
 			target.Draw(Player);
+		}
+
+		void OnPlayerHitWall()
+		{
+			// TODO: Check for horizontal wall allowance before instantly ending the game.
+			EndGame();
 		}
 	}
 }

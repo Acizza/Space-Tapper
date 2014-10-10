@@ -56,7 +56,7 @@ namespace SpaceTapper.States
 			Game.Exit();
 		}
 
-		public override void Update(double dt)
+		public override void Update(float dt)
 		{
 		}
 

@@ -79,7 +79,7 @@ namespace SpaceTapper.UI
 			Text.Origin = new Vector2f((int)b.Width / 2, (int)b.Height / 2);
 		}
 
-		protected override void UpdateSelf(double dt)
+		protected override void UpdateSelf(float dt)
 		{
 		}
 

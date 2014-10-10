@@ -16,10 +16,10 @@ namespace SpaceTapper
 			State    = state;
 		}
 
-		protected abstract void UpdateSelf(double dt);
+		protected abstract void UpdateSelf(float dt);
 		protected abstract void DrawSelf(RenderTarget target, RenderStates states);
 
-		public void Update(double dt)
+		public void Update(float dt)
 		{
 			UpdateSelf(dt);
 
