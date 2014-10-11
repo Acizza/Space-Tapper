@@ -6,7 +6,7 @@ using SpaceTapper.UI;
 namespace SpaceTapper.States
 {
 	[StateAttr]
-	public class MenuState : State
+	public class MenuState : ForegroundState
 	{
 		Text 	   _titleText;
 		ButtonList _buttons;
@@ -50,7 +50,7 @@ namespace SpaceTapper.States
 
 		static void OnEscapePressed(bool pressed)
 		{
-			if(pressed)
+			if(!pressed)
 				return;
 
 			Game.Exit();
@@ -62,6 +62,8 @@ namespace SpaceTapper.States
 
 		public override void Draw(RenderTarget target)
 		{
+			base.Draw(target);
+
 			target.Draw(_titleText);
 
 			foreach(var button in _buttons)
@@ -70,7 +72,7 @@ namespace SpaceTapper.States
 
 		static void OnStartPressed()
 		{
-			Game.SetActiveState("difficulty_select");
+			Game.SetActiveState("difficulty_select", "game", false, true);
 		}
 
 		static void OnQuitPressed()

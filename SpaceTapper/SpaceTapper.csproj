@@ -103,5 +103,6 @@
     <Compile Include="Source\States\Data\DifficultySettings.cs" />
     <Compile Include="Source\States\Data\Difficulty.cs" />
     <Compile Include="Source\Ents\Player.cs" />
+    <Compile Include="Source\States\ForegroundState.cs" />
   </ItemGroup>
 </Project>

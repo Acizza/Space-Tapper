@@ -156,6 +156,8 @@ namespace SpaceTapper
 		{
 			Window.Clear();
 
+			States.Sort((a, b) => b.DrawOrder.CompareTo(a.DrawOrder));
+
 			foreach(var state in States)
 			{
 				if(!state.Drawing)
@@ -192,6 +194,56 @@ namespace SpaceTapper
 
 			States[index].Active = true;
 			States.Where(x => x.Name != name).ToList().ForEach(x => x.Active = false);
+		}
+
+		/// <summary>
+		/// Makes the state found by name active. Sets other's states to updating and drawing.
+		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
+		/// The example above will make the game state draw behind the menu state.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="other">Other state name.</param>
+		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
+		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
+		public static void SetActiveState(string name, string other, bool updating, bool drawing)
+		{
+			int index    = FetchStateIndex(name, x => x.Name == name);
+			int otherIdx = FetchStateIndex(name, x => x.Name == other);
+
+			if(index == -1 || otherIdx == -1)
+				return;
+
+			States[index].Active = true;
+
+			States[otherIdx].Updating = updating;
+			States[otherIdx].Drawing  = drawing;
+
+			States.Where(x => x.Name != name && x.Name != other).ToList().ForEach(x => x.Active = false);
+		}
+
+		/// <summary>
+		/// Makes the state found by name active. Sets other's states to updating and drawing.
+		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
+		/// The example above will make the game state draw behind the menu state.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="other">Other state.</param>
+		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
+		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
+		public static void SetActiveState(string name, State other, bool updating, bool drawing)
+		{
+			int index    = FetchStateIndex(name, x => x.Name == name);
+			int otherIdx = FetchStateIndex(other.Name, x => x.Name == other.Name);
+
+			if(index == -1 || otherIdx == -1)
+				return;
+
+			States[index].Active = true;
+
+			States[otherIdx].Updating = updating;
+			States[otherIdx].Drawing  = drawing;
+
+			States.Where(x => x.Name != name && x.Name != other.Name).ToList().ForEach(x => x.Active = false);
 		}
 
 		/// <summary>
@@ -270,7 +322,7 @@ namespace SpaceTapper
 
 			if(index == -1)
 			{
-				Log.Error("State not found: ", name);
+				Log.Error("Game.FetchStateIndex(): State not found: ", name);
 				return -1;
 			}
 

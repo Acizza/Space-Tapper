@@ -18,6 +18,11 @@ namespace SpaceTapper.Ents
 		public RectangleShape Shape { get; private set; }
 
 		/// <summary>
+		/// The distance allowed for the player to exit the screen space before calling HitWall.
+		/// </summary>
+		public Vector2f WallAllowance = new Vector2f(Size.X * 1.5f, Size.Y * 1.5f);
+
+		/// <summary>
 		/// The key used to move left.
 		/// </summary>
 		public Keyboard.Key MoveLeft  = Keyboard.Key.A;
@@ -99,7 +104,10 @@ namespace SpaceTapper.Ents
 			var x = Position.X - Origin.X;
 			var y = Position.Y - Origin.Y;
 
-			if((x < 0 || x > Game.Size.X) || (y < 0 || y > Game.Size.Y))
+			bool xOOB = x < -WallAllowance.X || x > Game.Size.X + WallAllowance.X;
+			bool yOOB = y < -WallAllowance.Y || y > Game.Size.Y + WallAllowance.Y;
+
+			if(xOOB || yOOB)
 				HitWall.Invoke();
 		}
 

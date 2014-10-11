@@ -1,7 +1,8 @@
 ﻿using System;
 using SFML.Graphics;
-using SpaceTapper.States.Data;
+using SFML.Window;
 using SpaceTapper.Ents;
+using SpaceTapper.States.Data;
 using SpaceTapper.Util;
 
 namespace SpaceTapper.States
@@ -14,7 +15,7 @@ namespace SpaceTapper.States
 		/// </summary>
 		/// <value><c>true</c> if in progress; otherwise, <c>false</c>.</value>
 		public bool InProgress { get; private set; }
-		public Player Player { get; private set; }
+		public Player Player   { get; private set; }
 
 		GameDifficulty _level;
 
@@ -34,9 +35,12 @@ namespace SpaceTapper.States
 			}
 		}
 
-		public GameState()
+		// TODO: Possible draw order issue if any other states are initialized after this one.
+		public GameState() : base(State.MaxDrawOrder)
 		{
 			base.Name = "game";
+
+			Input.Keys[Keyboard.Key.Escape] = p => Game.SetActiveState("menu", this, false, true);
 		}
 
 		/// <summary>
@@ -45,13 +49,10 @@ namespace SpaceTapper.States
 		/// <param name="level">Difficulty level.</param>
 		public void StartGame(GameDifficulty level)
 		{
-			if(InProgress)
-				return;
-
 			if(Player == null)
 			{
 				Player = new Player(this, Game.Size.ToFloat() / 2);
-				Player.HitWall += OnPlayerHitWall;
+				Player.HitWall += () => EndGame();
 			}
 			else
 				Player.Reset();
@@ -68,7 +69,7 @@ namespace SpaceTapper.States
 			InProgress = false;
 
 			if(transition)
-				Game.SetActiveState("end_game");
+				Game.SetActiveState("end_game", this, false, true);
 		}
 
 		public override void UpdateChanged(bool flag)
@@ -93,12 +94,6 @@ namespace SpaceTapper.States
 				return;
 
 			target.Draw(Player);
-		}
-
-		void OnPlayerHitWall()
-		{
-			// TODO: Check for horizontal wall allowance before instantly ending the game.
-			EndGame();
 		}
 	}
 }

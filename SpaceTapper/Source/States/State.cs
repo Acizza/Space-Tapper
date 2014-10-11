@@ -10,9 +10,10 @@ namespace SpaceTapper.States
 	{
 		public string Name;
 		public Input  Input { get; private set; }
+		public static uint MaxDrawOrder { get; private set; }
 
-		bool _updating;
-		bool _drawing;
+		protected bool _updating;
+		protected bool _drawing;
 
 		public bool Updating
 		{
@@ -55,6 +56,8 @@ namespace SpaceTapper.States
 			}
 		}
 
+		public uint DrawOrder = MaxDrawOrder++;
+
 		public State()
 		{
 			Input = new Input();
@@ -64,10 +67,21 @@ namespace SpaceTapper.States
 			Input.OnMouseProcess = m => Updating;
 		}
 
+		public State(uint drawOrder) : this()
+		{
+			DrawOrder = drawOrder;
+		}
+
 		public State(string name, bool active = false) : this()
 		{
 			Name   = name;
 			Active = active;
+		}
+
+		public State(string name, uint drawOrder, bool active = false)
+			: this(name, active)
+		{
+			DrawOrder = drawOrder;
 		}
 
 		public abstract void Update(float dt);
