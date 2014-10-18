@@ -13,11 +13,14 @@ namespace SpaceTapper
 		public static RenderWindow Window;
 		public static State DefaultState;
 		public static Resource<Font> Fonts;
+		public static Keyboard.Key DebugMenuKey = Keyboard.Key.Back;
 
-		public static List<State> States { get; private set; }
-		public static double DeltaTime   { get; private set; }
-		public static bool Initialized   { get; private set; }
-
+		public static List<State> States  { get; private set; }
+		public static double DeltaTime    { get; private set; }
+		public static bool Initialized    { get; private set; }
+		public static Random Random       { get; private set; }
+		public static Input Input         { get; private set; }
+		public static DebugMenu DebugMenu { get; private set; }
 		public static event Action EndFrame = delegate {};
 
 		static DateTime _lastFrameTime;
@@ -38,6 +41,13 @@ namespace SpaceTapper
 			}
 		}
 
+		static Game()
+		{
+			Random = new Random();
+		}
+
+		#region Initialization
+
 		/// <summary>
 		/// Initializes the window and states.
 		/// </summary>
@@ -55,8 +65,6 @@ namespace SpaceTapper
 			InitPlatform();
 			InitWindow(settings);
 			InitResources();
-
-			States = State.FindAll();
 
 			Initialized = true;
 			Log.Info("Initialization complete");
@@ -89,13 +97,24 @@ namespace SpaceTapper
 		}
 
 		/// <summary>
-		/// Creates resource groups.
+		/// Creates resource groups and class instances.
 		/// </summary>
 		static void InitResources()
 		{
 			Fonts = new Resource<Font>();
 			Fonts["default"] = new Font("Resources/Fonts/DejaVuSans.ttf");
+
+			Input = new Input();
+			Input.Keys[DebugMenuKey] = OnDebugMenuKeyPressed;
+
+			States = State.FindAll();
+
+			DebugMenu = new DebugMenu(States.ToArray());
+			DebugMenu.Position = new Vector2f(10, Window.Size.Y - DebugMenu.TotalHeight);
 		}
+
+		#endregion
+		#region Game loop
 
 		/// <summary>
 		/// Starts updating and drawing the window. Runs in the current thread.
@@ -140,12 +159,16 @@ namespace SpaceTapper
 			DeltaTime = (DateTime.UtcNow - _lastFrameTime).TotalSeconds;
 			_lastFrameTime = DateTime.UtcNow;
 
+			DebugMenu.Update();
+
 			foreach(var state in States)
 			{
 				if(!state.Updating)
 					continue;
 
+				DebugMenu.PreUpdateState(state);
 				state.Update((float)DeltaTime);
+				DebugMenu.PostUpdateState(state);
 			}
 		}
 
@@ -163,11 +186,16 @@ namespace SpaceTapper
 				if(!state.Drawing)
 					continue;
 
-				state.Draw(Window);
+				DebugMenu.PreDrawState(state);
+				Window.Draw(state);
+				DebugMenu.PostDrawState(state);
 			}
 
+			Window.Draw(DebugMenu);
 			Window.Display();
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Exits the game by closing the window.
@@ -180,6 +208,8 @@ namespace SpaceTapper
 			Log.Info("Exiting");
 			Window.Close();
 		}
+
+		#region State modifiers
 
 		/// <summary>
 		/// Makes the state found by name active. Disables all others.
@@ -327,6 +357,16 @@ namespace SpaceTapper
 			}
 
 			return index;
+		}
+
+		#endregion
+
+		static void OnDebugMenuKeyPressed(bool pressed)
+		{
+			if(!pressed)
+				return;
+
+			DebugMenu.Show = !DebugMenu.Show;
 		}
 	}
 }

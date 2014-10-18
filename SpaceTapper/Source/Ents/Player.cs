@@ -11,7 +11,7 @@ namespace SpaceTapper.Ents
 		/// <summary>
 		/// The multiplier used when slowing down the player when no horizontal keys are pressed.
 		/// </summary>
-		public const float SlowingMultiplier  = 0.0075f;
+		public const float SlowingMultiplier  = 1.4f;
 		public static readonly Vector2f Size  = new Vector2f(15, 15);
 		public static readonly Color    Color = Color.Green;
 
@@ -116,7 +116,7 @@ namespace SpaceTapper.Ents
 			if(!_moveLeftPressed && !_moveRightPressed)
 			{
 				_slowingTick += SlowingMultiplier * dt;
-				Velocity.X = MathUtil.Lerp(Velocity.X, 0, _slowingTick);
+				Velocity.X = MathUtil.Lerp(Velocity.X, 0, _slowingTick * dt);
 			}
 			else
 				_slowingTick = 0;

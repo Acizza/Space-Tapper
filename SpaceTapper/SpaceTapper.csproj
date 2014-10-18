@@ -27,7 +27,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <Commandlineparameters>-v true -w 1024 -h 768</Commandlineparameters>
-    <DocumentationFile>bin\Release\SpaceTapper.xml</DocumentationFile>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -104,5 +103,8 @@
     <Compile Include="Source\States\Data\Difficulty.cs" />
     <Compile Include="Source\Ents\Player.cs" />
     <Compile Include="Source\States\ForegroundState.cs" />
+    <Compile Include="Source\Ents\BlockSpawner.cs" />
+    <Compile Include="Source\Ents\Block.cs" />
+    <Compile Include="Source\DebugMenu.cs" />
   </ItemGroup>
 </Project>

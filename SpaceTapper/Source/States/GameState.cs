@@ -14,10 +14,12 @@ namespace SpaceTapper.States
 		/// Gets a value indicating whether a game is in progress.
 		/// </summary>
 		/// <value><c>true</c> if in progress; otherwise, <c>false</c>.</value>
-		public bool InProgress { get; private set; }
-		public Player Player   { get; private set; }
+		public bool InProgress           { get; private set; }
+		public Player Player             { get; private set; }
+		public BlockSpawner BlockSpawner { get; private set; }
 
 		GameDifficulty _level;
+		DifficultySettings _settings;
 
 		/// <summary>
 		/// The difficulty level. Can be swapped mid-game.
@@ -30,8 +32,10 @@ namespace SpaceTapper.States
 			}
 			set
 			{
-				// TODO: Update BlockSpawner values when implemented.
-				_level = value;
+				_settings = Difficulty.Levels[value];
+				_level    = value;
+
+				BlockSpawner.Settings = _settings;
 			}
 		}
 
@@ -40,7 +44,12 @@ namespace SpaceTapper.States
 		{
 			base.Name = "game";
 
-			Input.Keys[Keyboard.Key.Escape] = p => Game.SetActiveState("menu", this, false, true);
+			Player = new Player(this, Game.Size.ToFloat() / 2);
+			Player.HitWall += () => EndGame();
+
+			BlockSpawner = new BlockSpawner(this);
+
+			Input.Keys[Keyboard.Key.Escape] = OnEscapePressed;
 		}
 
 		/// <summary>
@@ -49,13 +58,10 @@ namespace SpaceTapper.States
 		/// <param name="level">Difficulty level.</param>
 		public void StartGame(GameDifficulty level)
 		{
-			if(Player == null)
-			{
-				Player = new Player(this, Game.Size.ToFloat() / 2);
-				Player.HitWall += () => EndGame();
-			}
-			else
-				Player.Reset();
+			Level = level;
+
+			Player.Reset();
+			BlockSpawner.Reset();
 
 			InProgress = true;
 		}
@@ -74,10 +80,18 @@ namespace SpaceTapper.States
 
 		public override void UpdateChanged(bool flag)
 		{
-			if(!flag)
+			if(!flag || InProgress)
 				return;
 
 			StartGame(Level);
+		}
+
+		void OnEscapePressed(bool pressed)
+		{
+			if(!pressed)
+				return;
+
+			Game.SetActiveState("menu", this, false, true);
 		}
 
 		public override void Update(float dt)
@@ -86,14 +100,25 @@ namespace SpaceTapper.States
 				return;
 
 			Player.Update(dt);
+			BlockSpawner.Update(dt);
+
+			foreach(var block in BlockSpawner.Blocks)
+			{
+				if(block.GetGlobalBounds().Intersects(Player.Shape.GlobalBounds(Player.Position)))
+				{
+					Game.SetActiveState("end_game", this, false, true);
+					break;
+				}
+			}
 		}
 
-		public override void Draw(RenderTarget target)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
 			if(!InProgress)
 				return;
 
 			target.Draw(Player);
+			target.Draw(BlockSpawner);
 		}
 	}
 }

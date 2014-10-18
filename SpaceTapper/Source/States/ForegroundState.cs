@@ -3,7 +3,7 @@ using SFML.Graphics;
 using SpaceTapper.States;
 using SpaceTapper.Util;
 
-namespace SpaceTapper
+namespace SpaceTapper.States
 {
 	public abstract class ForegroundState : State
 	{
@@ -37,7 +37,7 @@ namespace SpaceTapper
 			Background.FillColor = BackgroundColor;
 		}
 
-		public override void Draw(RenderTarget target)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
 			target.Draw(Background);
 		}

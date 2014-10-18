@@ -56,9 +56,9 @@ namespace SpaceTapper.States
 		{
 		}
 
-		public override void Draw(RenderTarget target)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
-			base.Draw(target);
+			base.Draw(target, states);
 
 			target.Draw(_titleText);
 

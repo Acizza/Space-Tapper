@@ -48,26 +48,29 @@ namespace SpaceTapper.States
 			_buttons.Add(quitBtn);
 		}
 
-		static void OnEscapePressed(bool pressed)
-		{
-			if(!pressed)
-				return;
-
-			Game.Exit();
-		}
-
 		public override void Update(float dt)
 		{
 		}
 
-		public override void Draw(RenderTarget target)
+		public override void Draw(RenderTarget target, RenderStates states)
 		{
-			base.Draw(target);
+			base.Draw(target, states);
 
 			target.Draw(_titleText);
 
 			foreach(var button in _buttons)
 				target.Draw(button);
+		}
+
+		static void OnEscapePressed(bool pressed)
+		{
+			if(!pressed)
+				return;
+
+			if((Game.GetState("game") as GameState).InProgress)
+				Game.SetActiveState("game");
+			else
+				Game.Exit();
 		}
 
 		static void OnStartPressed()

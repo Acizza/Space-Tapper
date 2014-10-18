@@ -6,7 +6,7 @@ using SFML.Graphics;
 
 namespace SpaceTapper.States
 {
-	public abstract class State
+	public abstract class State : Transformable, Drawable
 	{
 		public string Name;
 		public Input  Input { get; private set; }
@@ -85,7 +85,7 @@ namespace SpaceTapper.States
 		}
 
 		public abstract void Update(float dt);
-		public abstract void Draw(RenderTarget target);
+		public abstract void Draw(RenderTarget target, RenderStates states);
 
 		/// <summary>
 		/// Called when Active is set.
