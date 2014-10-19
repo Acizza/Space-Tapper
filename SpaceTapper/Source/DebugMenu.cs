@@ -1,14 +1,13 @@
 ﻿using System;
-using SFML.Graphics;
 using System.Collections.Generic;
-using SpaceTapper.States;
 using System.Diagnostics;
-using SFML.Window;
 using System.Linq;
+using SFML.Graphics;
+using SFML.Window;
+using SpaceTapper.States;
 
 namespace SpaceTapper
 {
-	[StateAttr]
 	public class DebugMenu : Transformable, Drawable
 	{
 		public Dictionary<State, DebugStateInfo> StateTimes;
@@ -42,10 +41,10 @@ namespace SpaceTapper
 			}
 		}
 
-		public DebugMenu(params State[] states)
+		public DebugMenu()
 		{
-			StateTimes = new Dictionary<State, DebugStateInfo>(states.Length);
-			Add(states);
+			StateTimes = new Dictionary<State, DebugStateInfo>();
+			Add(State.Instances.ToArray());
 		}
 
 		/// <summary>
@@ -74,7 +73,7 @@ namespace SpaceTapper
 			if(!Show)
 				return;
 
-			foreach(var state in Game.States)
+			foreach(var state in State.Instances)
 				UpdateText(state);
 		}
 

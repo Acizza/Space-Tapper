@@ -17,6 +17,7 @@ namespace SpaceTapper.States
 		public bool InProgress           { get; private set; }
 		public Player Player             { get; private set; }
 		public BlockSpawner BlockSpawner { get; private set; }
+		public uint Score                { get; private set; }
 
 		GameDifficulty _level;
 		DifficultySettings _settings;
@@ -39,8 +40,7 @@ namespace SpaceTapper.States
 			}
 		}
 
-		// TODO: Possible draw order issue if any other states are initialized after this one.
-		public GameState() : base(State.MaxDrawOrder)
+		public GameState() : base(0)
 		{
 			base.Name = "game";
 
@@ -104,9 +104,10 @@ namespace SpaceTapper.States
 
 			foreach(var block in BlockSpawner.Blocks)
 			{
-				if(block.GetGlobalBounds().Intersects(Player.Shape.GlobalBounds(Player.Position)))
+				if(block.GetGlobalBounds().Intersects(
+					Player.Shape.GlobalBounds(Player.Position - Player.Origin)))
 				{
-					Game.SetActiveState("end_game", this, false, true);
+					EndGame();
 					break;
 				}
 			}
@@ -114,9 +115,6 @@ namespace SpaceTapper.States
 
 		public override void Draw(RenderTarget target, RenderStates states)
 		{
-			if(!InProgress)
-				return;
-
 			target.Draw(Player);
 			target.Draw(BlockSpawner);
 		}

@@ -106,5 +106,6 @@
     <Compile Include="Source\Ents\BlockSpawner.cs" />
     <Compile Include="Source\Ents\Block.cs" />
     <Compile Include="Source\DebugMenu.cs" />
+    <Compile Include="Source\States\EndGameState.cs" />
   </ItemGroup>
 </Project>

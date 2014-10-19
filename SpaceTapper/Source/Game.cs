@@ -15,7 +15,6 @@ namespace SpaceTapper
 		public static Resource<Font> Fonts;
 		public static Keyboard.Key DebugMenuKey = Keyboard.Key.Back;
 
-		public static List<State> States  { get; private set; }
 		public static double DeltaTime    { get; private set; }
 		public static bool Initialized    { get; private set; }
 		public static Random Random       { get; private set; }
@@ -49,7 +48,7 @@ namespace SpaceTapper
 		#region Initialization
 
 		/// <summary>
-		/// Initializes the window and states.
+		/// Initializes the game.
 		/// </summary>
 		/// <param name="settings">Game settings.</param>
 		public static void Init(GameSettings settings)
@@ -107,9 +106,9 @@ namespace SpaceTapper
 			Input = new Input();
 			Input.Keys[DebugMenuKey] = OnDebugMenuKeyPressed;
 
-			States = State.FindAll();
+			//State.Instances = State.Instances;
 
-			DebugMenu = new DebugMenu(States.ToArray());
+			DebugMenu = new DebugMenu();
 			DebugMenu.Position = new Vector2f(10, Window.Size.Y - DebugMenu.TotalHeight);
 		}
 
@@ -129,10 +128,10 @@ namespace SpaceTapper
 
 			if(DefaultState != null)
 				SetActiveState(DefaultState.Name);
-			else if(States != null && States.Count > 0)
+			else if(State.Instances.Count > 0)
 			{
-				Log.Info("No default state found. Using: " + States[0].Name);
-				SetActiveState(States[0]);
+				Log.Info("No default state found. Using: " + State.Instances[0].Name);
+				SetActiveState(State.Instances[0]);
 			}
 			else
 			{
@@ -161,7 +160,7 @@ namespace SpaceTapper
 
 			DebugMenu.Update();
 
-			foreach(var state in States)
+			foreach(var state in State.Instances)
 			{
 				if(!state.Updating)
 					continue;
@@ -179,9 +178,9 @@ namespace SpaceTapper
 		{
 			Window.Clear();
 
-			States.Sort((a, b) => b.DrawOrder.CompareTo(a.DrawOrder));
+			State.Instances.Sort((a, b) => a.DrawOrder.CompareTo(b.DrawOrder));
 
-			foreach(var state in States)
+			foreach(var state in State.Instances)
 			{
 				if(!state.Drawing)
 					continue;
@@ -222,12 +221,12 @@ namespace SpaceTapper
 			if(index == -1)
 				return;
 
-			States[index].Active = true;
-			States.Where(x => x.Name != name).ToList().ForEach(x => x.Active = false);
+			State.Instances[index].Active = true;
+			State.Instances.Where(x => x.Name != name).ToList().ForEach(x => x.Active = false);
 		}
 
 		/// <summary>
-		/// Makes the state found by name active. Sets other's states to updating and drawing.
+		/// Makes the state found by name active. Sets other's State.Instances to updating and drawing.
 		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
 		/// The example above will make the game state draw behind the menu state.
 		/// </summary>
@@ -243,16 +242,16 @@ namespace SpaceTapper
 			if(index == -1 || otherIdx == -1)
 				return;
 
-			States[index].Active = true;
+			State.Instances[index].Active = true;
 
-			States[otherIdx].Updating = updating;
-			States[otherIdx].Drawing  = drawing;
+			State.Instances[otherIdx].Updating = updating;
+			State.Instances[otherIdx].Drawing  = drawing;
 
-			States.Where(x => x.Name != name && x.Name != other).ToList().ForEach(x => x.Active = false);
+			State.Instances.Where(x => x.Name != name && x.Name != other).ToList().ForEach(x => x.Active = false);
 		}
 
 		/// <summary>
-		/// Makes the state found by name active. Sets other's states to updating and drawing.
+		/// Makes the state found by name active. Sets other's State.Instances to updating and drawing.
 		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
 		/// The example above will make the game state draw behind the menu state.
 		/// </summary>
@@ -268,12 +267,12 @@ namespace SpaceTapper
 			if(index == -1 || otherIdx == -1)
 				return;
 
-			States[index].Active = true;
+			State.Instances[index].Active = true;
 
-			States[otherIdx].Updating = updating;
-			States[otherIdx].Drawing  = drawing;
+			State.Instances[otherIdx].Updating = updating;
+			State.Instances[otherIdx].Drawing  = drawing;
 
-			States.Where(x => x.Name != name && x.Name != other.Name).ToList().ForEach(x => x.Active = false);
+			State.Instances.Where(x => x.Name != name && x.Name != other.Name).ToList().ForEach(x => x.Active = false);
 		}
 
 		/// <summary>
@@ -287,8 +286,8 @@ namespace SpaceTapper
 			if(index == -1)
 				return;
 
-			States[index].Active = true;
-			States.Where(x => x != state).ToList().ForEach(x => x.Active = false);
+			State.Instances[index].Active = true;
+			State.Instances.Where(x => x != state).ToList().ForEach(x => x.Active = false);
 		}
 
 		/// <summary>
@@ -304,8 +303,8 @@ namespace SpaceTapper
 			if(index == -1)
 				return;
 
-			States[index].Updating = updating;
-			States[index].Drawing  = drawing;
+			State.Instances[index].Updating = updating;
+			State.Instances[index].Drawing  = drawing;
 		}
 
 		/// <summary>
@@ -321,18 +320,18 @@ namespace SpaceTapper
 			if(index == -1)
 				return;
 
-			States[index].Updating = updating;
-			States[index].Drawing  = drawing;
+			State.Instances[index].Updating = updating;
+			State.Instances[index].Drawing  = drawing;
 		}
 
 		/// <summary>
-		/// Finds state by name in States. Returns null if not found.
+		/// Finds state by name in State.Instances. Returns null if not found.
 		/// </summary>
 		/// <returns>The state found.</returns>
 		/// <param name="name">State name.</param>
 		public static State GetState(string name)
 		{
-			var found = States.Find(x => x.Name == name);
+			var found = State.Instances.Find(x => x.Name == name);
 
 			if(found == null)
 				Log.Error("Game.GetState(): State not found: ", name);
@@ -348,7 +347,7 @@ namespace SpaceTapper
 		/// <param name="pred">Delegate.</param>
 		static int FetchStateIndex(string name, Predicate<State> pred)
 		{
-			int index = States.FindIndex(pred);
+			int index = State.Instances.FindIndex(pred);
 
 			if(index == -1)
 			{
