@@ -31,9 +31,9 @@ namespace SpaceTapper
 			_buttons.Add(menuBtn);
 		}
 
-		public override void DrawChanged(bool flag)
+		public override void Enter()
 		{
-			_scoreText.DisplayedString = "Score: " + (Game.GetState("game") as GameState).Score;
+			_scoreText.DisplayedString = "Score: " + (State.Get("game") as GameState).Score;
 
 			_scoreText.Position = new Vector2f(
 				Game.Size.X / 2 - _scoreText.GetLocalBounds().Width / 2,
@@ -58,7 +58,7 @@ namespace SpaceTapper
 
 		static void OnMenuBtnPressed()
 		{
-			Game.SetActiveState("menu", "game", false, true);
+			State.SetActive("menu", "game", false, true);
 		}
 	}
 }

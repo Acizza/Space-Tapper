@@ -49,7 +49,7 @@ namespace SpaceTapper.States
 			if(pressed)
 				return;
 
-			Game.SetActiveState("menu", "game", false, true);
+			State.SetActive("menu", "game", false, true);
 		}
 
 		public override void Update(float dt)
@@ -68,14 +68,14 @@ namespace SpaceTapper.States
 
 		static void OnDifficultyPressed(int index)
 		{
-			var state = Game.GetState("game") as GameState;
+			var state = State.Get("game") as GameState;
 			var level = (GameDifficulty)index;
 
 			if(state == null)
 				return;
 
 			state.StartGame(level);
-			Game.SetActiveState(state);
+			State.SetActive(state);
 		}
 	}
 }

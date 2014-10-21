@@ -2,6 +2,7 @@
 using System.IO;
 using SFML.Window;
 using SpaceTapper.Util;
+using SpaceTapper.States;
 
 namespace SpaceTapper
 {
@@ -33,7 +34,7 @@ namespace SpaceTapper
 			parser.Parse(args);
 
 			Game.Init(settings);
-			Game.DefaultState = Game.GetState(DefaultState);
+			Game.DefaultState = State.Get(DefaultState);
 			Game.Run();
 		}
 	}

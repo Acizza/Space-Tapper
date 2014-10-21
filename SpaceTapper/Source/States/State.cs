@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SFML.Graphics;
+using SpaceTapper.Util;
 
 namespace SpaceTapper.States
 {
 	public abstract class State : Transformable, Drawable
 	{
 		public string Name;
-		public Input  Input   { get; private set; }
+		public bool Updating  { get; private set; }
+		public bool Drawing   { get; private set; }
+		public Input Input    { get; private set; }
 
 		public static uint MaxDrawOrder     { get; private set; }
 		public static List<State> Instances { get; private set; }
-
-		protected bool _updating;
-		protected bool _drawing;
 
 		uint _drawOrder = MaxDrawOrder++;
 
@@ -34,42 +34,14 @@ namespace SpaceTapper.States
 			}
 		}
 
-		public bool Updating
-		{
-			get
-			{
-				return _updating;
-			}
-			set
-			{
-				UpdateChanged(value);
-				_updating = value;
-			}
-		}
-
-		public bool Drawing
-		{
-			get
-			{
-				return _drawing;
-			}
-			set
-			{
-				DrawChanged(value);
-				_drawing = value;
-			}
-		}
-
 		public bool Active
 		{
 			get
 			{
 				return Updating && Drawing;
 			}
-			set
+			private set
 			{
-				StatusChanged(value);
-
 				Updating = value;
 				Drawing  = value;
 			}
@@ -120,27 +92,195 @@ namespace SpaceTapper.States
 		#region Status changed callbacks
 
 		/// <summary>
-		/// Called when Active is set.
+		/// Called when Updating is set to true.
 		/// </summary>
-		/// <param name="activated">The new Active value.</param>
-		public virtual void StatusChanged(bool activated)
+		public virtual void Enter()
 		{
 		}
 
 		/// <summary>
-		/// Called when Update is set.
+		/// Called when Updating is set to false.
 		/// </summary>
-		/// <param name="flag">The new Updating value.</param>
-		public virtual void UpdateChanged(bool flag)
+		public virtual void Leave()
 		{
 		}
 
+		#endregion
+		#region State modifiers
+
 		/// <summary>
-		/// Called when Drawing is set.
+		/// Makes the state found by name active. Disables all others.
 		/// </summary>
-		/// <param name="flag">The new Drawing value.</param>
-		public virtual void DrawChanged(bool flag)
+		/// <param name="name">Name.</param>
+		public static void SetActive(string name)
 		{
+			int index = FetchStateIndex(name, x => x.Name == name);
+
+			if(index == -1)
+				return;
+
+			SetStatus(index, true, true);
+
+			Instances.Where(x => x.Name != name).ToList().ForEach(DisableState);
+		}
+
+		/// <summary>
+		/// Makes the state found by name active. Modifies the status of the state found from <c>other</c>.
+		/// Example use case: SetActiveState("menu", "game", false, true)
+		/// The example above will make the game state draw with the menu state.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="other">Other state name.</param>
+		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
+		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
+		public static void SetActive(string name, string other, bool updating, bool drawing)
+		{
+			int index    = FetchStateIndex(name, x => x.Name == name);
+			int otherIdx = FetchStateIndex(name, x => x.Name == other);
+
+			if(index == -1 || otherIdx == -1)
+				return;
+
+			SetStatus(index, true, true);
+			SetStatus(otherIdx, updating, drawing);
+
+			Instances.Where(x => x.Name != name && x.Name != other).ToList().ForEach(DisableState);
+		}
+
+		/// <summary>
+		/// Makes the state found by name active. Modifies the status of the state found from <c>other</c>.
+		/// Example use case: SetActiveState("menu", Get("game"), false, true)
+		/// The example above will make the game state draw with the menu state.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="other">Other state.</param>
+		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
+		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
+		public static void SetActive(string name, State other, bool updating, bool drawing)
+		{
+			int index    = FetchStateIndex(name, x => x.Name == name);
+			int otherIdx = FetchStateIndex(other.Name, x => x.Name == other.Name);
+
+			if(index == -1 || otherIdx == -1)
+				return;
+
+			SetStatus(index, true, true);
+			SetStatus(otherIdx, updating, drawing);
+
+			Instances.Where(x => x.Name != name && x.Name != other.Name).ToList().ForEach(DisableState);
+		}
+
+		/// <summary>
+		/// Makes the state found by reference active. Disables all others.
+		/// </summary>
+		/// <param name="state">State.</param>
+		public static void SetActive(State state)
+		{
+			int index = FetchStateIndex(state.Name, x => x == state);
+
+			if(index == -1)
+				return;
+
+			Instances[index].Active = true;
+			Instances[index].Enter();
+
+			Instances.Where(x => x != state).ToList().ForEach(DisableState);
+		}
+
+		/// <summary>
+		/// Sets the status of the state found by name.
+		/// </summary>
+		/// <param name="name">State name.</param>
+		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
+		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
+		public static void SetStatus(string name, bool updating, bool drawing)
+		{
+			int index = FetchStateIndex(name, x => x.Name == name);
+
+			if(index == -1)
+				return;
+
+			SetStatus(index, updating, drawing);
+		}
+
+		/// <summary>
+		/// Sets the status of the state found by reference.
+		/// </summary>
+		/// <param name="state">State.</param>
+		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
+		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
+		public static void SetStatus(State state, bool updating, bool drawing)
+		{
+			int index = FetchStateIndex(state.Name, x => x == state);
+
+			if(index == -1)
+				return;
+
+			SetStatus(index, updating, drawing);
+		}
+
+		/// <summary>
+		/// Sets the state found by index in Instances updating and drawing variables.
+		/// Also calls Enter() or Leave().
+		/// </summary>
+		/// <param name="index">Instances index.</param>
+		/// <param name="updating">If set to <c>true</c>, sets the state's updating variable.</param>
+		/// <param name="drawing">If set to <c>true</c>, sets the state's drawing variable.</param>
+		public static void SetStatus(int index, bool updating, bool drawing)
+		{
+			var s = Instances[index];
+
+			s.Updating = updating;
+			s.Drawing  = drawing;
+
+			if(updating)
+				s.Enter();
+			else
+				s.Leave();
+		}
+
+		/// <summary>
+		/// Finds state by name in State.Instances. Returns null if not found.
+		/// </summary>
+		/// <returns>The state found.</returns>
+		/// <param name="name">State name.</param>
+		public static State Get(string name)
+		{
+			var found = Instances.Find(x => x.Name == name);
+
+			if(found == null)
+				Log.Error("Game.GetState(): State not found: ", name);
+
+			return found;
+		}
+
+		/// <summary>
+		/// Util function to automatically log an invalid index.
+		/// </summary>
+		/// <returns>The state index.</returns>
+		/// <param name="name">Name.</param>
+		/// <param name="pred">Delegate.</param>
+		static int FetchStateIndex(string name, Predicate<State> pred)
+		{
+			int index = Instances.FindIndex(pred);
+
+			if(index == -1)
+			{
+				Log.Error("Game.FetchStateIndex(): State not found: ", name);
+				return -1;
+			}
+
+			return index;
+		}
+
+		/// <summary>
+		/// Sets the state's active variable to false and calls Leave() on the state.
+		/// </summary>
+		/// <param name="state">The state.</param>
+		static void DisableState(State state)
+		{
+			state.Active = false;
+			state.Leave();
 		}
 
 		#endregion

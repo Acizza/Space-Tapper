@@ -127,11 +127,11 @@ namespace SpaceTapper
 			}
 
 			if(DefaultState != null)
-				SetActiveState(DefaultState.Name);
+				State.SetActive(DefaultState.Name);
 			else if(State.Instances.Count > 0)
 			{
 				Log.Info("No default state found. Using: " + State.Instances[0].Name);
-				SetActiveState(State.Instances[0]);
+				State.SetActive(State.Instances[0]);
 			}
 			else
 			{
@@ -207,158 +207,6 @@ namespace SpaceTapper
 			Log.Info("Exiting");
 			Window.Close();
 		}
-
-		#region State modifiers
-
-		/// <summary>
-		/// Makes the state found by name active. Disables all others.
-		/// </summary>
-		/// <param name="name">Name.</param>
-		public static void SetActiveState(string name)
-		{
-			int index = FetchStateIndex(name, x => x.Name == name);
-
-			if(index == -1)
-				return;
-
-			State.Instances[index].Active = true;
-			State.Instances.Where(x => x.Name != name).ToList().ForEach(x => x.Active = false);
-		}
-
-		/// <summary>
-		/// Makes the state found by name active. Sets other's State.Instances to updating and drawing.
-		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
-		/// The example above will make the game state draw behind the menu state.
-		/// </summary>
-		/// <param name="name">State name.</param>
-		/// <param name="other">Other state name.</param>
-		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
-		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
-		public static void SetActiveState(string name, string other, bool updating, bool drawing)
-		{
-			int index    = FetchStateIndex(name, x => x.Name == name);
-			int otherIdx = FetchStateIndex(name, x => x.Name == other);
-
-			if(index == -1 || otherIdx == -1)
-				return;
-
-			State.Instances[index].Active = true;
-
-			State.Instances[otherIdx].Updating = updating;
-			State.Instances[otherIdx].Drawing  = drawing;
-
-			State.Instances.Where(x => x.Name != name && x.Name != other).ToList().ForEach(x => x.Active = false);
-		}
-
-		/// <summary>
-		/// Makes the state found by name active. Sets other's State.Instances to updating and drawing.
-		/// Example use case: SetActiveState("menu", GetState("game"), false, true)
-		/// The example above will make the game state draw behind the menu state.
-		/// </summary>
-		/// <param name="name">State name.</param>
-		/// <param name="other">Other state.</param>
-		/// <param name="updating">If set to <c>true</c>, sets other state's updating value.</param>
-		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
-		public static void SetActiveState(string name, State other, bool updating, bool drawing)
-		{
-			int index    = FetchStateIndex(name, x => x.Name == name);
-			int otherIdx = FetchStateIndex(other.Name, x => x.Name == other.Name);
-
-			if(index == -1 || otherIdx == -1)
-				return;
-
-			State.Instances[index].Active = true;
-
-			State.Instances[otherIdx].Updating = updating;
-			State.Instances[otherIdx].Drawing  = drawing;
-
-			State.Instances.Where(x => x.Name != name && x.Name != other.Name).ToList().ForEach(x => x.Active = false);
-		}
-
-		/// <summary>
-		/// Makes the state found by reference active. Disables all others.
-		/// </summary>
-		/// <param name="state">State.</param>
-		public static void SetActiveState(State state)
-		{
-			int index = FetchStateIndex(state.Name, x => x == state);
-
-			if(index == -1)
-				return;
-
-			State.Instances[index].Active = true;
-			State.Instances.Where(x => x != state).ToList().ForEach(x => x.Active = false);
-		}
-
-		/// <summary>
-		/// Sets the status of the state found by name.
-		/// </summary>
-		/// <param name="name">State name.</param>
-		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
-		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
-		public static void SetStateStatus(string name, bool updating, bool drawing)
-		{
-			int index = FetchStateIndex(name, x => x.Name == name);
-
-			if(index == -1)
-				return;
-
-			State.Instances[index].Updating = updating;
-			State.Instances[index].Drawing  = drawing;
-		}
-
-		/// <summary>
-		/// Sets the status of the state found by reference.
-		/// </summary>
-		/// <param name="state">State.</param>
-		/// <param name="updating">Forwarded to the found state's Updating variable.</param>
-		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
-		public static void SetStateStatus(State state, bool updating, bool drawing)
-		{
-			int index = FetchStateIndex(state.Name, x => x == state);
-
-			if(index == -1)
-				return;
-
-			State.Instances[index].Updating = updating;
-			State.Instances[index].Drawing  = drawing;
-		}
-
-		/// <summary>
-		/// Finds state by name in State.Instances. Returns null if not found.
-		/// </summary>
-		/// <returns>The state found.</returns>
-		/// <param name="name">State name.</param>
-		public static State GetState(string name)
-		{
-			var found = State.Instances.Find(x => x.Name == name);
-
-			if(found == null)
-				Log.Error("Game.GetState(): State not found: ", name);
-
-			return found;
-		}
-
-		/// <summary>
-		/// Util function to automatically log an invalid index.
-		/// </summary>
-		/// <returns>The state index.</returns>
-		/// <param name="name">Name.</param>
-		/// <param name="pred">Delegate.</param>
-		static int FetchStateIndex(string name, Predicate<State> pred)
-		{
-			int index = State.Instances.FindIndex(pred);
-
-			if(index == -1)
-			{
-				Log.Error("Game.FetchStateIndex(): State not found: ", name);
-				return -1;
-			}
-
-			return index;
-		}
-
-		#endregion
 
 		static void OnDebugMenuKeyPressed(bool pressed)
 		{

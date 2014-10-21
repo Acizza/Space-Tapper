@@ -67,15 +67,15 @@ namespace SpaceTapper.States
 			if(!pressed)
 				return;
 
-			if((Game.GetState("game") as GameState).InProgress)
-				Game.SetActiveState("game");
+			if((State.Get("game") as GameState).InProgress)
+				State.SetActive("game");
 			else
 				Game.Exit();
 		}
 
 		static void OnStartPressed()
 		{
-			Game.SetActiveState("difficulty_select", "game", false, true);
+			State.SetActive("difficulty_select", "game", false, true);
 		}
 
 		static void OnQuitPressed()

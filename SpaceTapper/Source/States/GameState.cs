@@ -75,12 +75,12 @@ namespace SpaceTapper.States
 			InProgress = false;
 
 			if(transition)
-				Game.SetActiveState("end_game", this, false, true);
+				State.SetActive("end_game", this, false, true);
 		}
 
-		public override void UpdateChanged(bool flag)
+		public override void Enter()
 		{
-			if(!flag || InProgress)
+			if(InProgress)
 				return;
 
 			StartGame(Level);
@@ -91,7 +91,7 @@ namespace SpaceTapper.States
 			if(!pressed)
 				return;
 
-			Game.SetActiveState("menu", this, false, true);
+			State.SetActive("menu", this, false, true);
 		}
 
 		public override void Update(float dt)
