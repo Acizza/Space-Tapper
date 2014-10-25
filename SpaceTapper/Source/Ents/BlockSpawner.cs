@@ -30,7 +30,7 @@ namespace SpaceTapper.Ents
 				}
 				else if(value.BlockCount < _settings.BlockCount)
 				{
-					var diff = value.BlockCount - _settings.BlockCount;
+					var diff = Math.Abs(value.BlockCount - _settings.BlockCount);
 
 					Blocks.RemoveRange(Blocks.Count - diff, diff);
 

@@ -111,7 +111,7 @@ namespace SpaceTapper
 				s.Text.Origin   = new Vector2f(s.Text.GetLocalBounds().Width / 2, 0);
 
 				s.Text.Position = new Vector2f(
-					Game.Size.X / 2 - s.Text.GetLocalBounds().Width / 2,
+					Game.Size.X / 2,
 					Game.Size.Y * 0.35f + 35 * i).Round();
 			}
 		}
