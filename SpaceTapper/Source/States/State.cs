@@ -103,6 +103,9 @@ namespace SpaceTapper.States
 		/// </summary>
 		public virtual void Leave()
 		{
+			// Reset all keys when leaving
+			foreach(var key in Input.Keys)
+				key.Value.Invoke(false);
 		}
 
 		#endregion
@@ -114,7 +117,7 @@ namespace SpaceTapper.States
 		/// <param name="name">Name.</param>
 		public static void SetActive(string name)
 		{
-			int index = FetchStateIndex(name, x => x.Name == name);
+			int index = FetchIndex(name, x => x.Name == name);
 
 			if(index == -1)
 				return;
@@ -135,8 +138,8 @@ namespace SpaceTapper.States
 		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
 		public static void SetActive(string name, string other, bool updating, bool drawing)
 		{
-			int index    = FetchStateIndex(name, x => x.Name == name);
-			int otherIdx = FetchStateIndex(name, x => x.Name == other);
+			int index    = FetchIndex(name, x => x.Name == name);
+			int otherIdx = FetchIndex(name, x => x.Name == other);
 
 			if(index == -1 || otherIdx == -1)
 				return;
@@ -158,8 +161,8 @@ namespace SpaceTapper.States
 		/// <param name="drawing">If set to <c>true</c>, sets the other state's drawing value.</param>
 		public static void SetActive(string name, State other, bool updating, bool drawing)
 		{
-			int index    = FetchStateIndex(name, x => x.Name == name);
-			int otherIdx = FetchStateIndex(other.Name, x => x.Name == other.Name);
+			int index    = FetchIndex(name, x => x.Name == name);
+			int otherIdx = FetchIndex(other.Name, x => x.Name == other.Name);
 
 			if(index == -1 || otherIdx == -1)
 				return;
@@ -176,7 +179,7 @@ namespace SpaceTapper.States
 		/// <param name="state">State.</param>
 		public static void SetActive(State state)
 		{
-			int index = FetchStateIndex(state.Name, x => x == state);
+			int index = FetchIndex(state.Name, x => x == state);
 
 			if(index == -1)
 				return;
@@ -195,7 +198,7 @@ namespace SpaceTapper.States
 		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
 		public static void SetStatus(string name, bool updating, bool drawing)
 		{
-			int index = FetchStateIndex(name, x => x.Name == name);
+			int index = FetchIndex(name, x => x.Name == name);
 
 			if(index == -1)
 				return;
@@ -211,7 +214,7 @@ namespace SpaceTapper.States
 		/// <param name="drawing">Forwarded to the found state's Drawing variable.</param>
 		public static void SetStatus(State state, bool updating, bool drawing)
 		{
-			int index = FetchStateIndex(state.Name, x => x == state);
+			int index = FetchIndex(state.Name, x => x == state);
 
 			if(index == -1)
 				return;
@@ -249,7 +252,7 @@ namespace SpaceTapper.States
 			var found = Instances.Find(x => x.Name == name);
 
 			if(found == null)
-				Log.Error("Game.GetState(): State not found: ", name);
+				Log.Error("State.Get(): State not found: ", name);
 
 			return found;
 		}
@@ -260,13 +263,13 @@ namespace SpaceTapper.States
 		/// <returns>The state index.</returns>
 		/// <param name="name">Name.</param>
 		/// <param name="pred">Delegate.</param>
-		static int FetchStateIndex(string name, Predicate<State> pred)
+		static int FetchIndex(string name, Predicate<State> pred)
 		{
 			int index = Instances.FindIndex(pred);
 
 			if(index == -1)
 			{
-				Log.Error("Game.FetchStateIndex(): State not found: ", name);
+				Log.Error("State.FetchIndex(): State not found: ", name);
 				return -1;
 			}
 

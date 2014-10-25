@@ -109,7 +109,7 @@ namespace SpaceTapper
 
 		void OnEnterKey(bool pressed)
 		{
-			if(pressed)
+			if(!pressed)
 				return;
 
 			base[_selected].Press();

@@ -25,19 +25,32 @@ namespace SpaceTapper
 				Game.Fonts["default"],
 				(Game.Size / 2).ToFloat() + new Vector2f(0, 30));
 
-			menuBtn.Pressed += OnMenuBtnPressed;
+			scoreBtn.Pressed += () => State.SetActive("scores", "game", false, true);
+			menuBtn.Pressed  += () => State.SetActive("menu", "game", false, true);
 
 			_buttons.Add(scoreBtn);
 			_buttons.Add(menuBtn);
+
+			Input.Keys[Keyboard.Key.Escape] = p =>
+			{
+				if(!p)
+					return;
+
+				State.SetActive("menu", "game", false, true);
+			};
 		}
 
 		public override void Enter()
 		{
-			_scoreText.DisplayedString = "Score: " + (State.Get("game") as GameState).Score;
+			uint score = (State.Get("game") as GameState).Score;
+
+			_scoreText.DisplayedString = "Score: " + score;
 
 			_scoreText.Position = new Vector2f(
 				Game.Size.X / 2 - _scoreText.GetLocalBounds().Width / 2,
 				Game.Size.Y * 0.225f);
+
+			(State.Get("scores") as ScoresState).AddScore(score);
 		}
 
 		public override void Update(float dt)
@@ -54,11 +67,6 @@ namespace SpaceTapper
 
 			foreach(var btn in _buttons)
 				target.Draw(btn, states);
-		}
-
-		static void OnMenuBtnPressed()
-		{
-			State.SetActive("menu", "game", false, true);
 		}
 	}
 }

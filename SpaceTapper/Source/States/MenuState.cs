@@ -15,7 +15,16 @@ namespace SpaceTapper.States
 		{
 			base.Name = "menu";
 
-			Input.Keys[Keyboard.Key.Escape] = OnEscapePressed;
+			Input.Keys[Keyboard.Key.Escape] = p =>
+			{
+				if(!p)
+					return;
+
+				if((State.Get("game") as GameState).InProgress)
+					State.SetActive("game");
+				else
+					Game.Exit();
+			};
 
 			PopulateDrawables();
 		}
@@ -34,7 +43,7 @@ namespace SpaceTapper.States
 			var startBtn      = new Button(this);
 			startBtn.Text     = new Text("Start", font, 22);
 			startBtn.Position = new Vector2f(hSize.X, hSize.Y);
-			startBtn.Pressed  += OnStartPressed;
+			startBtn.Pressed  += () => State.SetActive("difficulty_select", "game", false, true);
 
 			startBtn.Center();
 			_buttons.Add(startBtn);
@@ -42,7 +51,7 @@ namespace SpaceTapper.States
 			var quitBtn      = new Button(this);
 			quitBtn.Text     = new Text("Quit", font, 22);
 			quitBtn.Position = new Vector2f(hSize.X, hSize.Y + 25);
-			quitBtn.Pressed  += OnQuitPressed;
+			quitBtn.Pressed += Game.Exit;
 
 			quitBtn.Center();
 			_buttons.Add(quitBtn);
@@ -60,27 +69,6 @@ namespace SpaceTapper.States
 
 			foreach(var button in _buttons)
 				target.Draw(button);
-		}
-
-		static void OnEscapePressed(bool pressed)
-		{
-			if(!pressed)
-				return;
-
-			if((State.Get("game") as GameState).InProgress)
-				State.SetActive("game");
-			else
-				Game.Exit();
-		}
-
-		static void OnStartPressed()
-		{
-			State.SetActive("difficulty_select", "game", false, true);
-		}
-
-		static void OnQuitPressed()
-		{
-			Game.Exit();
 		}
 	}
 }

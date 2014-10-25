@@ -49,7 +49,13 @@ namespace SpaceTapper.States
 
 			BlockSpawner = new BlockSpawner(this);
 
-			Input.Keys[Keyboard.Key.Escape] = OnEscapePressed;
+			Input.Keys[Keyboard.Key.Escape] = p =>
+			{
+				if(!p)
+					return;
+
+				State.SetActive("menu", this, false, true);
+			};
 		}
 
 		/// <summary>
@@ -59,6 +65,7 @@ namespace SpaceTapper.States
 		public void StartGame(GameDifficulty level)
 		{
 			Level = level;
+			Score = 0;
 
 			Player.Reset();
 			BlockSpawner.Reset();
@@ -86,19 +93,8 @@ namespace SpaceTapper.States
 			StartGame(Level);
 		}
 
-		void OnEscapePressed(bool pressed)
-		{
-			if(!pressed)
-				return;
-
-			State.SetActive("menu", this, false, true);
-		}
-
 		public override void Update(float dt)
 		{
-			if(!InProgress)
-				return;
-
 			Player.Update(dt);
 			BlockSpawner.Update(dt);
 
@@ -109,6 +105,12 @@ namespace SpaceTapper.States
 				{
 					EndGame();
 					break;
+				}
+
+				if(!block.Passed && block.Position.Y >= Player.Position.Y)
+				{
+					++Score;
+					block.Passed = true;
 				}
 			}
 		}

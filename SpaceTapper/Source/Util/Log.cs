@@ -49,7 +49,9 @@ namespace SpaceTapper.Util
 			if(!LogExceptions)
 				return;
 
-			Write("EXCEPTION", e.ExceptionObject.ToString());
+			var exception = e.ExceptionObject as Exception;
+
+			Error(exception.Message);
 		}
 	}
 }

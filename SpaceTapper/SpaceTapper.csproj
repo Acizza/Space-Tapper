@@ -19,7 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>-vsync=true</Commandlineparameters>
+    <Commandlineparameters>-v true</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -107,5 +107,6 @@
     <Compile Include="Source\Ents\Block.cs" />
     <Compile Include="Source\DebugMenu.cs" />
     <Compile Include="Source\States\EndGameState.cs" />
+    <Compile Include="Source\States\ScoresState.cs" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,13 @@ namespace SpaceTapper.States
 		{
 			base.Name = "difficulty_select";
 
-			Input.Keys[Keyboard.Key.Escape] = OnEscapePressed;
+			Input.Keys[Keyboard.Key.Escape] = p =>
+			{
+				if(!p)
+					return;
+
+				State.SetActive("menu", "game", false, true);
+			};
 
 			PopulateDrawables();
 		}
@@ -37,19 +43,18 @@ namespace SpaceTapper.States
 				var b = new Button(this, names[i], Game.Fonts["default"],
 					new Vector2f(pos.X, pos.Y + 25 * i));
 
-				int copy = i;
-				b.Pressed += () => OnDifficultyPressed(copy);
+				int idxCopy = i;
+
+				b.Pressed += () =>
+				{
+					var gState = State.Get("game") as GameState;
+
+					gState.StartGame((GameDifficulty)idxCopy);
+					State.SetActive(gState);
+				};
 
 				_buttons.Add(b);
 			}
-		}
-
-		static void OnEscapePressed(bool pressed)
-		{
-			if(pressed)
-				return;
-
-			State.SetActive("menu", "game", false, true);
 		}
 
 		public override void Update(float dt)
@@ -64,18 +69,6 @@ namespace SpaceTapper.States
 
 			foreach(var button in _buttons)
 				target.Draw(button);
-		}
-
-		static void OnDifficultyPressed(int index)
-		{
-			var state = State.Get("game") as GameState;
-			var level = (GameDifficulty)index;
-
-			if(state == null)
-				return;
-
-			state.StartGame(level);
-			State.SetActive(state);
 		}
 	}
 }
