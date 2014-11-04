@@ -3,7 +3,7 @@ using SFML.Window;
 
 namespace SpaceTapper
 {
-	public struct GameSettings
+	public class GameSettings
 	{
 		public string Title;
 		public VideoMode Mode;

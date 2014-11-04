@@ -11,7 +11,6 @@ namespace SpaceTapper
 	public class CommandParser
 	{
 		public Dictionary<string, CommandInfo> Callbacks;
-		public delegate void CallbackDel(string value);
 
 		public static char NameSeparator = '|';
 
@@ -41,8 +40,8 @@ namespace SpaceTapper
 		/// </summary>
 		/// <param name="name">Name. Can be separated by CommandParser.NameSeparator to use multiple aliases.
 		/// Will not overwrite others.</param>
-		/// <param name="del">Delegate.</param>
-		public void Add(string name, bool single, CallbackDel del)
+		/// <param name="del">Delegate. String parameter is the value returned when parsing.</param>
+		public void Add(string name, bool single, Action<string> del)
 		{
 			var names = name.Split(NameSeparator);
 
@@ -86,14 +85,14 @@ namespace SpaceTapper
 
 	public struct CommandInfo
 	{
-		public CommandParser.CallbackDel Callback;
+		public Action<string> Callback;
 
 		/// <summary>
 		/// If true, the parser will not look for a value ahead.
 		/// </summary>
 		public bool Single;
 
-		public CommandInfo(CommandParser.CallbackDel callback, bool single = false)
+		public CommandInfo(Action<string> callback, bool single = false)
 		{
 			Callback = callback;
 			Single = single;

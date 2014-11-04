@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SpaceTapper.Util;
 
@@ -58,7 +59,7 @@ namespace SpaceTapper.States
 				Instances.Add(Activator.CreateInstance(type) as State);
 		}
 
-		public State()
+		protected State()
 		{
 			Input = new Input();
 
@@ -67,18 +68,18 @@ namespace SpaceTapper.States
 			Input.OnMouseProcess = m => Updating;
 		}
 
-		public State(uint drawOrder) : this()
+		protected State(uint drawOrder) : this()
 		{
 			DrawOrder = drawOrder;
 		}
 
-		public State(string name, bool active = false) : this()
+		protected State(string name, bool active = false) : this()
 		{
 			Name   = name;
 			Active = active;
 		}
 
-		public State(string name, uint drawOrder, bool active = false)
+		protected State(string name, uint drawOrder, bool active = false)
 			: this(name, active)
 		{
 			DrawOrder = drawOrder;
@@ -243,7 +244,7 @@ namespace SpaceTapper.States
 		}
 
 		/// <summary>
-		/// Finds state by name in State.Instances. Returns null if not found.
+		/// Finds a state by name in State.Instances. Returns null if not found.
 		/// </summary>
 		/// <returns>The state found.</returns>
 		/// <param name="name">State name.</param>
@@ -252,9 +253,31 @@ namespace SpaceTapper.States
 			var found = Instances.Find(x => x.Name == name);
 
 			if(found == null)
-				Log.Error("State.Get(): State not found: ", name);
+				Log.Error("State not found: ", name);
 
 			return found;
+		}
+
+		/// <summary>
+		/// Tries to find a state by name in State.Instances. Returns null if not found.
+		/// </summary>
+		/// <returns>The state found.</returns>
+		/// <param name="name">State name.</param>
+		/// <typeparam name="T">The state type to return as.</typeparam>
+		public static T TryGet<T>(string name) where T : State
+		{
+			return Get(name) as T;
+		}
+
+		/// <summary>
+		/// Finds a state by name in State.Instances. Throws if unable to cast to T.
+		/// </summary>
+		/// <returns>The state found.</returns>
+		/// <param name="name">State name.</param>
+		/// <typeparam name="T">The state type to return as.</typeparam>
+		public static T Get<T>(string name) where T : State
+		{
+			return (T)Get(name);
 		}
 
 		/// <summary>
@@ -295,7 +318,7 @@ namespace SpaceTapper.States
 		public static IEnumerable<Type> GetAllTypes()
 		{
 			var types = from type in Assembly.GetExecutingAssembly().GetTypes()
-						where type.IsDefined(typeof(StateAttr)) && type.IsSubclassOf(typeof(State))
+					where type.IsDefined(typeof(StateAttribute)) && type.IsSubclassOf(typeof(State))
 			            select type;
 
 			return types;

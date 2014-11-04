@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.Window;
 using SpaceTapper.States;
@@ -53,7 +54,7 @@ namespace SpaceTapper
 		{
 			if(Initialized)
 			{
-				Log.Warning("Tried to call Game.Init() after already being initialized");
+				Log.Warning("Already initialized");
 				return;
 			}
 
@@ -88,7 +89,7 @@ namespace SpaceTapper
 			{
 				// Threads + SFML calls will likely cause a crash, and SFML doesn't call this for us.
 				case PlatformID.Unix:
-					LinuxInit.XInitThreads();
+					NativeMethods.XInitThreads();
 					break;
 			}
 		}
@@ -120,7 +121,7 @@ namespace SpaceTapper
 		{
 			if(!Initialized)
 			{
-				Log.Warning("Tried to call Game.Run() without calling Game.Init() first");
+				Log.Warning("Must call Game.Run() first");
 				return;
 			}
 
@@ -133,7 +134,7 @@ namespace SpaceTapper
 			}
 			else
 			{
-				Log.Error("Unable to find a valid game state in Game.Run()");
+				Log.Error("Unable to find a valid game state");
 				return;
 			}
 
@@ -163,9 +164,9 @@ namespace SpaceTapper
 				if(!state.Updating)
 					continue;
 
-				DebugMenu.PreUpdateState(state);
+				DebugMenu.PreUpdate(state);
 				state.Update((float)DeltaTime);
-				DebugMenu.PostUpdateState(state);
+				DebugMenu.PostUpdate(state);
 			}
 		}
 
@@ -183,9 +184,9 @@ namespace SpaceTapper
 				if(!state.Drawing)
 					continue;
 
-				DebugMenu.PreDrawState(state);
+				DebugMenu.PreDraw(state);
 				Window.Draw(state);
-				DebugMenu.PostDrawState(state);
+				DebugMenu.PostDraw(state);
 			}
 
 			Window.Draw(DebugMenu);

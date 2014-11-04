@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.Window;
 using SpaceTapper.Ents;
@@ -7,7 +8,7 @@ using SpaceTapper.Util;
 
 namespace SpaceTapper.States
 {
-	[StateAttr]
+	[StateAttribute]
 	public class GameState : State
 	{
 		/// <summary>

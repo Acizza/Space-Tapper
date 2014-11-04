@@ -6,7 +6,7 @@ using SpaceTapper.States;
 
 namespace SpaceTapper
 {
-	public class Program
+	public static class Program
 	{
 		public const string Name = "Space Tapper";
 		public const uint DefaultWidth   = 1024;
@@ -15,11 +15,12 @@ namespace SpaceTapper
 
 		static void Main(string[] args)
 		{
-			var settings = new GameSettings();
-
-			settings.Mode   = new VideoMode(DefaultWidth, DefaultHeight);
-			settings.Vsync  = true;
-			settings.Title  = Name;
+			var settings = new GameSettings
+			{
+				Mode  = new VideoMode(DefaultWidth, DefaultHeight),
+				Vsync = true,
+				Title = Name
+			};
 
 			var parser = new CommandParser();
 

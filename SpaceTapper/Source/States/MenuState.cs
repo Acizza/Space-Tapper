@@ -5,7 +5,7 @@ using SpaceTapper.UI;
 
 namespace SpaceTapper.States
 {
-	[StateAttr]
+	[StateAttribute]
 	public class MenuState : ForegroundState
 	{
 		Text 	   _titleText;
@@ -20,7 +20,7 @@ namespace SpaceTapper.States
 				if(!p)
 					return;
 
-				if((State.Get("game") as GameState).InProgress)
+				if(State.Get<GameState>("game").InProgress)
 					State.SetActive("game");
 				else
 					Game.Exit();

@@ -10,7 +10,7 @@ namespace SpaceTapper
 		public List<Entity> Children;
 		public State State { get; protected set; }
 
-		public Entity(State state)
+		protected Entity(State state)
 		{
 			Children = new List<Entity>();
 			State    = state;

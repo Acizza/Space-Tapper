@@ -6,7 +6,7 @@ using SpaceTapper.UI;
 
 namespace SpaceTapper.States
 {
-	[StateAttr]
+	[StateAttribute]
 	public class DifficultyState : ForegroundState
 	{
 		Text 	   _titleText;
@@ -47,7 +47,7 @@ namespace SpaceTapper.States
 
 				b.Pressed += () =>
 				{
-					var gState = State.Get("game") as GameState;
+					var gState = State.Get<GameState>("game");
 
 					gState.StartGame((GameDifficulty)idxCopy);
 					State.SetActive(gState);

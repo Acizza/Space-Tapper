@@ -87,7 +87,6 @@
     <Compile Include="Source\Util\Log.cs" />
     <Compile Include="Source\Util\CommandParser.cs" />
     <Compile Include="Source\States\State.cs" />
-    <Compile Include="Source\Util\LinuxInit.cs" />
     <Compile Include="Source\States\MenuState.cs" />
     <Compile Include="Source\UI\Button.cs" />
     <Compile Include="Source\Entity.cs" />
@@ -96,7 +95,6 @@
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\UI\ButtonList.cs" />
     <Compile Include="Source\States\DifficultyState.cs" />
-    <Compile Include="Source\States\StateAttr.cs" />
     <Compile Include="Source\States\GameState.cs" />
     <Compile Include="Source\States\Data\GameDifficulty.cs" />
     <Compile Include="Source\States\Data\DifficultySettings.cs" />
@@ -108,5 +106,8 @@
     <Compile Include="Source\DebugMenu.cs" />
     <Compile Include="Source\States\EndGameState.cs" />
     <Compile Include="Source\States\ScoresState.cs" />
+    <Compile Include="Source\Util\NativeMethods.cs" />
+    <Compile Include="Source\AssemblyInfo.cs" />
+    <Compile Include="Source\States\StateAttribute.cs" />
   </ItemGroup>
 </Project>

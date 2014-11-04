@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -45,6 +47,16 @@ namespace SpaceTapper.Util
 		public static Vector2f ToFloat(this Vector2i vec)
 		{
 			return new Vector2f(vec.X, vec.Y);
+		}
+
+		/// <summary>
+		/// Returns the class + method name of a method.
+		/// </summary>
+		/// <returns>The full name.</returns>
+		/// <param name="method">Method.</param>
+		public static string GetFullName(this MemberInfo method)
+		{
+			return method.ReflectedType.Name + "." + method.Name;
 		}
 	}
 

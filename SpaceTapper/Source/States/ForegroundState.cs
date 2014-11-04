@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using SFML.Graphics;
 using SpaceTapper.States;
 using SpaceTapper.Util;
@@ -10,22 +11,22 @@ namespace SpaceTapper.States
 		public RectangleShape Background;
 		public Color BackgroundColor = new Color(10, 10, 10, 200);
 
-		public ForegroundState()
+		protected ForegroundState()
 		{
 			Init();
 		}
 
-		public ForegroundState(uint drawOrder) : base(drawOrder)
+		protected ForegroundState(uint drawOrder) : base(drawOrder)
 		{
 			Init();
 		}
 
-		public ForegroundState(string name, bool active = false) : base(name, active)
+		protected ForegroundState(string name, bool active = false) : base(name, active)
 		{
 			Init();
 		}
 
-		public ForegroundState(string name, uint drawOrder, bool active = false)
+		protected ForegroundState(string name, uint drawOrder, bool active = false)
 			: base(name, drawOrder, active)
 		{
 			Init();

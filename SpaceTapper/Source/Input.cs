@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using SFML.Window;
+using System.Runtime.Serialization;
 
 namespace SpaceTapper
 {
@@ -12,12 +14,12 @@ namespace SpaceTapper
 		/// <summary>
 		/// Key callbacks.
 		/// </summary>
-		public InputDict<Keyboard.Key> Keys;
+		public InputDictionary<Keyboard.Key> Keys;
 
 		/// <summary>
 		/// Mouse button callbacks.
 		/// </summary>
-		public InputDict<Mouse.Button> Mouse;
+		public InputDictionary<Mouse.Button> MButtons;
 
 		/// <summary>
 		/// Polled keys to be flushed at the end of the frame.
@@ -31,10 +33,6 @@ namespace SpaceTapper
 		/// <value>The polled buttons.</value>
 		public Dictionary<Mouse.Button, bool> PolledButtons { get; private set; }
 
-		public delegate void PressDel(bool pressed);
-		public delegate bool ProcessKeyDel(Keyboard.Key key);
-		public delegate bool ProcessMouseDel(Mouse.Button button);
-
 		/// <summary>
 		/// When true, the input system will push all input to a queue and flush it at the end of the current frame.
 		/// When false, the input system executes all input as soon as it notices it.
@@ -44,12 +42,12 @@ namespace SpaceTapper
 		/// <summary>
 		/// Called on every key state change. Return false to halt further processing.
 		/// </summary>
-		public ProcessKeyDel OnKeyProcess;
+		public Func<Keyboard.Key, bool> OnKeyProcess;
 
 		/// <summary>
 		/// Called on every mouse state change. Return false to halt further processing.
 		/// </summary>
-		public ProcessMouseDel OnMouseProcess;
+		public Func<Mouse.Button, bool> OnMouseProcess;
 
 		/// <summary>
 		/// Occurs when the mouse is moved.
@@ -58,8 +56,8 @@ namespace SpaceTapper
 
 		public Input()
 		{
-			Keys  = new InputDict<Keyboard.Key>();
-			Mouse = new InputDict<Mouse.Button>();
+			Keys    = new InputDictionary<Keyboard.Key>();
+			MButtons = new InputDictionary<Mouse.Button>();
 
 			PolledKeys = new Dictionary<Keyboard.Key, bool>();
 			PolledButtons = new Dictionary<Mouse.Button, bool>();
@@ -116,7 +114,7 @@ namespace SpaceTapper
 			if(OnMouseProcess != null && !OnMouseProcess.Invoke(e.Button))
 				return;
 
-			if(!Mouse.ContainsKey(e.Button))
+			if(!MButtons.ContainsKey(e.Button))
 				return;
 
 			if(UseQueue)
@@ -127,7 +125,7 @@ namespace SpaceTapper
 				PolledButtons.Add(e.Button, pressed);
 			}
 			else
-				Mouse[e.Button].Invoke(pressed);
+				MButtons[e.Button].Invoke(pressed);
 		}
 
 		void OnEndFrame()
@@ -136,7 +134,7 @@ namespace SpaceTapper
 				Keys[k.Key].Invoke(k.Value);
 
 			foreach(var m in PolledButtons)
-				Mouse[m.Key].Invoke(m.Value);
+				MButtons[m.Key].Invoke(m.Value);
 
 			PolledKeys.Clear();
 			PolledButtons.Clear();
@@ -166,30 +164,40 @@ namespace SpaceTapper
 		{
 			MouseMoved.Invoke(e);
 		}
+	}
+
+	/// <summary>
+	/// Same functionality as a Dictionary, but with an overloaded index operator.
+	/// </summary>
+	[Serializable]
+	public class InputDictionary<T> : Dictionary<T, Action<bool>>
+	{
+		protected InputDictionary(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
+
+		public InputDictionary()
+		{
+		}
 
 		/// <summary>
-		/// Same functionality as a Dictionary, but with an overloaded index operator.
+		/// Does the same thing as a Dictionary, but prevents invalid key exceptions.
+		/// NOTE: = will act as += when more than one delegate exists.
 		/// </summary>
-		public class InputDict<T> : Dictionary<T, PressDel>
+		/// <param name="index">Index.</param>
+		public new Action<bool> this[T index]
 		{
-			/// <summary>
-			/// Does the same thing as a Dictionary, but prevents invalid key exceptions.
-			/// NOTE: = will act as += when more than one delegate exists.
-			/// </summary>
-			/// <param name="index">Index.</param>
-			public new PressDel this[T index]
+			get
 			{
-				get
-				{
-					return base[index];
-				}
-				set
-				{
-					if(base.ContainsKey(index))
-						base[index] += value;
-					else
-						base[index] = value;
-				}
+				return base[index];
+			}
+			set
+			{
+				if(base.ContainsKey(index))
+					base[index] += value;
+				else
+					base[index] = value;
 			}
 		}
 	}

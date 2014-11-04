@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using SFML.Window;
 using SpaceTapper.States;
 using SpaceTapper.UI;
@@ -21,7 +22,8 @@ namespace SpaceTapper
 		public int PrevSelected { get; private set; }
 
 		/// <summary>
-		/// The current button index that is selected. When set, calls SetSelected(value).
+		/// The current button index that is selected. When set, sets the currently selected button.
+		/// Wraps if the index is out of bounds.
 		/// </summary>
 		/// <value>The button index.</value>
 		public int Selected
@@ -32,7 +34,19 @@ namespace SpaceTapper
 			}
 			set
 			{
-				SetSelected(value);
+				if(value < 0)
+					value = Count - 1;
+				else if(value >= Count)
+					value = 0;
+
+				PrevSelected = _selected;
+				_selected    = value;
+
+				var prev     = base[PrevSelected];
+				var selected = base[value];
+
+				prev.Text.Color     = prev.ClearColor;
+				selected.Text.Color = selected.SelectColor;
 			}
 		}
 
@@ -68,27 +82,6 @@ namespace SpaceTapper
 			State.Input.Keys[Keyboard.Key.S]    -= OnDownKey;
 
 			State.Input.Keys[Keyboard.Key.Return] -= OnEnterKey;
-		}
-
-		/// <summary>
-		/// Sets the currently selected button. Wraps if the index is out of bounds.
-		/// </summary>
-		/// <param name="index">Index.</param>
-		public void SetSelected(int index)
-		{
-			if(index < 0)
-				index = Count - 1;
-			else if(index >= Count)
-				index = 0;
-
-			PrevSelected = _selected;
-			_selected    = index;
-
-			var prev     = base[PrevSelected];
-			var selected = base[index];
-
-			prev.Text.Color     = prev.ClearColor;
-			selected.Text.Color = selected.SelectColor;
 		}
 
 		void OnUpKey(bool pressed)

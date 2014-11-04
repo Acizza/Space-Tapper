@@ -7,7 +7,7 @@ using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
-	[StateAttr]
+	[StateAttribute]
 	public class EndGameState : ForegroundState
 	{
 		Text _scoreText;
@@ -42,7 +42,7 @@ namespace SpaceTapper
 
 		public override void Enter()
 		{
-			uint score = (State.Get("game") as GameState).Score;
+			uint score = State.Get<GameState>("game").Score;
 
 			_scoreText.DisplayedString = "Score: " + score;
 
@@ -50,7 +50,7 @@ namespace SpaceTapper
 				Game.Size.X / 2 - _scoreText.GetLocalBounds().Width / 2,
 				Game.Size.Y * 0.225f);
 
-			(State.Get("scores") as ScoresState).AddScore(score);
+			State.Get<ScoresState>("scores").AddScore(score);
 		}
 
 		public override void Update(float dt)

@@ -40,13 +40,13 @@ namespace SpaceTapper.UI
 
 		public Button(State state) : base(state)
 		{
-			State.Input.Mouse[Mouse.Button.Left] = OnMousePressed;
+			State.Input.MButtons[Mouse.Button.Left] = OnMousePressed;
 			State.Input.MouseMoved += OnMouseMoved;
 		}
 
 		~Button()
 		{
-			State.Input.Mouse[Mouse.Button.Left] -= OnMousePressed;
+			State.Input.MButtons[Mouse.Button.Left] -= OnMousePressed;
 			State.Input.MouseMoved -= OnMouseMoved;
 		}
 

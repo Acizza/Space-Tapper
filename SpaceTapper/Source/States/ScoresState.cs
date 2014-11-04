@@ -9,17 +9,28 @@ using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
-	[StateAttr]
+	[StateAttribute]
 	public class ScoresState : ForegroundState
 	{
+		public const string OldFilePrefix = ".old";
+
 		public string ScoreFile = "scores.txt";
 		public uint MaxScores   = 5;
 
-		public Text TitleText         { get; private set; }
-		public List<ScoreIter> Scores { get; private set; }
+		public Text TitleText { get; private set; }
 
 		List<ScoreIter> _lastScores;
+		List<ScoreIter> _scores;
+
 		int _lastReplaceIndex;
+
+		public IReadOnlyList<ScoreIter> Scores
+		{
+			get
+			{
+				return _scores;
+			}
+		}
 
 		public ScoresState()
 		{
@@ -30,7 +41,7 @@ namespace SpaceTapper
 				Game.Size.X / 2 - TitleText.GetLocalBounds().Width / 2,
 				Game.Size.Y * 0.225f);
 
-			Scores = new List<ScoreIter>();
+			_scores = new List<ScoreIter>();
 
 			Input.Keys[Keyboard.Key.Escape] = p =>
 			{
@@ -64,7 +75,7 @@ namespace SpaceTapper
 			if(Scores.Count >= MaxScores)
 				return false;
 
-			Scores.Add(new ScoreIter(score, new Text("", Game.Fonts["default"])));
+			_scores.Add(new ScoreIter(score, new Text("", Game.Fonts["default"])));
 			RebuildScoreOrder();
 
 			return true;
@@ -77,7 +88,7 @@ namespace SpaceTapper
 		/// <param name="score">The score to use as a replacement.</param>
 		public bool ReplaceScore(uint score)
 		{
-			int replaceIdx = Scores.FindIndex(x => x.Score <= score);
+			int replaceIdx = _scores.FindIndex(x => x.Score <= score);
 
 			if(replaceIdx == -1 || Scores.Count < MaxScores)
 				return false;
@@ -101,7 +112,7 @@ namespace SpaceTapper
 		/// </summary>
 		public void RebuildScoreOrder()
 		{
-			Scores.Sort((a, b) => b.Score.CompareTo(a.Score));
+			_scores.Sort((a, b) => b.Score.CompareTo(a.Score));
 
 			for(int i = 0; i < Scores.Count; ++i)
 			{
@@ -127,10 +138,10 @@ namespace SpaceTapper
 				return;
 			}
 
-			if(File.Exists(ScoreFile + ".old"))
-				File.Delete(ScoreFile + ".old");
+			if(File.Exists(ScoreFile + OldFilePrefix))
+				File.Delete(ScoreFile + OldFilePrefix);
 
-			File.Move(ScoreFile, ScoreFile + ".old");
+			File.Move(ScoreFile, ScoreFile + OldFilePrefix);
 			File.WriteAllLines(ScoreFile, Scores.Select(x => x.Score).Select(x => x.ToString()));
 		}
 
@@ -143,7 +154,7 @@ namespace SpaceTapper
 				WriteScores();
 
 			_lastScores = new List<ScoreIter>(Scores);
-			Scores.Clear();
+			_scores.Clear();
 
 			var lines = File.ReadAllLines(ScoreFile);
 

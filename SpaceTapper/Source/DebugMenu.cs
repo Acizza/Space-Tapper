@@ -84,7 +84,7 @@ namespace SpaceTapper
 		/// Call before updating a state.
 		/// </summary>
 		/// <param name="state">State.</param>
-		public void PreUpdateState(State state)
+		public void PreUpdate(State state)
 		{
 			if(!Show || !StateTimes.ContainsKey(state))
 				return;
@@ -96,7 +96,7 @@ namespace SpaceTapper
 		/// Call after updating a state.
 		/// </summary>
 		/// <param name="state">State.</param>
-		public void PostUpdateState(State state)
+		public void PostUpdate(State state)
 		{
 			if(!Show || !StateTimes.ContainsKey(state))
 				return;
@@ -108,7 +108,7 @@ namespace SpaceTapper
 		/// Call before drawing a state.
 		/// </summary>
 		/// <param name="state">State.</param>
-		public void PreDrawState(State state)
+		public void PreDraw(State state)
 		{
 			if(!Show || !StateTimes.ContainsKey(state))
 				return;
@@ -120,7 +120,7 @@ namespace SpaceTapper
 		/// Call after drawing a state.
 		/// </summary>
 		/// <param name="state">State.</param>
-		public void PostDrawState(State state)
+		public void PostDraw(State state)
 		{
 			if(!Show || !StateTimes.ContainsKey(state))
 				return;
