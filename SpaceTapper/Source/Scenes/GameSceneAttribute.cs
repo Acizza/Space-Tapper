@@ -1,12 +1,15 @@
 ﻿using System;
 
-namespace SpaceTapper
+namespace SpaceTapper.Scenes
 {
-	public class GameSceneAttribute
+	[AttributeUsage(AttributeTargets.Class)]
+	public sealed class GameSceneAttribute : Attribute
 	{
-		public GameSceneAttribute()
+		public string Name { get; private set; }
+
+		public GameSceneAttribute(string name)
 		{
+			Name = name;
 		}
 	}
 }
-
