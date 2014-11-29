@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using SFML.Graphics;
+using SFML.Window;
 using SpaceTapper.Physics;
 using SpaceTapper.Scenes;
 using SpaceTapper.Settings;
-using SFML.Window;
 
 namespace SpaceTapper.Entities
 {
@@ -19,8 +19,6 @@ namespace SpaceTapper.Entities
 		{
 			Blocks = new List<Block>();
 			Difficulty.Changed += DifficultyChangeHandler;
-
-			AddBlocks();
 		}
 
 		~BlockSpawner()
@@ -43,9 +41,13 @@ namespace SpaceTapper.Entities
 				Blocks.RemoveRange(Blocks.Count - blockDiff, blockDiff);
 			}
 
+			// Generate a new postion for every block and update spacings
 			Reset();
 		}
 
+		/// <summary>
+		/// Adds a new block to the spawner.
+		/// </summary>
 		public void AddBlock()
 		{
 			var size = new Vector2f(Game.Random.Next(75, (int)(Scene.Game.Window.Size.X * 0.45f)),
@@ -58,12 +60,20 @@ namespace SpaceTapper.Entities
 			Blocks.Add(block);
 		}
 
+		/// <summary>
+		/// Adds the amount of blocks specified by the current difficulty level.
+		/// </summary>
 		public void AddBlocks()
 		{
 			for(int i = 0; i < Difficulty.Level.BlockCount; ++i)
 				AddBlock();
 		}
 
+		/// <summary>
+		/// Generates a random block position.
+		/// </summary>
+		/// <returns>The generated block position.</returns>
+		/// <param name="index">A multiplier to use for height offsets.</param>
 		public Vector2f GenerateBlockPosition(int index)
 		{
 			float x = Game.Random.Next(-5, (int)(Scene.Game.Window.Size.X * 0.9f));
@@ -72,6 +82,11 @@ namespace SpaceTapper.Entities
 			return new Vector2f(x, y);
 		}
 
+		/// <summary>
+		/// Resets the block and generates a new position for it.
+		/// </summary>
+		/// <param name="block">Block to reset.</param>
+		/// <param name="index">A multiplier to use for height offsets.</param>
 		public void ResetBlock(Block block, int index)
 		{
 			block.Reset();
