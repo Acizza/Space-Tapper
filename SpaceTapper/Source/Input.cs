@@ -25,12 +25,14 @@ namespace SpaceTapper
 		/// </summary>
 		public event Func<Mouse.Button, bool> OnMouseProcess;
 
+		public event Action<MouseMoveEventArgs> MouseMoved = delegate {};
+
 		/// <summary>
 		/// If enabled, all input will be added to a queue and flushed at the end of the frame.
 		/// </summary>
 		public bool QueueEnabled = true;
 
-		#region Ctors / Dtors
+		#region Constructors / destructors
 
 		public Input(Game game)
 		{
@@ -43,22 +45,22 @@ namespace SpaceTapper
 
 			Game.Window.KeyPressed  += OnKeyPressed;
 			Game.Window.KeyReleased += OnKeyReleased;
-
+			Game.Window.MouseMoved  += OnMouseMoved;
 			Game.Window.MouseButtonPressed  += OnMousePressed;
 			Game.Window.MouseButtonReleased += OnMouseReleased;
 
-			Game.OnEndFrame += Flush;
+			Game.EndFrame += Flush;
 		}
 
 		~Input()
 		{
 			Game.Window.KeyPressed  -= OnKeyPressed;
 			Game.Window.KeyReleased -= OnKeyReleased;
-
+			Game.Window.MouseMoved  -= OnMouseMoved;
 			Game.Window.MouseButtonPressed  -= OnMousePressed;
 			Game.Window.MouseButtonReleased -= OnMouseReleased;
 
-			Game.OnEndFrame -= Flush;
+			Game.EndFrame -= Flush;
 		}
 
 		#endregion
@@ -82,6 +84,14 @@ namespace SpaceTapper
 		void OnMouseReleased(object sender, MouseButtonEventArgs e)
 		{
 			ProcessMouse(e.Button, false);
+		}
+
+		void OnMouseMoved(object sender, MouseMoveEventArgs e)
+		{
+			if(OnMouseProcess != null && !OnMouseProcess.Invoke(Mouse.Button.Left))
+				return;
+
+			MouseMoved.Invoke(e);
 		}
 
 		#endregion

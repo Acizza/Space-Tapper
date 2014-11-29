@@ -20,7 +20,7 @@ namespace SpaceTapper
 
 		public Dictionary<string, Scene> Scenes { get; private set; }
 
-		public event Action OnEndFrame = delegate {};
+		public event Action EndFrame = delegate {};
 
 		public Game(GameSettings settings)
 		{
@@ -92,7 +92,7 @@ namespace SpaceTapper
 				Update();
 				Draw();
 
-				OnEndFrame.Invoke();
+				EndFrame.Invoke();
 			}
 		}
 

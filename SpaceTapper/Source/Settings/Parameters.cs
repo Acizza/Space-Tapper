@@ -25,7 +25,7 @@ namespace SpaceTapper.Settings
 			}
 		}
 
-		static Dictionary<ParameterAttribute, ParameterDel> _all;
+		static readonly Dictionary<ParameterAttribute, ParameterDel> _all;
 
 		static Parameters()
 		{

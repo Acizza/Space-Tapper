@@ -84,6 +84,7 @@
     <Folder Include="Source\Util\" />
     <Folder Include="Source\Scenes\" />
     <Folder Include="Source\Settings\" />
+    <Folder Include="Source\UI\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
@@ -110,5 +111,7 @@
     <Compile Include="Source\Util\MathUtil.cs" />
     <Compile Include="Source\Settings\ParameterAttribute.cs" />
     <Compile Include="Source\Settings\Parameters.cs" />
+    <Compile Include="Source\Scenes\EndGameScene.cs" />
+    <Compile Include="Source\UI\Button.cs" />
   </ItemGroup>
 </Project>

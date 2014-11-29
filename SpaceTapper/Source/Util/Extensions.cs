@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SFML.Window;
+using SFML.Graphics;
 
 namespace SpaceTapper.Util
 {
@@ -36,6 +38,21 @@ namespace SpaceTapper.Util
 		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> source, Func<T, K> selector)
 		{
 			return source.GroupBy(selector).Select(x => x.First());
+		}
+
+		public static Vector2f Size(this FloatRect rect)
+		{
+			return new Vector2f(rect.Width, rect.Height);
+		}
+
+		public static Vector2f ToVector2f(this Vector2i vec)
+		{
+			return new Vector2f(vec.X, vec.Y);
+		}
+
+		public static Vector2f ToVector2f(this Vector2u vec)
+		{
+			return new Vector2f(vec.X, vec.Y);
 		}
 	}
 }
