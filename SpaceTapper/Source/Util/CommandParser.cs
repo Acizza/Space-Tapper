@@ -31,7 +31,7 @@ namespace SpaceTapper.Util
 			}
 			set
 			{
-				Add(name, value.NameOnly, value.Callback);
+				Add(name, value.NameOnly, value.Callback, value.Description);
 			}
 		}
 
@@ -41,14 +41,15 @@ namespace SpaceTapper.Util
 		/// <param name="name">Command name(s).</param>
 		/// <param name="nameOnly">If set to <c>true</c>, the command only requires itself to be specified.</param>
 		/// <param name="func">The callback to use on a match.</param>
-		public void Add(string name, bool nameOnly, Action<string> func)
+		/// <param name="desc">The description of the command.</param>
+		public void Add(string name, bool nameOnly, Action<string> func, string desc)
 		{
 			var names = name.Split(NameSeparator);
 
 			foreach(var n in names)
 			{
 				if(!Callbacks.ContainsKey(n))
-					Callbacks[n] = new CommandInfo(nameOnly, func);
+					Callbacks[n] = new CommandInfo(nameOnly, func, desc, name);
 			}
 		}
 
@@ -91,12 +92,16 @@ namespace SpaceTapper.Util
 	public struct CommandInfo
 	{
 		public Action<string> Callback;
+		public string FullName;
+		public string Description;
 		public bool NameOnly;
 
-		public CommandInfo(bool nameOnly, Action<string> callback)
+		public CommandInfo(bool nameOnly, Action<string> callback, string desc = "None", string name = "Unknown")
 		{
-			Callback = callback;
-			NameOnly = nameOnly;
+			Callback    = callback;
+			FullName    = name;
+			Description = desc;
+			NameOnly    = nameOnly;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace SpaceTapper.Util
 {
@@ -30,6 +31,11 @@ namespace SpaceTapper.Util
 				dict[key] += func;
 			else
 				dict[key] = func;
+		}
+
+		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> source, Func<T, K> selector)
+		{
+			return source.GroupBy(selector).Select(x => x.First());
 		}
 	}
 }
