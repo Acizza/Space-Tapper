@@ -10,6 +10,8 @@ namespace SpaceTapper
 {
 	public sealed class Game
 	{
+		public static Random Random = new Random();
+
 		public RenderWindow Window   { get; private set; }
 		public GameSettings Settings { get; private set; }
 

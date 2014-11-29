@@ -1,7 +1,7 @@
 ﻿using System;
 using SFML.Window;
 
-namespace SpaceTapper.Math
+namespace SpaceTapper
 {
 	/// <summary>
 	/// A simple 2 dimensional float vector. Stores previous values.

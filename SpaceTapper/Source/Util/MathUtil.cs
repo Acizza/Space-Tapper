@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpaceTapper.Math
+namespace SpaceTapper.Util
 {
 	public static class MathUtil
 	{
