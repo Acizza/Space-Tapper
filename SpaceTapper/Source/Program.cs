@@ -21,40 +21,20 @@ namespace SpaceTapper
 				Title     = "Space Tapper"
 			};
 
+			//Parameters.Parse();
+			// TODO: Revamp SpaceTapper.Util.CommandParser for the Parameters class.
+
 			Parser = new CommandParser();
 
-			Parser["w|width"] = new CommandInfo(false, v => settings.Mode.Width  = uint.Parse(v),
-				"The width of the window.");
-
-			Parser["h|height"] = new CommandInfo(false, v => settings.Mode.Height = uint.Parse(v),
-				"The height of the window.");
-
-			Parser["v|vsync"] = new CommandInfo(false, v => settings.Vsync = bool.Parse(v),
-				"A true or false value indicating if vertical sync should be enabled.");
-
-			Parser["a|autosize"] = new CommandInfo(true, v => settings.Mode = VideoMode.DesktopMode,
-				"Sizes the window to the primary monitor's resolution. Must be after and width / height commands.");
-
-			Parser["f|fullscreen"] = new CommandInfo(true, v => settings.Style = Styles.Fullscreen,
-				"Sets the window to fullscreen mode.");
-
-			Parser["minorVersion"] = new CommandInfo(false, v => settings.CSettings.MinorVersion = uint.Parse(v),
-				"The minor OpenGL version to use.");
-
-			Parser["majorVersion"] = new CommandInfo(false, v => settings.CSettings.MajorVersion = uint.Parse(v),
-				"The major OpenGL version to use.");
-
-			Parser["aa|antialiasing"] = new CommandInfo(false, v => settings.CSettings.AntialiasingLevel = uint.Parse(v),
-				"The anti-aliasing level to use for the window.");
-
-			Parser["file|parse"] = new CommandInfo(false, v => Parser.Parse(File.ReadAllLines(v)),
-				"The file to parse for additional commands.");
-
-			Parser["log"] = new CommandInfo(false, v => Log.LogFile = v,
-				"The file to write all log information to.");
-
-			Parser["help|commands"] = new CommandInfo(true, v => PrintHelp(true),
-				"Prints this.");
+			// Currently just going to use a slight hack
+			foreach(var param in Parameters.All)
+			{
+				Parser.Add(
+					param.Key.Name,
+					!param.Key.ValueNeeded,
+					v => param.Value(ref settings, v),
+					param.Key.Description);
+			}
 
 			Parser.Parse(args);
 

@@ -109,5 +109,7 @@
     <Compile Include="Source\Settings\Difficulty.cs" />
     <Compile Include="Source\Vector2.cs" />
     <Compile Include="Source\Util\MathUtil.cs" />
+    <Compile Include="Source\Settings\ParameterAttribute.cs" />
+    <Compile Include="Source\Settings\Parameters.cs" />
   </ItemGroup>
 </Project>
