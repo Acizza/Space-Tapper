@@ -25,7 +25,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <Commandlineparameters>-v true -w 1024 -h 768</Commandlineparameters>
+    <Commandlineparameters>-v true -w 1600 -h 900</Commandlineparameters>
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -102,7 +102,6 @@
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\Scenes\GameSceneAttribute.cs" />
     <Compile Include="Source\Scenes\GameScene.cs" />
-    <Compile Include="Source\Util\CommandParser.cs" />
     <Compile Include="Source\Entities\BlockSpawner.cs" />
     <Compile Include="Source\Entities\Block.cs" />
     <Compile Include="Source\Interfaces\IResetable.cs" />

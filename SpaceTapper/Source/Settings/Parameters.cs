@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Collections.ObjectModel;
 using SFML.Window;
 using SpaceTapper.Util;
 
-namespace SpaceTapper
+namespace SpaceTapper.Settings
 {
 	public static class Parameters
 	{
 		#region Internal code
+
+		public const char NameSeparator = '|';
+		public const char ArgSpecifier  = '-';
 
 		public delegate void ParameterDel(ref GameSettings settings, string value);
 
@@ -30,11 +33,46 @@ namespace SpaceTapper
 			GetAll();
 		}
 
-		public static void Parse()
+		/// <summary>
+		/// Parse the specified arguments for parameters and execute them.
+		/// </summary>
+		/// <param name="settings">The game settings to pass to parameters for possible modification.</param> 
+		/// <param name="args">Arguments to parse.</param>
+		public static void Parse(ref GameSettings settings, string[] args)
 		{
+			for(uint i = 0; i < args.Length; ++i)
+			{
+				var arg = args[i];
 
+				if(arg[0] != ArgSpecifier)
+				{
+					Log.Warning("Skipping argument: " + arg);
+					continue;
+				}
+
+				// Skip the arg specifier
+				var name = arg.Substring(1);
+
+				if(!_all.Select(x => x.Key.Name).Contains(name))
+				{
+					Log.Warning("Unknown command: " + arg);
+					continue;
+				}
+
+				var command = _all.First(x => x.Key.Name == name);
+
+				// Increase i if the command requires a value and the next iteration won't overflow the argument list
+				if(command.Key.ValueNeeded && i + 1 < args.Length)
+					++i;
+
+				command.Value.Invoke(ref settings, args[i]);
+			}
 		}
 
+		/// <summary>
+		/// Uses reflection to grab all public static methods that have the Parameter attribute.
+		/// Adds everything found to <see cref="Parameters.All"/>.
+		/// </summary>
 		public static void GetAll()
 		{
 			var types = from type in Assembly.GetExecutingAssembly().GetTypes()
@@ -46,7 +84,20 @@ namespace SpaceTapper
 			_all.Clear();
 
 			foreach(var param in types)
-				_all[param.Attribute] = (ParameterDel)Delegate.CreateDelegate(typeof(ParameterDel), param.Method);
+			{
+				// Split the name by NameSeparator and add them all manually
+				var names = param.Attribute.Name.Split(NameSeparator);
+
+				foreach(var name in names)
+				{
+					_all.Add(new ParameterAttribute(
+						name,
+						param.Attribute.ValueNeeded,
+						param.Attribute.Description,
+						param.Attribute.Name),
+						(ParameterDel)Delegate.CreateDelegate(typeof(ParameterDel), param.Method));
+				}
+			}
 		}
 
 		#endregion
@@ -110,8 +161,19 @@ namespace SpaceTapper
 		[Parameter("help|commands", false, "Prints this.")]
 		public static void PrintHelp(ref GameSettings settings, string value)
 		{
-			// TODO: Revamp CommandParser class and move all help things here too
-			Program.PrintHelp(true);
+			Console.WriteLine("Specify command values by placing a space after typing the command.");
+			Console.WriteLine("Commands separated by \"{0}\" do the same thing.\n", NameSeparator);
+
+			foreach(var param in _all.DistinctBy(x => x.Key.FullName))
+			{
+				Console.WriteLine("{0}{1}:\n\tDescription: {2}\n\tValue needed: {3}\n",
+					ArgSpecifier,
+					param.Key.FullName,
+					param.Key.Description,
+					param.Key.ValueNeeded ? "yes" : "no");
+			}
+
+			Environment.Exit(0);
 		}
 
 		#endregion
