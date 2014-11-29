@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using SFML.Window;
-using SpaceTapper.Physics;
 using SpaceTapper.Scenes;
 using SpaceTapper.Util;
-using System.Linq;
 
 namespace SpaceTapper
 {
@@ -29,6 +28,8 @@ namespace SpaceTapper
 			InitializePlatform();
 			InitializeWindow();
 		}
+
+		#region Initializing methods
 
 		static void InitializePlatform()
 		{
@@ -72,6 +73,9 @@ namespace SpaceTapper
 
 			InitializeScenes();
 		}
+
+		#endregion
+		#region Game loop
 
 		public void Run()
 		{
@@ -120,6 +124,9 @@ namespace SpaceTapper
 			Window.Display();
 		}
 
+		#endregion
+		#region Scene status modifiers
+
 		public void SetActiveScene(string name)
 		{
 			SetSceneStatus(name, true);
@@ -140,6 +147,8 @@ namespace SpaceTapper
 
 			Log.Info("Status of \"" + name + "\" set to " + active);
 		}
+
+		#endregion
 
 		public void Exit()
 		{
