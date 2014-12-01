@@ -17,10 +17,17 @@ namespace SpaceTapper.UI
 		public Color DisabledIdleColor  = new Color(115, 115, 115, 255);
 		public Color IdleColor     = Color.White;
 
+		/// <summary>
+		/// Called when the button is pressed.
+		/// </summary>
 		public event Action Pressed = delegate {};
 
 		public Text Text { get; private set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="SpaceTapper.UI.Button"/> is enabled.
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		public bool Enabled
 		{
 			get
@@ -84,6 +91,10 @@ namespace SpaceTapper.UI
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the size of the button's text object.
+		/// </summary>
+		/// <value>The character size.</value>
 		public new uint Size
 		{
 			get
@@ -98,7 +109,7 @@ namespace SpaceTapper.UI
 
 		public override void Reset()
 		{
-			Text.Color = IdleColor;
+			Text.Color = Enabled ? IdleColor : DisabledIdleColor;
 		}
 
 		public override void Update(GameTime time)
@@ -114,6 +125,9 @@ namespace SpaceTapper.UI
 		#endregion
 		#region Public methods
 
+		/// <summary>
+		/// Calls the Pressed event if the button is enabled.
+		/// </summary>
 		public void Press()
 		{
 			if(!Enabled)

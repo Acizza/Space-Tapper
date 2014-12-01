@@ -78,7 +78,7 @@ namespace SpaceTapper.Scenes
 		{
 			target.Draw(_titleText, states);
 
-			for(int i = _buttons.MinIndex; i < _buttons.MaxIndex; ++i)
+			for(int i = _buttons.MinIndex; i <= _buttons.MaxIndex; ++i)
 				target.Draw(_buttons.Buttons[i], states);
 		}
 	}

@@ -40,11 +40,19 @@ namespace SpaceTapper.Util
 			return source.GroupBy(selector).Select(x => x.First());
 		}
 
+		/// <summary>
+		/// Returns a truncated version of the specified vector.
+		/// </summary>
+		/// <param name="vec">The vector to truncate.</param>
 		public static Vector2f Truncate(this Vector2f vec)
 		{
 			return new Vector2f((float)Math.Truncate(vec.X), (float)Math.Truncate(vec.Y));
 		}
 
+		/// <summary>
+		/// Returns the size attributes of the specified FloatRect.
+		/// </summary>
+		/// <param name="rect">The FloatRect to use.</param>
 		public static Vector2f Size(this FloatRect rect)
 		{
 			return new Vector2f(rect.Width, rect.Height);

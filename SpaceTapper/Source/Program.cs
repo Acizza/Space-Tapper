@@ -10,12 +10,13 @@ namespace SpaceTapper
 		{
 			var settings = new GameSettings
 			{
-				Mode      = new VideoMode(1024, 768),
-				CSettings = new ContextSettings(0, 0, 0, 3, 3),
-				Style     = Styles.Close,
-				Vsync     = true,
-				KeyRepeat = false,
-				Title     = "Space Tapper"
+				Mode         = new VideoMode(1024, 768),
+				CSettings    = new ContextSettings(0, 0, 0, 3, 3),
+				Style        = Styles.Close,
+				Vsync        = true,
+				KeyRepeat    = false,
+				Title        = "Space Tapper",
+				DefaultScene = "menu"
 			};
 
 			Parameters.Parse(ref settings, args);

@@ -12,7 +12,14 @@ namespace SpaceTapper.Settings
 	{
 		#region Internal code
 
+		/// <summary>
+		/// The char used to separate parameter names that do the same thing.
+		/// </summary>
 		public const char NameSeparator = '|';
+
+		/// <summary>
+		/// The char used to identify parameters from other arguments.
+		/// </summary>
 		public const char ArgSpecifier  = '-';
 
 		public delegate void ParameterDel(ref GameSettings settings, string value);
