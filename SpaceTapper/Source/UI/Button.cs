@@ -5,19 +5,36 @@ using SpaceTapper.Entities;
 using SpaceTapper.Scenes;
 using SpaceTapper.Util;
 
-namespace SpaceTapper
+namespace SpaceTapper.UI
 {
 	// TODO: Convert inheritence to Transformable, IResetable, Drawable
 	public sealed class Button : Entity
 	{
 		public const uint TextSize = 18;
 
-		public Color HoverColor = Color.Red;
-		public Color IdleColor  = Color.White;
+		public Color HoverColor    = Color.Red;
+		public Color DisabledHoverColor = new Color(100, 0, 0, 255);
+		public Color DisabledIdleColor  = new Color(115, 115, 115, 255);
+		public Color IdleColor     = Color.White;
 
-		public event Action<Vector2i> Pressed = delegate {};
+		public event Action Pressed = delegate {};
 
 		public Text Text { get; private set; }
+
+		public bool Enabled
+		{
+			get
+			{
+				return _enabled;
+			}
+			set
+			{
+				_enabled = value;
+				Text.Color = _enabled ? IdleColor : DisabledIdleColor;
+			}
+		}
+
+		bool _enabled = true;
 
 		#region Constructors / destructors
 
@@ -26,10 +43,10 @@ namespace SpaceTapper
 			Text = new Text(text, font, size);
 			Text.Color = IdleColor;
 
-			Position = position;
+			Position = position.Truncate();
 
 			if(center)
-				Text.Origin = GlobalBounds.Size() / 2;
+				Text.Origin = (GlobalBounds.Size() / 2).Truncate();
 
 			scene.Input.MouseButtons.AddOrUpdate(Mouse.Button.Left, OnMousePress);
 			scene.Input.MouseMoved += OnMouseMoved;
@@ -95,23 +112,37 @@ namespace SpaceTapper
 		}
 
 		#endregion
+		#region Public methods
+
+		public void Press()
+		{
+			if(!Enabled)
+				return;
+
+			Pressed.Invoke();
+		}
+
+		#endregion
 		#region Private methods
 
 		void OnMousePress(bool pressed)
 		{
-			if(pressed)
+			if(pressed || !Enabled)
 				return;
 
 			var pos  = Mouse.GetPosition(Scene.Game.Window);
 			var rect = new FloatRect(pos.X, pos.Y, 1, 1);
 
 			if(GlobalBounds.Intersects(rect))
-				Pressed.Invoke(pos);
+				Pressed.Invoke();
 		}
 
-		// TODO: Getting a native segfault from the GC on exit after adding this. May also be related to not cleaning up manually.
+		// TODO: Native segfault from sfml-window on exit sometimes after adding this.
 		void OnMouseMoved(MouseMoveEventArgs e)
 		{
+			if(!Enabled)
+				return;
+
 			var rect = new FloatRect(e.X, e.Y, 1, 1);
 			Text.Color = GlobalBounds.Intersects(rect) ? HoverColor : IdleColor;
 		}

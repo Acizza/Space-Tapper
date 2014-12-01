@@ -4,6 +4,7 @@ using SFML.Graphics;
 using SFML.Window;
 using SpaceTapper.Entities;
 using SpaceTapper.Scenes;
+using SpaceTapper.Util;
 
 namespace SpaceTapper
 {
@@ -28,6 +29,8 @@ namespace SpaceTapper
 				Player,
 				BlockSpawner
 			};
+
+			Input.Keys.AddOrUpdate(Keyboard.Key.Escape, p => Game.SetActiveScene("menu"));
 		}
 
 		#region Public methods
@@ -37,8 +40,7 @@ namespace SpaceTapper
 		/// </summary>
 		public void StartNewGame()
 		{
-			if(InProgress)
-				return;
+			EndGame();
 
 			foreach(var entity in Entities)
 				entity.Reset();
@@ -59,7 +61,8 @@ namespace SpaceTapper
 
 		public override void Enter()
 		{
-			StartNewGame();
+			if(!InProgress)
+				StartNewGame();
 		}
 
 		public override void Leave()

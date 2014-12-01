@@ -59,7 +59,7 @@ namespace SpaceTapper
 			foreach(var type in Scene.Types)
 				Scenes.Add(type.Key, (Scene)Activator.CreateInstance(type.Value, this));
 
-			SetActiveScene("game");
+			SetActiveScene("menu");
 		}
 
 		void InitializeResources()
@@ -148,6 +148,11 @@ namespace SpaceTapper
 				Scenes.Where(x => x.Key != name).ToList().ForEach(x => x.Value.Active = false);
 
 			Log.Info("Status of \"" + name + "\" set to " + active);
+		}
+
+		public T GetScene<T>(string name) where T : Scene
+		{
+			return (T)Scenes[name];
 		}
 
 		#endregion

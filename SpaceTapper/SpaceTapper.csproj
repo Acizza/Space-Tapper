@@ -113,5 +113,7 @@
     <Compile Include="Source\Settings\Parameters.cs" />
     <Compile Include="Source\Scenes\EndGameScene.cs" />
     <Compile Include="Source\UI\Button.cs" />
+    <Compile Include="Source\Scenes\MenuScene.cs" />
+    <Compile Include="Source\UI\ButtonList.cs" />
   </ItemGroup>
 </Project>
