@@ -42,7 +42,7 @@ namespace SpaceTapper.Scenes
 			GetTypes();
 		}
 
-		protected Scene(Game game, bool active = true)
+		protected Scene(Game game, bool active = false)
 		{
 			Input = new Input(game);
 			Input.OnKeyProcess   += p => Active; // Only process input if the scene is active

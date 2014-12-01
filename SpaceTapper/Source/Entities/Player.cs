@@ -2,12 +2,11 @@
 using SFML.Graphics;
 using SFML.Window;
 using SpaceTapper.Entities;
-using SpaceTapper.Math;
 using SpaceTapper.Physics;
 using SpaceTapper.Scenes;
 using SpaceTapper.Util;
 
-namespace SpaceTapper
+namespace SpaceTapper.Entities
 {
 	public sealed class Player : Entity, ICollidable
 	{
@@ -58,21 +57,20 @@ namespace SpaceTapper
 			}
 		}
 
+		Vector2f _initialPos;
 		Vector2f _size = new Vector2f(15, 15);
 		Color _color   = Color.Green;
 
 		float _slowingTick;
 
-		public Player(Scene scene) : base(scene)
+		public Player(Scene scene, Vector2f pos) : base(scene)
 		{
 			Shape = new RectangleShape(Size);
 			Shape.Origin    = Size / 2;
 			Shape.FillColor = Color;
-		}
 
-		public Player(Scene scene, Vector2f pos) : this(scene)
-		{
-			Shape.Position = pos;
+			_initialPos = pos;
+			Position    = pos;
 		}
 
 		public bool Collides(Entity entity)
@@ -110,6 +108,12 @@ namespace SpaceTapper
 
 			if(Scene.Input.IsPressed(MoveUp))
 				Velocity.Y = MathUtil.Clamp(Velocity.Y - Acceleration.Y * delta, -MaxSpeed.Y, MaxSpeed.Y);
+		}
+
+		public override void Reset()
+		{
+			Position = _initialPos;
+			Velocity = new Vector2(0, 0);
 		}
 
 		public override void Update(GameTime time)

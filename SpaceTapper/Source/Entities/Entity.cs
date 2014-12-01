@@ -1,11 +1,10 @@
 ﻿using System;
 using SFML.Graphics;
-using SpaceTapper.Math;
 using SpaceTapper.Scenes;
 
 namespace SpaceTapper.Entities
 {
-	public abstract class Entity : Transformable, IUpdatable, Drawable
+	public abstract class Entity : Transformable, IUpdatable, Drawable, IResetable
 	{
 		public Scene Scene { get; protected set; }
 
@@ -40,7 +39,15 @@ namespace SpaceTapper.Entities
 			Scene = scene;
 		}
 
-		public abstract FloatRect GlobalBounds { get; }
+		public virtual FloatRect GlobalBounds
+		{
+			get
+			{
+				return new FloatRect(0, 0, 0, 0);
+			}
+		}
+
+		public abstract void Reset();
 
 		public abstract void Update(GameTime time);
 		public abstract void Draw(RenderTarget target, RenderStates states);

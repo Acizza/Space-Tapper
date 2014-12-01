@@ -25,7 +25,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <Commandlineparameters>-v true -w 1024 -h 768</Commandlineparameters>
+    <Commandlineparameters>-v true -w 1600 -h 900</Commandlineparameters>
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -79,11 +79,12 @@
     <Folder Include="Resources\" />
     <Folder Include="Resources\Fonts\" />
     <Folder Include="Source\Interfaces\" />
-    <Folder Include="Source\Math\" />
     <Folder Include="Source\Entities\" />
     <Folder Include="Source\Physics\" />
     <Folder Include="Source\Util\" />
     <Folder Include="Source\Scenes\" />
+    <Folder Include="Source\Settings\" />
+    <Folder Include="Source\UI\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Program.cs" />
@@ -92,18 +93,27 @@
     <Compile Include="Source\GameTime.cs" />
     <Compile Include="Source\DebugInfo.cs" />
     <Compile Include="Source\Interfaces\IUpdatable.cs" />
-    <Compile Include="Source\Math\Vector2.cs" />
     <Compile Include="Source\Entities\Entity.cs" />
     <Compile Include="Source\Physics\Collider.cs" />
     <Compile Include="Source\Util\NativeMethods.cs" />
     <Compile Include="Source\Entities\Player.cs" />
-    <Compile Include="Source\Math\MathUtil.cs" />
     <Compile Include="Source\Util\Log.cs" />
     <Compile Include="Source\Util\Extensions.cs" />
     <Compile Include="Source\Scenes\Scene.cs" />
     <Compile Include="Source\Input.cs" />
     <Compile Include="Source\Scenes\GameSceneAttribute.cs" />
     <Compile Include="Source\Scenes\GameScene.cs" />
-    <Compile Include="Source\Util\CommandParser.cs" />
+    <Compile Include="Source\Entities\BlockSpawner.cs" />
+    <Compile Include="Source\Entities\Block.cs" />
+    <Compile Include="Source\Interfaces\IResetable.cs" />
+    <Compile Include="Source\Settings\Difficulty.cs" />
+    <Compile Include="Source\Vector2.cs" />
+    <Compile Include="Source\Util\MathUtil.cs" />
+    <Compile Include="Source\Settings\ParameterAttribute.cs" />
+    <Compile Include="Source\Settings\Parameters.cs" />
+    <Compile Include="Source\Scenes\EndGameScene.cs" />
+    <Compile Include="Source\UI\Button.cs" />
+    <Compile Include="Source\Scenes\MenuScene.cs" />
+    <Compile Include="Source\UI\ButtonList.cs" />
   </ItemGroup>
 </Project>

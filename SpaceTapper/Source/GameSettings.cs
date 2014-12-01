@@ -11,5 +11,6 @@ namespace SpaceTapper
 		public bool Vsync;
 		public bool KeyRepeat;
 		public string Title;
+		public string DefaultScene;
 	}
 }
