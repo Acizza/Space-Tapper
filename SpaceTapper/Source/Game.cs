@@ -19,7 +19,7 @@ namespace SpaceTapper
 		/// The render window used by the game.
 		/// </summary>
 		/// <value>The window.</value>
-		public RenderWindow Window   { get; private set; }
+		public RenderWindow Window { get; private set; }
 
 		/// <summary>
 		/// The settings passed to the game on initialization.
@@ -31,7 +31,7 @@ namespace SpaceTapper
 		/// The game time. Updated every frame.
 		/// </summary>
 		/// <value>The game time.</value>
-		public GameTime Time       { get; private set; }
+		public GameTime Time { get; private set; }
 
 		/// <summary>
 		/// Debug information shown by the game.
@@ -82,13 +82,13 @@ namespace SpaceTapper
 
 		void InitializeScenes()
 		{
+			if(String.IsNullOrEmpty(Settings.DefaultScene))
+				throw new ArgumentNullException("Default scene must be specified in game settings.");
+
 			Scenes = new Dictionary<string, Scene>();
 
 			foreach(var type in Scene.Types)
 				Scenes.Add(type.Key, (Scene)Activator.CreateInstance(type.Value, this));
-
-			if(String.IsNullOrEmpty(Settings.DefaultScene))
-				throw new ArgumentNullException("Default scene must be specified in game settings.");
 
 			SetActiveScene(Settings.DefaultScene);
 		}
