@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFML.Window;
 using SpaceTapper.Util;
 
@@ -10,6 +11,8 @@ namespace SpaceTapper.UI
 		public Input Input          { get; private set; }
 		public List<Button> Buttons { get; private set; }
 
+		public delegate bool ScrolledDel(int oldIdx, int newIdx, Button button, Keyboard.Key scrollKey);
+
 		/// <summary>
 		/// The minimum button index to use for scrolling.
 		/// </summary>
@@ -19,6 +22,11 @@ namespace SpaceTapper.UI
 		/// The maximum button index to use for scrolling.
 		/// </summary>
 		public int MaxIndex;
+
+		/// <summary>
+		/// Called when the button list is scrolled.
+		/// </summary>
+		public event ScrolledDel Scrolled;
 
 		/// <summary>
 		/// Gets or sets the button index. When set, calls SetIndex(value).
@@ -43,25 +51,16 @@ namespace SpaceTapper.UI
 			Input   = input;
 			Buttons = new List<Button>();
 
-			input.Keys.AddOrUpdate(Keyboard.Key.W, OnUpPressed);
-			input.Keys.AddOrUpdate(Keyboard.Key.Up, OnUpPressed);
-			input.Keys.AddOrUpdate(Keyboard.Key.S, OnDownPressed);
-			input.Keys.AddOrUpdate(Keyboard.Key.Down, OnDownPressed);
+			input.Keys.AddOrUpdate(Keyboard.Key.W,    p => OnUpPressed(Keyboard.Key.W, p));
+			input.Keys.AddOrUpdate(Keyboard.Key.Up,   p => OnUpPressed(Keyboard.Key.Up, p));
+			input.Keys.AddOrUpdate(Keyboard.Key.S,    p => OnDownPressed(Keyboard.Key.S, p));
+			input.Keys.AddOrUpdate(Keyboard.Key.Down, p => OnDownPressed(Keyboard.Key.Down, p));
 			input.Keys.AddOrUpdate(Keyboard.Key.Return, OnEnterPressed);
 		}
 
 		public ButtonList(Input input, params Button[] buttons) : this(input)
 		{
 			Add(buttons);
-		}
-
-		~ButtonList()
-		{
-			Input.Keys[Keyboard.Key.W]      -= OnUpPressed;
-			Input.Keys[Keyboard.Key.Up]     -= OnUpPressed;
-			Input.Keys[Keyboard.Key.S]      -= OnDownPressed;
-			Input.Keys[Keyboard.Key.Down]   -= OnDownPressed;
-			Input.Keys[Keyboard.Key.Return] -= OnEnterPressed;
 		}
 
 		#region Public methods
@@ -85,11 +84,34 @@ namespace SpaceTapper.UI
 			if(Buttons.Count == 0)
 				return;
 
-			if(index >= Buttons.Count || index > MaxIndex)
-				index = MinIndex;
-			else if(index < 0 || index < MinIndex)
-				index = MaxIndex;
+			_SetIndex(GetClosestIndex(index));
+		}
 
+		/// <summary>
+		/// Gets the closest index to the one specified. Wraps if out of bounds of MinIndex or MaxIndex.
+		/// </summary>
+		/// <returns>The closest index found.</returns>
+		/// <param name="index">The index to get the closest of.</param>
+		public int GetClosestIndex(int index)
+		{
+			if(index >= Buttons.Count || index > MaxIndex)
+				return MinIndex;
+
+			if(index < 0 || index < MinIndex)
+				return MaxIndex;
+
+			return index;
+		}
+
+		#endregion
+		#region Private methods
+
+		/// <summary>
+		/// Sets the current button index with no bounds checking.
+		/// </summary>
+		/// <param name="index">Index.</param>
+		void _SetIndex(int index)
+		{
 			var cButton = Buttons[index];
 			var pButton = Buttons[_index];
 
@@ -99,28 +121,39 @@ namespace SpaceTapper.UI
 			_index = index;
 		}
 
-		#endregion
-		#region Private methods
-
-		void OnUpPressed(bool pressed)
+		void OnUpPressed(Keyboard.Key key, bool pressed)
 		{
 			if(pressed)
 				return;
 
-			--Index;
+			int newIdx  = GetClosestIndex(Index - 1);
+			bool result = true;
+
+			if(Scrolled != null)
+				result = Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key);
+
+			if(result)
+				_SetIndex(newIdx);
 		}
 
-		void OnDownPressed(bool pressed)
+		void OnDownPressed(Keyboard.Key key, bool pressed)
 		{
 			if(pressed)
 				return;
 
-			++Index;
+			int newIdx  = GetClosestIndex(Index + 1);
+			bool result = true;
+
+			if(Scrolled != null)
+				result = Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key);
+
+			if(result)
+				_SetIndex(newIdx);
 		}
 
 		void OnEnterPressed(bool pressed)
 		{
-			if(pressed)
+			if(pressed || Buttons.Count == 0)
 				return;
 
 			Buttons[Index].Press();

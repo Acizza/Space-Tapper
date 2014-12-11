@@ -109,11 +109,15 @@
     <Compile Include="Source\Settings\Difficulty.cs" />
     <Compile Include="Source\Vector2.cs" />
     <Compile Include="Source\Util\MathUtil.cs" />
-    <Compile Include="Source\Settings\ParameterAttribute.cs" />
-    <Compile Include="Source\Settings\Parameters.cs" />
     <Compile Include="Source\Scenes\EndGameScene.cs" />
     <Compile Include="Source\UI\Button.cs" />
     <Compile Include="Source\Scenes\MenuScene.cs" />
     <Compile Include="Source\UI\ButtonList.cs" />
+    <Compile Include="Source\Scenes\OptionsScene.cs" />
+    <Compile Include="Source\Settings\ParameterAttribute.cs" />
+    <Compile Include="Source\Settings\Parameters.cs" />
+    <Compile Include="Source\Settings\Options.cs" />
+    <Compile Include="Source\UI\TextField.cs" />
+    <Compile Include="Source\UI\UIElement.cs" />
   </ItemGroup>
 </Project>

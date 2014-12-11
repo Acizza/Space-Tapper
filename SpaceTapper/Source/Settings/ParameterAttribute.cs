@@ -11,7 +11,7 @@ namespace SpaceTapper.Settings
 		public bool ValueNeeded;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SpaceTapper.ParameterAttribute"/> class.
+		/// Initializes a new instance of the <see cref="SpaceTapper.Settings.ParameterAttribute"/> class.
 		/// </summary>
 		/// <param name="name">Parameter name.</param>
 		/// <param name="valueNeeded">If set to <c>true</c>, a value is needed for the parameter.</param>

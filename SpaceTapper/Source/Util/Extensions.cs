@@ -58,6 +58,34 @@ namespace SpaceTapper.Util
 			return new Vector2f(rect.Width, rect.Height);
 		}
 
+		/// <summary>
+		/// Returns the position attributes of the specified FloatRect.
+		/// </summary>
+		/// <param name="rect">The FloatRect to use.</param>
+		public static Vector2f Position(this FloatRect rect)
+		{
+			return new Vector2f(rect.Left, rect.Top);
+		}
+
+		/// <summary>
+		/// Returns the X position + width of the specified FloatRect.
+		/// </summary>
+		/// <param name="rect">The FloatRect to use.</param>
+		public static float Right(this FloatRect rect)
+		{
+			return rect.Left + rect.Width;
+		}
+
+		/// <summary>
+		/// Returns a version of the specified string with the first letter capitalized.
+		/// </summary>
+		/// <returns>The string, with the first letter capitalized.</returns>
+		/// <param name="str">The string to use.</param>
+		public static string MakeFirstUpper(this string str)
+		{
+			return Char.ToUpper(str[0]) + str.Substring(1);
+		}
+
 		public static Vector2f ToVector2f(this Vector2i vec)
 		{
 			return new Vector2f(vec.X, vec.Y);

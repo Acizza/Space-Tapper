@@ -1,7 +1,6 @@
 ﻿using System;
-using SFML.Window;
 using System.Collections.Generic;
-using SpaceTapper.Util;
+using SFML.Window;
 
 namespace SpaceTapper
 {
@@ -25,6 +24,21 @@ namespace SpaceTapper
 		/// </summary>
 		public event Func<Mouse.Button, bool> OnMouseProcess;
 
+		/// <summary>
+		/// Called when any key is pressed.
+		/// </summary>
+		public event Action<Keyboard.Key> KeyPressed = delegate {};
+
+		/// <summary>
+		/// Called when any mouse button is pressed.
+		/// </summary>
+		public event Action<Mouse.Button> MousePressed = delegate {};
+
+		/// <summary>
+		/// Called when text is entered.
+		/// </summary>
+		public event Action<string> TextEntered = delegate {};
+
 		public event Action<MouseMoveEventArgs> MouseMoved = delegate {};
 
 		/// <summary>
@@ -45,6 +59,7 @@ namespace SpaceTapper
 
 			Game.Window.KeyPressed  += OnKeyPressed;
 			Game.Window.KeyReleased += OnKeyReleased;
+			Game.Window.TextEntered += OnTextEntered;
 			Game.Window.MouseMoved  += OnMouseMoved;
 			Game.Window.MouseButtonPressed  += OnMousePressed;
 			Game.Window.MouseButtonReleased += OnMouseReleased;
@@ -56,6 +71,7 @@ namespace SpaceTapper
 		{
 			Game.Window.KeyPressed  -= OnKeyPressed;
 			Game.Window.KeyReleased -= OnKeyReleased;
+			Game.Window.TextEntered -= OnTextEntered;
 			Game.Window.MouseMoved  -= OnMouseMoved;
 			Game.Window.MouseButtonPressed  -= OnMousePressed;
 			Game.Window.MouseButtonReleased -= OnMouseReleased;
@@ -64,7 +80,7 @@ namespace SpaceTapper
 		}
 
 		#endregion
-		#region Event handlers
+		#region Private methods
 
 		void OnKeyPressed(object sender, KeyEventArgs e)
 		{
@@ -94,8 +110,16 @@ namespace SpaceTapper
 			MouseMoved.Invoke(e);
 		}
 
+		void OnTextEntered(object sender, TextEventArgs e)
+		{
+			if(OnKeyProcess != null && !OnKeyProcess.Invoke(Keyboard.Key.Unknown))
+				return;
+
+			TextEntered.Invoke(e.Unicode);
+		}
+
 		#endregion
-		#region Input processors
+		#region Public methods
 
 		/// <summary>
 		/// If a key handler exists in Keys, the method will either put the key in QueuedKeys,
@@ -105,10 +129,14 @@ namespace SpaceTapper
 		/// <param name="pressed">The key state.</param>
 		public void ProcessKey(Keyboard.Key key, bool pressed)
 		{
-			if(!Keys.ContainsKey(key))
+			if(OnKeyProcess != null && !OnKeyProcess.Invoke(key))
 				return;
 
-			if(OnKeyProcess != null && !OnKeyProcess.Invoke(key))
+			if(pressed)
+				KeyPressed.Invoke(key);
+
+			// Process any key specific handlers
+			if(!Keys.ContainsKey(key))
 				return;
 
 			if(QueueEnabled)
@@ -132,10 +160,14 @@ namespace SpaceTapper
 		/// <param name="pressed">The mouse button state.</param>
 		public void ProcessMouse(Mouse.Button button, bool pressed)
 		{
-			if(!MouseButtons.ContainsKey(button))
+			if(OnMouseProcess != null && !OnMouseProcess.Invoke(button))
 				return;
 
-			if(OnMouseProcess != null && !OnMouseProcess.Invoke(button))
+			if(pressed)
+				MousePressed.Invoke(button);
+
+			// Process any mouse button specific handlers
+			if(!MouseButtons.ContainsKey(button))
 				return;
 
 			if(QueueEnabled)
@@ -150,9 +182,6 @@ namespace SpaceTapper
 				MouseButtons[button].Invoke(pressed);
 			}
 		}
-
-		#endregion
-		#region Button press methods
 
 		/// <summary>
 		/// Returns true if the specified key is pressed and the OnKeyProcess event returns true.
@@ -180,8 +209,6 @@ namespace SpaceTapper
 			return Mouse.IsButtonPressed(button);
 		}
 
-		#endregion
-
 		public void Flush()
 		{
 			if(!QueueEnabled)
@@ -197,5 +224,7 @@ namespace SpaceTapper
 
 			QueuedMouseButtons.Clear();
 		}
+
+		#endregion
 	}
 }

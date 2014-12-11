@@ -4,6 +4,7 @@ using SFML.Window;
 using SpaceTapper.Scenes;
 using SpaceTapper.UI;
 using SpaceTapper.Util;
+using System.Collections.Generic;
 
 namespace SpaceTapper.Scenes
 {
@@ -37,26 +38,33 @@ namespace SpaceTapper.Scenes
 		{
 			var font = new Font("Resources/Fonts/DejaVuSans.ttf");
 			var pos  = Game.Window.Size.ToVector2f() / 2;
-			const int offset = 10;
 
-			_resumeBtn = new Button(this, font, pos, 24, "Resume");
+			const int fSize  = 24;
+			const int offset = (int)(fSize * 1.35f);
+
+			_resumeBtn = new Button(this, font, pos, fSize, "Resume");
 			_resumeBtn.Pressed += () => Game.SetActiveScene("game");
 
-			pos.Y += _resumeBtn.Text.GetLocalBounds().Height + offset;
+			pos.Y += offset;
 
-			var startBtn = new Button(this, font, pos, 24, "Start");
+			var startBtn = new Button(this, font, pos, fSize, "Start");
 			startBtn.Pressed += () =>
 			{
 				Game.GetScene<GameScene>("game").StartNewGame();
 				Game.SetActiveScene("game");
 			};
 
-			pos.Y += startBtn.Text.GetLocalBounds().Height + offset;
+			pos.Y += offset;
 
-			var quitBtn = new Button(this, font, pos, 24, "Quit");
+			var optionsBtn = new Button(this, font, pos, fSize, "Options");
+			optionsBtn.Pressed += () => Game.SetActiveScene("options");
+
+			pos.Y += offset;
+
+			var quitBtn = new Button(this, font, pos, fSize, "Quit");
 			quitBtn.Pressed += Game.Exit;
 
-			_buttons = new ButtonList(Input, _resumeBtn, startBtn, quitBtn);
+			_buttons = new ButtonList(Input, _resumeBtn, startBtn, optionsBtn, quitBtn);
 		}
 
 		public override void Enter()
