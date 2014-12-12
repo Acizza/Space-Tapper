@@ -18,6 +18,14 @@ namespace SpaceTapper.UI
 			}
 		}
 
+		public virtual FloatRect GlobalBounds
+		{
+			get
+			{
+				return Transform.TransformRect(new FloatRect(0, 0, 0, 0));
+			}
+		}
+
 		bool _enabled;
 
 		protected UIElement(bool enabled = true)

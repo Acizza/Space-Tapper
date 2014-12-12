@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SFML.Window;
 using SpaceTapper.Util;
+using SFML.Graphics;
 
 namespace SpaceTapper.UI
 {
@@ -56,6 +57,7 @@ namespace SpaceTapper.UI
 			input.Keys.AddOrUpdate(Keyboard.Key.S,    p => OnDownPressed(Keyboard.Key.S, p));
 			input.Keys.AddOrUpdate(Keyboard.Key.Down, p => OnDownPressed(Keyboard.Key.Down, p));
 			input.Keys.AddOrUpdate(Keyboard.Key.Return, OnEnterPressed);
+			input.MouseMoved += OnMouseMoved;
 		}
 
 		public ButtonList(Input input, params Button[] buttons) : this(input)
@@ -63,6 +65,78 @@ namespace SpaceTapper.UI
 			Add(buttons);
 		}
 
+		#region Private methods
+
+		/// <summary>
+		/// Sets the current button index with no bounds checking.
+		/// </summary>
+		/// <param name="index">Index.</param>
+		void _SetIndex(int index)
+		{
+			Buttons[index].SetHighlighted(true);
+			Buttons[_index].SetHighlighted(false);
+
+			_index = index;
+		}
+
+		void OnMouseMoved(MouseMoveEventArgs e)
+		{
+			var rect = new FloatRect(e.X, e.Y, 1, 1);
+
+			var pair = Buttons
+				.Select((x, idx) => new { Button = x, Index = idx })
+				.FirstOrDefault(x => x.Button.GlobalBounds.Intersects(rect));
+
+			if(pair != null)
+			{
+				ValidateSelected(pair.Button);
+				_index = pair.Index;
+			}
+		}
+
+		void OnUpPressed(Keyboard.Key key, bool pressed)
+		{
+			if(pressed)
+				return;
+
+			int newIdx = GetClosestIndex(Index - 1);
+
+			if(Scrolled != null)
+			{
+				if(!Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key))
+					return;
+			}
+				
+			_SetIndex(newIdx);
+			ValidateSelected(Buttons[newIdx]);
+		}
+
+		void OnDownPressed(Keyboard.Key key, bool pressed)
+		{
+			if(pressed)
+				return;
+
+			int newIdx = GetClosestIndex(Index + 1);
+
+			if(Scrolled != null)
+			{
+				if(!Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key))
+					return;
+			}
+
+			_SetIndex(newIdx);
+			ValidateSelected(Buttons[newIdx]);
+		}
+
+		void OnEnterPressed(bool pressed)
+		{
+			if(pressed || Buttons.Count == 0)
+				return;
+
+			Buttons[Index].Press();
+		}
+
+		#endregion
 		#region Public methods
 
 		/// <summary>
@@ -103,60 +177,14 @@ namespace SpaceTapper.UI
 			return index;
 		}
 
-		#endregion
-		#region Private methods
-
 		/// <summary>
-		/// Sets the current button index with no bounds checking.
+		/// Makes sure that only one button is selected at a time.
 		/// </summary>
-		/// <param name="index">Index.</param>
-		void _SetIndex(int index)
+		/// <param name="current">The button to avoid resetting if there is more than one button selected.</param>
+		public void ValidateSelected(Button current)
 		{
-			var cButton = Buttons[index];
-			var pButton = Buttons[_index];
-
-			pButton.Text.Color = pButton.Enabled ? pButton.IdleColor : pButton.DisabledIdleColor;
-			cButton.Text.Color = cButton.Enabled ? cButton.HoverColor : cButton.DisabledHoverColor;
-
-			_index = index;
-		}
-
-		void OnUpPressed(Keyboard.Key key, bool pressed)
-		{
-			if(pressed)
-				return;
-
-			int newIdx  = GetClosestIndex(Index - 1);
-			bool result = true;
-
-			if(Scrolled != null)
-				result = Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key);
-
-			if(result)
-				_SetIndex(newIdx);
-		}
-
-		void OnDownPressed(Keyboard.Key key, bool pressed)
-		{
-			if(pressed)
-				return;
-
-			int newIdx  = GetClosestIndex(Index + 1);
-			bool result = true;
-
-			if(Scrolled != null)
-				result = Scrolled.Invoke(Index, newIdx, Buttons[newIdx], key);
-
-			if(result)
-				_SetIndex(newIdx);
-		}
-
-		void OnEnterPressed(bool pressed)
-		{
-			if(pressed || Buttons.Count == 0)
-				return;
-
-			Buttons[Index].Press();
+			if(Buttons.Count(x => x.Highlighted) > 1)
+				Buttons.Where(x => x != current).ToList().ForEach(x => x.SetHighlighted(false));
 		}
 
 		#endregion

@@ -86,6 +86,22 @@ namespace SpaceTapper.Util
 			return Char.ToUpper(str[0]) + str.Substring(1);
 		}
 
+		public static FloatRect MouseRect(this Window window)
+		{
+			var pos = Mouse.GetPosition(window);
+			return new FloatRect(pos.X, pos.Y, 1, 1);
+		}
+
+		public static FloatRect MouseRect(this MouseMoveEventArgs e)
+		{
+			return new FloatRect(e.X, e.Y, 1, 1);
+		}
+
+		public static FloatRect MouseRect(this Vector2f pos)
+		{
+			return new FloatRect(pos.X, pos.Y, 1, 1);
+		}
+
 		public static Vector2f ToVector2f(this Vector2i vec)
 		{
 			return new Vector2f(vec.X, vec.Y);

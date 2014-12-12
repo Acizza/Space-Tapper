@@ -7,46 +7,73 @@ using SpaceTapper.Util;
 
 namespace SpaceTapper.UI
 {
-	// TODO: Convert inheritence to Transformable, IResetable, Drawable
-	public sealed class Button : Entity
+	public sealed class Button : UIElement
 	{
+		/// <summary>
+		/// The default text size.
+		/// </summary>
 		public const uint TextSize = 18;
 
-		public Color HoverColor    = Color.Red;
-		public Color DisabledHoverColor = new Color(100, 0, 0, 255);
-		public Color DisabledIdleColor  = new Color(115, 115, 115, 255);
-		public Color IdleColor     = Color.White;
+		/// <summary>
+		/// The text used by the button.
+		/// </summary>
+		/// <value>The text.</value>
+		public Text Text { get; private set; }
+
+		/// <summary>
+		/// The scene reference used by the button for input.
+		/// </summary>
+		/// <value>The scene.</value>
+		public Scene Scene { get; private set; }
+
+		/// <summary>
+		/// Indicates if the button is being highlighted.
+		/// </summary>
+		/// <value><c>true</c> if highlighted; otherwise, <c>false</c>.</value>
+		public bool Highlighted { get; private set; }
+
+		/// <summary>
+		/// The color to use when the button is highlighted.
+		/// </summary>
+		public Color HighlightColor = Color.Red;
+
+		/// <summary>
+		/// The color to use when the button is highlighted while disabled.
+		/// </summary>
+		public Color DisabledHighlightColor = new Color(100, 0, 0, 255);
+
+		/// <summary>
+		/// The color to use when the button is idle while disabled.
+		/// </summary>
+		public Color DisabledIdleColor = new Color(115, 115, 115, 255);
+
+		/// <summary>
+		/// The color to use when the button is idle.
+		/// </summary>
+		public Color IdleColor = Color.White;
 
 		/// <summary>
 		/// Called when the button is pressed.
 		/// </summary>
 		public event Action Pressed = delegate {};
 
-		public Text Text { get; private set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="SpaceTapper.UI.Button"/> is enabled.
-		/// </summary>
-		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-		public bool Enabled
+		public override FloatRect GlobalBounds
 		{
 			get
 			{
-				return _enabled;
-			}
-			set
-			{
-				_enabled = value;
-				Text.Color = _enabled ? IdleColor : DisabledIdleColor;
+				return Transform.TransformRect(Text.GetGlobalBounds());
 			}
 		}
 
-		bool _enabled = true;
+		bool _intersects;
+		bool _prevIntersects;
 
 		#region Constructors / destructors
 
-		public Button(Scene scene, Font font, Vector2f position, uint size, bool center, string text) : base(scene)
+		public Button(Scene scene, Font font, Vector2f position, uint size, bool center, string text)
 		{
+			Scene = scene;
+
 			Text = new Text(text, font, size);
 			Text.Color = IdleColor;
 
@@ -81,63 +108,12 @@ namespace SpaceTapper.UI
 		}
 
 		#endregion
-		#region Overrides
-
-		public override FloatRect GlobalBounds
-		{
-			get
-			{
-				return Transform.TransformRect(Text.GetGlobalBounds());
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the size of the button's text object.
-		/// </summary>
-		/// <value>The character size.</value>
-		public new uint Size
-		{
-			get
-			{
-				return Text.CharacterSize;
-			}
-			set
-			{
-				Text.CharacterSize = value;
-			}
-		}
-
-		public override void Reset()
-		{
-			Text.Color = Enabled ? IdleColor : DisabledIdleColor;
-		}
-
-		public override void Update(GameTime time)
-		{
-		}
-
-		public override void Draw(RenderTarget target, RenderStates states)
-		{
-			states.Transform *= Transform;
-			target.Draw(Text, states);
-		}
-
-		#endregion
-		#region Public methods
-
-		/// <summary>
-		/// Calls the Pressed event if the button is enabled.
-		/// </summary>
-		public void Press()
-		{
-			if(!Enabled)
-				return;
-
-			Pressed.Invoke();
-		}
-
-		#endregion
 		#region Private methods
+
+		protected override void OnEnableChanged(bool newValue)
+		{
+			Text.Color = newValue ? IdleColor : DisabledIdleColor;
+		}
 
 		void OnMousePress(bool pressed)
 		{
@@ -158,7 +134,54 @@ namespace SpaceTapper.UI
 				return;
 
 			var rect = new FloatRect(e.X, e.Y, 1, 1);
-			Text.Color = GlobalBounds.Intersects(rect) ? HoverColor : IdleColor;
+
+			// This kind of checking prevents resetting colors if they're set externally
+			_prevIntersects = _intersects;
+			_intersects = GlobalBounds.Intersects(rect);
+
+			if(_intersects && !_prevIntersects)
+				SetHighlighted(true);
+			else if(!_intersects && _prevIntersects)
+				SetHighlighted(false);
+		}
+
+		#endregion
+		#region Public methods
+
+		/// <summary>
+		/// Calls the Pressed event if the button is enabled.
+		/// </summary>
+		public void Press()
+		{
+			if(!Enabled)
+				return;
+
+			Pressed.Invoke();
+		}
+
+		/// <summary>
+		/// Makes the button highlighted if value is true, idle otherwise.
+		/// </summary>
+		/// <param name="value">If set to <c>true</c>, the button is highlighted.</param>
+		public void SetHighlighted(bool value)
+		{
+			Highlighted = value;
+
+			if(Highlighted)
+				Text.Color = Enabled ? HighlightColor : DisabledHighlightColor;
+			else
+				Text.Color = Enabled ? IdleColor : DisabledIdleColor;
+		}
+
+		public override void Reset()
+		{
+			Text.Color = Enabled ? IdleColor : DisabledIdleColor;
+		}
+
+		public override void Draw(RenderTarget target, RenderStates states)
+		{
+			states.Transform *= Transform;
+			target.Draw(Text, states);
 		}
 
 		#endregion

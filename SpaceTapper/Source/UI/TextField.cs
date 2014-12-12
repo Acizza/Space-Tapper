@@ -168,9 +168,7 @@ namespace SpaceTapper.UI
 
 		void OnMousePressed(Mouse.Button button)
 		{
-			var pos  = Mouse.GetPosition(_scene.Game.Window);
-			var rect = new FloatRect(pos.X, pos.Y, 1, 1);
-
+			var rect = _scene.Game.Window.MouseRect();
 			bool intersects = rect.Intersects(Transform.TransformRect(BackgroundShape.GetGlobalBounds()));
 
 			// This kind of checking prevents the field from being enabled / disabled if clicking multiple times on it.
